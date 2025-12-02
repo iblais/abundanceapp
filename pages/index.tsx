@@ -1,7 +1,6 @@
 /**
  * Abundance Flow - Main App Page
- *
- * Full web implementation with same premium aesthetic
+ * Premium visual design matching reference screens
  */
 
 import React, { useState, useEffect } from 'react';
@@ -21,47 +20,49 @@ interface UserState {
   streak: number;
 }
 
-// Logo Component
-const Logo: React.FC<{ size?: number }> = ({ size = 120 }) => (
-  <svg width={size} height={size} viewBox="0 0 100 100" className={styles.logo}>
-    <defs>
-      <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#FFFFFF" stopOpacity="1" />
-        <stop offset="100%" stopColor="#A99DD4" stopOpacity="0.8" />
-      </linearGradient>
-      <linearGradient id="glowGradient" x1="50%" y1="0%" x2="50%" y2="100%">
-        <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.3" />
-        <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
-      </linearGradient>
-    </defs>
-    <circle cx="50" cy="50" r="48" fill="url(#glowGradient)" />
-    <g transform="translate(15, 15) scale(0.7)">
-      <path
-        d="M50 10 C80 10, 90 40, 70 60 C50 80, 30 70, 30 50 C30 30, 50 20, 70 30"
-        stroke="url(#logoGradient)"
-        strokeWidth="4"
-        fill="none"
-        strokeLinecap="round"
-      />
-      <path
-        d="M50 90 C20 90, 10 60, 30 40 C50 20, 70 30, 70 50 C70 70, 50 80, 30 70"
-        stroke="url(#logoGradient)"
-        strokeWidth="4"
-        fill="none"
-        strokeLinecap="round"
-      />
-      <circle cx="50" cy="50" r="8" fill="url(#logoGradient)" />
-    </g>
-  </svg>
+// Swirl Logo Component - matches reference design
+const Logo: React.FC<{ size?: number }> = ({ size = 100 }) => (
+  <div className={styles.logoWrapper}>
+    <svg width={size} height={size} viewBox="0 0 100 100" className={styles.logo}>
+      <defs>
+        <linearGradient id="swirlGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="1" />
+          <stop offset="100%" stopColor="#C4B8E8" stopOpacity="0.9" />
+        </linearGradient>
+        <filter id="logoGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="4" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+      </defs>
+      <g filter="url(#logoGlow)">
+        {/* Top swirl */}
+        <path
+          d="M50 15 C70 15, 85 30, 85 50 C85 60, 75 70, 60 65 C45 60, 45 45, 55 40 C65 35, 75 45, 70 55"
+          stroke="url(#swirlGradient)"
+          strokeWidth="5"
+          fill="none"
+          strokeLinecap="round"
+        />
+        {/* Bottom swirl */}
+        <path
+          d="M50 85 C30 85, 15 70, 15 50 C15 40, 25 30, 40 35 C55 40, 55 55, 45 60 C35 65, 25 55, 30 45"
+          stroke="url(#swirlGradient)"
+          strokeWidth="5"
+          fill="none"
+          strokeLinecap="round"
+        />
+      </g>
+    </svg>
+  </div>
 );
 
 // Progress Ring Component (Alignment Gauge)
-const ProgressRing: React.FC<{ progress: number; size?: number; children?: React.ReactNode }> = ({
+const ProgressRing: React.FC<{ progress: number; size?: number; strokeWidth?: number; children?: React.ReactNode }> = ({
   progress,
   size = 200,
+  strokeWidth = 12,
   children
 }) => {
-  const strokeWidth = 14;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
@@ -70,11 +71,12 @@ const ProgressRing: React.FC<{ progress: number; size?: number; children?: React
     <div className={styles.progressRing} style={{ width: size, height: size }}>
       <svg width={size} height={size}>
         <defs>
-          <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#F4CF77" />
+            <stop offset="50%" stopColor="#FFFFFF" />
             <stop offset="100%" stopColor="#9382FF" />
           </linearGradient>
-          <filter id="glow">
+          <filter id="ringGlow">
             <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
             <feMerge>
               <feMergeNode in="coloredBlur"/>
@@ -86,7 +88,7 @@ const ProgressRing: React.FC<{ progress: number; size?: number; children?: React
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="rgba(255,255,255,0.06)"
+          stroke="rgba(255,255,255,0.08)"
           strokeWidth={strokeWidth}
           fill="transparent"
         />
@@ -94,13 +96,13 @@ const ProgressRing: React.FC<{ progress: number; size?: number; children?: React
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="url(#progressGradient)"
+          stroke="url(#ringGradient)"
           strokeWidth={strokeWidth}
           fill="transparent"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
-          filter="url(#glow)"
+          filter="url(#ringGlow)"
           style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%', transition: 'stroke-dashoffset 1s ease-out' }}
         />
       </svg>
@@ -116,10 +118,10 @@ const GlassCard: React.FC<{
   children: React.ReactNode;
   className?: string;
   onClick?: () => void;
-  variant?: 'default' | 'accent';
+  variant?: 'default' | 'elevated';
 }> = ({ children, className = '', onClick, variant = 'default' }) => (
   <div
-    className={`${styles.glassCard} ${variant === 'accent' ? styles.glassCardAccent : ''} ${className}`}
+    className={`${styles.glassCard} ${variant === 'elevated' ? styles.glassCardElevated : ''} ${className}`}
     onClick={onClick}
     style={{ cursor: onClick ? 'pointer' : 'default' }}
   >
@@ -151,47 +153,24 @@ const Icons = {
       <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
     </svg>
   ),
-  meditation: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="8" r="3" />
-      <path d="M12 11v2m-4 7c0-4 2-6 4-6s4 2 4 6" />
+  plus: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
     </svg>
   ),
-  journal: (
+  grid: (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-    </svg>
-  ),
-  chart: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="3" width="7" height="7" rx="1" />
+      <rect x="3" y="14" width="7" height="7" rx="1" />
+      <rect x="14" y="14" width="7" height="7" rx="1" />
     </svg>
   ),
   profile: (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="8" r="4" />
       <path d="M20 21a8 8 0 10-16 0" />
-    </svg>
-  ),
-  settings: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065zM15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-    </svg>
-  ),
-  play: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M8 5v14l11-7z" />
-    </svg>
-  ),
-  pause: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-      <rect x="6" y="4" width="4" height="16" rx="1" />
-      <rect x="14" y="4" width="4" height="16" rx="1" />
-    </svg>
-  ),
-  chevronRight: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 5l7 7-7 7" />
     </svg>
   ),
   sparkle: (
@@ -204,9 +183,30 @@ const Icons = {
       <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
     </svg>
   ),
-  chat: (
+  chart: (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+    </svg>
+  ),
+  play: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <polygon points="5,3 19,12 5,21" fill="currentColor" />
+    </svg>
+  ),
+  playOutline: (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="6,4 20,12 6,20" />
+    </svg>
+  ),
+  pause: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+      <rect x="6" y="4" width="4" height="16" rx="1" />
+      <rect x="14" y="4" width="4" height="16" rx="1" />
+    </svg>
+  ),
+  chevronRight: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 5l7 7-7 7" />
     </svg>
   ),
   close: (
@@ -219,19 +219,14 @@ const Icons = {
       <path d="M15 19l-7-7 7-7" />
     </svg>
   ),
-  streak: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c-1.5-2-1.5-6-1.5-6s3.5 2 6 2c2.5 0 4.9-1.4 5.9-3.9C21 6 21 12 17.657 18.657z" />
-    </svg>
-  ),
   sun: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="4" />
       <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
     </svg>
   ),
   moon: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
     </svg>
   ),
@@ -240,20 +235,42 @@ const Icons = {
       <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
     </svg>
   ),
-  volume: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+  settings: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    </svg>
+  ),
+  chat: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+    </svg>
+  ),
+  meditation: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="8" r="3" />
+      <path d="M12 11v2m-4 7c0-4 2-6 4-6s4 2 4 6" />
+    </svg>
+  ),
+  journal: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+    </svg>
+  ),
+  streak: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c-1.5-2-1.5-6-1.5-6s3.5 2 6 2c2.5 0 4.9-1.4 5.9-3.9C21 6 21 12 17.657 18.657z" />
     </svg>
   ),
 };
 
-// Tab Bar Component
+// Tab Bar Component - matches reference with 4 icons
 const TabBar: React.FC<{ activeTab: string; onTabChange: (tab: Screen) => void }> = ({ activeTab, onTabChange }) => {
   const tabs = [
-    { id: 'dashboard', icon: Icons.home, label: 'Home' },
-    { id: 'meditations', icon: Icons.meditation, label: 'Meditate' },
-    { id: 'journal', icon: Icons.journal, label: 'Journal' },
-    { id: 'progress', icon: Icons.chart, label: 'Progress' },
+    { id: 'dashboard', icon: Icons.home },
+    { id: 'meditations', icon: Icons.plus },
+    { id: 'journal', icon: Icons.grid },
+    { id: 'profile', icon: Icons.profile },
   ];
 
   return (
@@ -265,14 +282,13 @@ const TabBar: React.FC<{ activeTab: string; onTabChange: (tab: Screen) => void }
           onClick={() => onTabChange(tab.id as Screen)}
         >
           <span className={styles.tabIcon}>{tab.icon}</span>
-          {activeTab === tab.id && <span className={styles.tabIndicator} />}
         </button>
       ))}
     </nav>
   );
 };
 
-// Welcome Screen
+// Welcome Screen - with glass card container like reference
 const WelcomeScreen: React.FC<{ onBegin: () => void }> = ({ onBegin }) => {
   const [visible, setVisible] = useState(false);
 
@@ -282,21 +298,42 @@ const WelcomeScreen: React.FC<{ onBegin: () => void }> = ({ onBegin }) => {
 
   return (
     <div className={`${styles.screen} ${styles.welcomeScreen} ${visible ? styles.fadeIn : ''}`}>
-      <div className={styles.welcomeContent}>
-        <div className={styles.logoContainer}>
-          <Logo size={120} />
+      <div className={styles.welcomeCard}>
+        <div className={styles.welcomeCardInner}>
+          <div className={styles.welcomeContent}>
+            <Logo size={100} />
+            <h1 className={styles.welcomeTitle}>Abundance Flow</h1>
+            <p className={styles.welcomeTagline}>Shift your state. Reshape your reality.</p>
+          </div>
+          <Button onClick={onBegin} fullWidth>Begin</Button>
         </div>
-        <h1 className={styles.welcomeTitle}>Abundance Flow</h1>
-        <p className={styles.welcomeTagline}>Shift your state. Reshape your reality.</p>
-      </div>
-      <div className={styles.welcomeButton}>
-        <Button onClick={onBegin} fullWidth>Begin</Button>
       </div>
     </div>
   );
 };
 
-// Onboarding Screen
+// Wave Background Component for Onboarding/Player
+const WaveBackground: React.FC = () => (
+  <div className={styles.waveBackground}>
+    <svg viewBox="0 0 400 400" className={styles.waveSvg}>
+      <defs>
+        <linearGradient id="waveGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#4A3F8C" stopOpacity="0.6" />
+          <stop offset="50%" stopColor="#6B5BA7" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#8B7BC2" stopOpacity="0.2" />
+        </linearGradient>
+        <linearGradient id="waveGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#3D3470" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#5C4D99" stopOpacity="0.3" />
+        </linearGradient>
+      </defs>
+      <ellipse cx="200" cy="350" rx="250" ry="150" fill="url(#waveGrad1)" className={styles.waveShape1} />
+      <ellipse cx="250" cy="380" rx="200" ry="120" fill="url(#waveGrad2)" className={styles.waveShape2} />
+    </svg>
+  </div>
+);
+
+// Onboarding Screen - matches reference with wave background
 const OnboardingScreen: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -329,6 +366,8 @@ const OnboardingScreen: React.FC<{ onComplete: () => void }> = ({ onComplete }) 
 
   return (
     <div className={styles.screen}>
+      <WaveBackground />
+
       <div className={styles.onboardingHeader}>
         <div className={styles.progressDots}>
           {slides.map((_, index) => (
@@ -341,25 +380,28 @@ const OnboardingScreen: React.FC<{ onComplete: () => void }> = ({ onComplete }) 
       </div>
 
       <div className={styles.onboardingContent}>
-        <div className={styles.onboardingSlide}>
-          <div className={styles.onboardingIcon}>
-            <GlassCard variant="accent" className={styles.iconCard}>
-              {Icons.sparkle}
-            </GlassCard>
-          </div>
+        <div className={styles.onboardingSlide} key={currentSlide}>
           <h2 className={styles.onboardingTitle}>{slides[currentSlide].title}</h2>
           <p className={styles.onboardingDescription}>{slides[currentSlide].description}</p>
         </div>
       </div>
 
       <div className={styles.onboardingButton}>
-        <Button onClick={handleContinue} fullWidth>Continue</Button>
+        <Button onClick={handleContinue} fullWidth>CONTINUE</Button>
       </div>
     </div>
   );
 };
 
-// Rhythm Scheduler Screen
+// Format time to 12-hour format
+const formatTime12h = (time24: string): string => {
+  const [hours, minutes] = time24.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const hours12 = hours % 12 || 12;
+  return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+};
+
+// Rhythm Scheduler Screen - matches reference
 const RhythmScreen: React.FC<{ onComplete: (morning: string, evening: string) => void }> = ({ onComplete }) => {
   const [morningTime, setMorningTime] = useState('07:00');
   const [eveningTime, setEveningTime] = useState('21:00');
@@ -382,28 +424,34 @@ const RhythmScreen: React.FC<{ onComplete: (morning: string, evening: string) =>
 
         <GlassCard className={styles.timeCard}>
           <div className={styles.timeCardHeader}>
-            {Icons.sun}
+            <span className={styles.timeIcon}>{Icons.sun}</span>
             <span>Morning Session</span>
           </div>
-          <input
-            type="time"
-            value={morningTime}
-            onChange={(e) => setMorningTime(e.target.value)}
-            className={styles.timeInput}
-          />
+          <div className={styles.timeDisplay}>
+            <input
+              type="time"
+              value={morningTime}
+              onChange={(e) => setMorningTime(e.target.value)}
+              className={styles.timeInputHidden}
+            />
+            <span className={styles.timeValue}>{formatTime12h(morningTime)}</span>
+          </div>
         </GlassCard>
 
         <GlassCard className={styles.timeCard}>
           <div className={styles.timeCardHeader}>
-            {Icons.moon}
+            <span className={styles.timeIcon}>{Icons.moon}</span>
             <span>Evening Session</span>
           </div>
-          <input
-            type="time"
-            value={eveningTime}
-            onChange={(e) => setEveningTime(e.target.value)}
-            className={styles.timeInput}
-          />
+          <div className={styles.timeDisplay}>
+            <input
+              type="time"
+              value={eveningTime}
+              onChange={(e) => setEveningTime(e.target.value)}
+              className={styles.timeInputHidden}
+            />
+            <span className={styles.timeValue}>{formatTime12h(eveningTime)}</span>
+          </div>
         </GlassCard>
 
         <div className={styles.daysSelector}>
@@ -432,50 +480,26 @@ const RhythmScreen: React.FC<{ onComplete: (morning: string, evening: string) =>
   );
 };
 
-// Dashboard Screen
+// Dashboard Screen - matches reference with 3 cards
 const DashboardScreen: React.FC<{
   user: UserState;
   onNavigate: (screen: Screen) => void;
 }> = ({ user, onNavigate }) => {
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  };
 
   const quickActions = [
     { title: 'Morning Visioneering', subtitle: 'Guided Focus for 10 mins.', icon: Icons.sparkle, screen: 'player' as Screen },
     { title: 'Quick Shifts', subtitle: 'Instant reset exercises.', icon: Icons.heart, screen: 'meditations' as Screen },
     { title: 'Reality Shift Board', subtitle: 'Track your progress & insights.', icon: Icons.chart, screen: 'journal' as Screen },
-    { title: 'Inner Mentor', subtitle: 'Chat with your AI guide.', icon: Icons.chat, screen: 'mentor' as Screen },
   ];
 
   return (
     <div className={styles.dashboardScreen}>
-      <header className={styles.dashboardHeader}>
-        <div>
-          <p className={styles.greeting}>{getGreeting()}</p>
-          <h2 className={styles.userName}>{user.displayName || 'Welcome back'}</h2>
-        </div>
-        <button className={styles.profileButton} onClick={() => onNavigate('profile')}>
-          {Icons.profile}
-        </button>
-      </header>
-
       <div className={styles.scoreSection}>
-        <GlassCard variant="accent" className={styles.scoreCard}>
-          <ProgressRing progress={user.alignmentScore} size={200}>
-            <span className={styles.scoreValue}>{user.alignmentScore}</span>
-            <span className={styles.scoreLabel}>Alignment Score</span>
-          </ProgressRing>
-        </GlassCard>
+        <ProgressRing progress={user.alignmentScore} size={220} strokeWidth={14}>
+          <span className={styles.scoreValue}>{user.alignmentScore}</span>
+          <span className={styles.scoreLabel}>Alignment Score</span>
+        </ProgressRing>
       </div>
-
-      <GlassCard className={styles.streakBadge}>
-        <span className={styles.streakIcon}>{Icons.streak}</span>
-        <span>{user.streak} day streak</span>
-      </GlassCard>
 
       <div className={styles.actionsSection}>
         {quickActions.map((action, index) => (
@@ -484,14 +508,11 @@ const DashboardScreen: React.FC<{
             className={styles.actionCard}
             onClick={() => onNavigate(action.screen)}
           >
-            <div className={styles.actionContent}>
-              <div className={styles.actionIcon}>{action.icon}</div>
-              <div className={styles.actionText}>
-                <h4>{action.title}</h4>
-                <p>{action.subtitle}</p>
-              </div>
+            <div className={styles.actionIcon}>{action.icon}</div>
+            <div className={styles.actionText}>
+              <h4>{action.title}</h4>
+              <p>{action.subtitle}</p>
             </div>
-            {Icons.chevronRight}
           </GlassCard>
         ))}
       </div>
@@ -606,7 +627,7 @@ const JournalScreen: React.FC = () => {
       </div>
 
       <div className={styles.promptCard}>
-        <GlassCard variant="accent">
+        <GlassCard variant="elevated">
           <p className={styles.promptLabel}>Today's Prompt</p>
           <p className={styles.promptText}>{prompts[0]}</p>
         </GlassCard>
@@ -647,18 +668,18 @@ const ProgressScreen: React.FC<{ user: UserState }> = ({ user }) => {
             </div>
           ))}
         </div>
-        <p className={styles.chartSubtitle}>Last 4 Weeks</p>
+        <p className={styles.chartSubtitle}>Last 7 Days</p>
       </GlassCard>
 
       <div className={styles.metricsRow}>
         <GlassCard className={styles.metricCard}>
-          <ProgressRing progress={85} size={80}>
+          <ProgressRing progress={85} size={80} strokeWidth={6}>
             <span className={styles.metricValue}>85%</span>
           </ProgressRing>
           <span className={styles.metricLabel}>Coherence</span>
         </GlassCard>
         <GlassCard className={styles.metricCard}>
-          <ProgressRing progress={72} size={80}>
+          <ProgressRing progress={72} size={80} strokeWidth={6}>
             <span className={styles.metricValue}>72%</span>
           </ProgressRing>
           <span className={styles.metricLabel}>Consistency</span>
@@ -668,7 +689,7 @@ const ProgressScreen: React.FC<{ user: UserState }> = ({ user }) => {
       <h3 className={styles.sectionTitle}>Streaks</h3>
       <GlassCard className={styles.streakCard}>
         <div className={styles.streakInfo}>
-          <div className={styles.streakIcon} style={{ background: 'rgba(201, 169, 97, 0.2)' }}>
+          <div className={styles.streakIconBox}>
             {Icons.streak}
           </div>
           <div>
@@ -698,7 +719,6 @@ const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     setMessages([...messages, { id: Date.now(), role: 'user', content: input }]);
     setInput('');
 
-    // Simulate mentor response
     setTimeout(() => {
       setMessages(prev => [...prev, {
         id: Date.now(),
@@ -757,11 +777,11 @@ const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   );
 };
 
-// Player Screen
+// Player Screen - matches reference with outlined play button
 const PlayerScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [selectedDuration, setSelectedDuration] = useState(8);
+  const [selectedDuration, setSelectedDuration] = useState(5);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -771,7 +791,7 @@ const PlayerScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       }, (selectedDuration * 60 * 1000) / 200);
     }
     return () => clearInterval(interval);
-  }, [isPlaying, selectedDuration]);
+  }, [isPlaying, selectedDuration, progress]);
 
   const formatTime = (percent: number) => {
     const totalSeconds = (selectedDuration * 60 * percent) / 100;
@@ -782,62 +802,57 @@ const PlayerScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   return (
     <div className={styles.playerScreen}>
-      <button className={styles.closeButton} onClick={onClose}>{Icons.close}</button>
-
-      <div className={styles.waveContainer}>
-        <div className={`${styles.wave} ${isPlaying ? styles.waveAnimating : ''}`} />
-        <div className={`${styles.wave} ${styles.wave2} ${isPlaying ? styles.waveAnimating : ''}`} />
-        <div className={`${styles.wave} ${styles.wave3} ${isPlaying ? styles.waveAnimating : ''}`} />
+      {/* Aurora wave background */}
+      <div className={styles.playerWaveBackground}>
+        <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" className={styles.auroraWave}>
+          <defs>
+            <linearGradient id="aurora1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#4A3F8C" stopOpacity="0.8" />
+              <stop offset="50%" stopColor="#6B5BA7" stopOpacity="0.5" />
+              <stop offset="100%" stopColor="#8B7BC2" stopOpacity="0.3" />
+            </linearGradient>
+            <linearGradient id="aurora2" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#3D3470" stopOpacity="0.7" />
+              <stop offset="100%" stopColor="#5C4D99" stopOpacity="0.4" />
+            </linearGradient>
+          </defs>
+          <path d="M0,100 Q100,50 200,100 T400,100 L400,200 L0,200 Z" fill="url(#aurora1)" className={styles.auroraPath1} />
+          <path d="M0,120 Q150,70 300,120 T400,80 L400,200 L0,200 Z" fill="url(#aurora2)" className={styles.auroraPath2} />
+        </svg>
       </div>
 
-      <div className={styles.playerContent}>
-        <h2>Morning Visioneering</h2>
-        <p>Start your day by connecting with your highest potential.</p>
+      <button className={styles.closeButton} onClick={onClose}>{Icons.close}</button>
 
+      <div className={styles.playerContent}>
+        <h2 className={styles.playerTitle}>Morning<br />Visioneering</h2>
+
+        {/* Outlined play button */}
+        <button
+          className={styles.playButtonOutlined}
+          onClick={() => setIsPlaying(!isPlaying)}
+        >
+          {isPlaying ? Icons.pause : Icons.playOutline}
+        </button>
+
+        {/* Progress bar */}
+        <div className={styles.progressBar}>
+          <div className={styles.progressTrack}>
+            <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+          </div>
+        </div>
+
+        {/* Duration selector */}
         <div className={styles.durationSelector}>
           {[5, 8, 12].map((dur) => (
             <button
               key={dur}
-              className={`${styles.durationButton} ${selectedDuration === dur ? styles.durationButtonActive : ''}`}
+              className={`${styles.durationPill} ${selectedDuration === dur ? styles.durationPillActive : ''}`}
               onClick={() => !isPlaying && setSelectedDuration(dur)}
             >
               {dur} min
             </button>
           ))}
         </div>
-
-        <div className={styles.progressBar}>
-          <div className={styles.progressTrack}>
-            <div className={styles.progressFill} style={{ width: `${progress}%` }} />
-          </div>
-          <div className={styles.timeLabels}>
-            <span>{formatTime(progress)}</span>
-            <span>{selectedDuration}:00</span>
-          </div>
-        </div>
-
-        <div className={styles.controls}>
-          <button className={styles.controlButton}>
-            {Icons.back}
-          </button>
-          <button
-            className={styles.playButton}
-            onClick={() => setIsPlaying(!isPlaying)}
-          >
-            {isPlaying ? Icons.pause : Icons.play}
-          </button>
-          <button className={styles.controlButton}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 12h14m0 0l-7-7m7 7l-7 7" />
-            </svg>
-          </button>
-        </div>
-
-        <GlassCard className={styles.soundSelector}>
-          <span>{Icons.volume}</span>
-          <span>Background Sound: Gentle Rain</span>
-          {Icons.chevronRight}
-        </GlassCard>
       </div>
     </div>
   );
@@ -884,7 +899,7 @@ const ProfileScreen: React.FC<{ user: UserState; onClose: () => void; onSettings
     </GlassCard>
 
     {!user.isPremium && (
-      <GlassCard variant="accent" className={styles.upgradeCard}>
+      <GlassCard variant="elevated" className={styles.upgradeCard}>
         <div className={styles.upgradeContent}>
           {Icons.sparkle}
           <div>
@@ -912,7 +927,6 @@ export default function Home() {
     streak: 7,
   });
 
-  // Check localStorage for saved state
   useEffect(() => {
     const savedUser = localStorage.getItem('abundanceUser');
     if (savedUser) {
@@ -959,7 +973,7 @@ export default function Home() {
       case 'mentor':
         return <MentorScreen onClose={() => setCurrentScreen('dashboard')} />;
       case 'player':
-        return <PlayerScreen onClose={() => setCurrentScreen('meditations')} />;
+        return <PlayerScreen onClose={() => setCurrentScreen('dashboard')} />;
       case 'profile':
         return <ProfileScreen user={user} onClose={() => setCurrentScreen('dashboard')} onSettings={() => setCurrentScreen('settings')} />;
       default:
@@ -967,7 +981,7 @@ export default function Home() {
     }
   };
 
-  const showTabBar = ['dashboard', 'meditations', 'journal', 'progress'].includes(currentScreen);
+  const showTabBar = ['dashboard', 'meditations', 'journal', 'profile'].includes(currentScreen);
 
   return (
     <main className={styles.main}>
