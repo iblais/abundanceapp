@@ -1,5 +1,6 @@
 /**
  * Abundance Flow - Next.js App Entry
+ * Premium Design System with Plus Jakarta Sans
  */
 
 import type { AppProps } from 'next/app';
@@ -13,14 +14,18 @@ export default function App({ Component, pageProps }: AppProps) {
         <title>Abundance Flow</title>
         <meta name="description" content="Shift your state. Reshape your reality." />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-        <meta name="theme-color" content="#0D0D24" />
+        <meta name="theme-color" content="#050716" />
         <link rel="icon" href="/favicon.ico" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </Head>
-      <Component {...pageProps} />
+      <main>
+        <Component {...pageProps} />
+      </main>
     </>
   );
 }

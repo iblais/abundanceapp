@@ -55,13 +55,13 @@ const Logo: React.FC<{ size?: number }> = ({ size = 120 }) => (
   </svg>
 );
 
-// Progress Ring Component
+// Progress Ring Component (Alignment Gauge)
 const ProgressRing: React.FC<{ progress: number; size?: number; children?: React.ReactNode }> = ({
   progress,
   size = 200,
   children
 }) => {
-  const strokeWidth = 12;
+  const strokeWidth = 14;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
@@ -71,15 +71,22 @@ const ProgressRing: React.FC<{ progress: number; size?: number; children?: React
       <svg width={size} height={size}>
         <defs>
           <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#C9A961" />
-            <stop offset="100%" stopColor="#8B7BB8" />
+            <stop offset="0%" stopColor="#F4CF77" />
+            <stop offset="100%" stopColor="#9382FF" />
           </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
         </defs>
         <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="rgba(255,255,255,0.1)"
+          stroke="rgba(255,255,255,0.06)"
           strokeWidth={strokeWidth}
           fill="transparent"
         />
@@ -93,6 +100,7 @@ const ProgressRing: React.FC<{ progress: number; size?: number; children?: React
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
+          filter="url(#glow)"
           style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%', transition: 'stroke-dashoffset 1s ease-out' }}
         />
       </svg>

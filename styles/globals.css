@@ -1,6 +1,59 @@
 /**
- * Abundance Flow - Global Styles
+ * Abundance Flow - Premium Design System
+ *
+ * Color Palette:
+ * - Background: #050716 (top) to #171C3F (bottom)
+ * - Glass: rgba(255, 255, 255, 0.08) to rgba(255, 255, 255, 0.14)
+ * - Glass Border: rgba(255, 255, 255, 0.35)
+ * - Accent Gold: #F4CF77 to #E9BB51
+ * - Text Primary: #FFFFFF
+ * - Text Secondary: #C6CBDA
+ * - Text Muted: #9BA3C3
  */
+
+:root {
+  /* Background Colors */
+  --bg-primary: #050716;
+  --bg-secondary: #0A0E1F;
+  --bg-tertiary: #171C3F;
+
+  /* Glass Surface Colors */
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-bg-hover: rgba(255, 255, 255, 0.12);
+  --glass-bg-elevated: rgba(255, 255, 255, 0.14);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-border-strong: rgba(255, 255, 255, 0.35);
+
+  /* Accent Colors */
+  --accent-gold: #F4CF77;
+  --accent-gold-dark: #E9BB51;
+  --accent-gold-glow: rgba(244, 207, 119, 0.4);
+  --accent-gold-subtle: rgba(244, 207, 119, 0.15);
+
+  /* Text Colors */
+  --text-primary: #FFFFFF;
+  --text-secondary: #C6CBDA;
+  --text-muted: #9BA3C3;
+  --text-disabled: rgba(255, 255, 255, 0.35);
+
+  /* Divider */
+  --divider: rgba(255, 255, 255, 0.18);
+
+  /* Shadows */
+  --shadow-card: 0 24px 60px rgba(0, 0, 0, 0.55);
+  --shadow-button: 0 8px 32px rgba(244, 207, 119, 0.35);
+  --shadow-button-hover: 0 12px 40px rgba(244, 207, 119, 0.45);
+
+  /* Border Radius */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-xl: 40px;
+  --radius-full: 100px;
+
+  /* Font */
+  --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
 
 * {
   box-sizing: border-box;
@@ -12,12 +65,13 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  background: linear-gradient(180deg, #1A1A3E 0%, #2E2650 50%, #0D0D24 100%);
+  font-family: var(--font-family);
+  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
   min-height: 100vh;
-  color: #FFFFFF;
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'kern' 1, 'liga' 1;
 }
 
 a {
@@ -45,7 +99,9 @@ html {
 
 /* Smooth transitions */
 * {
-  transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+  transition-property: background-color, border-color, transform, opacity, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Button reset */
@@ -54,6 +110,7 @@ button {
   border: none;
   cursor: pointer;
   font-family: inherit;
+  touch-action: manipulation;
 }
 
 /* Input reset */
@@ -66,6 +123,20 @@ input, textarea {
 
 /* Selection color */
 ::selection {
-  background: rgba(201, 169, 97, 0.3);
-  color: #FFFFFF;
+  background: var(--accent-gold-subtle);
+  color: var(--text-primary);
+}
+
+/* Focus visible for accessibility */
+:focus-visible {
+  outline: 2px solid var(--accent-gold);
+  outline-offset: 2px;
+}
+
+/* Active state for touch devices */
+@media (hover: none) {
+  button:active,
+  [role="button"]:active {
+    transform: scale(0.98);
+  }
 }
