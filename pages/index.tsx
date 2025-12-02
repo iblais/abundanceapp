@@ -241,6 +241,40 @@ const Icons = {
       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
     </svg>
   ),
+  user: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="8" r="4" />
+      <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
+    </svg>
+  ),
+  bell: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+    </svg>
+  ),
+  mic: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+      <line x1="12" y1="19" x2="12" y2="23" />
+      <line x1="8" y1="23" x2="16" y2="23" />
+    </svg>
+  ),
+  palette: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="13.5" cy="6.5" r="0.5" fill="currentColor" />
+      <circle cx="17.5" cy="10.5" r="0.5" fill="currentColor" />
+      <circle cx="8.5" cy="7.5" r="0.5" fill="currentColor" />
+      <circle cx="6.5" cy="12.5" r="0.5" fill="currentColor" />
+      <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z" />
+    </svg>
+  ),
+  shield: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  ),
   chat: (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -264,12 +298,13 @@ const Icons = {
   ),
 };
 
-// Tab Bar Component - matches reference with 4 icons
+// Tab Bar Component - matches reference with 5 icons
 const TabBar: React.FC<{ activeTab: string; onTabChange: (tab: Screen) => void }> = ({ activeTab, onTabChange }) => {
   const tabs = [
     { id: 'dashboard', icon: Icons.home },
-    { id: 'meditations', icon: Icons.plus },
-    { id: 'journal', icon: Icons.grid },
+    { id: 'journal', icon: Icons.heart },
+    { id: 'meditations', icon: Icons.meditation },
+    { id: 'progress', icon: Icons.chart },
     { id: 'profile', icon: Icons.profile },
   ];
 
@@ -628,7 +663,7 @@ const JournalScreen: React.FC = () => {
 
       <div className={styles.promptCard}>
         <GlassCard variant="elevated">
-          <p className={styles.promptLabel}>Today's Prompt</p>
+          <p className={styles.promptLabel}>Today&apos;s Prompt</p>
           <p className={styles.promptText}>{prompts[0]}</p>
         </GlassCard>
       </div>
@@ -913,6 +948,40 @@ const ProfileScreen: React.FC<{ user: UserState; onClose: () => void; onSettings
   </div>
 );
 
+// Settings Screen - matches reference design
+const SettingsScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  const settingsItems = [
+    { id: 'account', label: 'Account', icon: Icons.user },
+    { id: 'notifications', label: 'Notifications', icon: Icons.bell },
+    { id: 'voice', label: 'Voice Selection', icon: Icons.mic },
+    { id: 'theme', label: 'Theme', icon: Icons.palette },
+    { id: 'privacy', label: 'Data & Privacy', icon: Icons.shield },
+  ];
+
+  return (
+    <div className={styles.screen}>
+      <header className={styles.profileHeader}>
+        <button onClick={onClose}>{Icons.back}</button>
+        <div style={{ width: 48 }} />
+      </header>
+
+      <h1 className={styles.settingsTitle}>Settings</h1>
+
+      <div className={styles.settingsGroup}>
+        {settingsItems.map((item) => (
+          <GlassCard key={item.id} className={styles.settingsItem}>
+            <div className={styles.settingsItemLeft}>
+              <div className={styles.settingsIcon}>{item.icon}</div>
+              <span className={styles.settingsLabel}>{item.label}</span>
+            </div>
+            <div className={styles.settingsChevron}>{Icons.chevronRight}</div>
+          </GlassCard>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // Main App Component
 export default function Home() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
@@ -976,12 +1045,14 @@ export default function Home() {
         return <PlayerScreen onClose={() => setCurrentScreen('dashboard')} />;
       case 'profile':
         return <ProfileScreen user={user} onClose={() => setCurrentScreen('dashboard')} onSettings={() => setCurrentScreen('settings')} />;
+      case 'settings':
+        return <SettingsScreen onClose={() => setCurrentScreen('profile')} />;
       default:
         return <DashboardScreen user={user} onNavigate={setCurrentScreen} />;
     }
   };
 
-  const showTabBar = ['dashboard', 'meditations', 'journal', 'profile'].includes(currentScreen);
+  const showTabBar = ['dashboard', 'meditations', 'journal', 'progress', 'profile'].includes(currentScreen);
 
   return (
     <main className={styles.main}>

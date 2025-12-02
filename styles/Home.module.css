@@ -1,6 +1,6 @@
 /**
  * Abundance Flow - Premium UI Styles
- * Matching reference screens with glassmorphic design
+ * Refined glass and glow effects matching reference designs
  */
 
 /* ==== Base & Layout ==== */
@@ -79,6 +79,11 @@
   50% { transform: translateY(-10px) scale(1.02); }
 }
 
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(244, 207, 119, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(244, 207, 119, 0.5); }
+}
+
 .fadeIn {
   animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
@@ -96,21 +101,25 @@
   animation: glow 3s ease-in-out infinite;
 }
 
-/* ==== Glass Card ==== */
+/* ==== Glass Card - Enhanced ==== */
 .glassCard {
   background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.1) 0%,
-    rgba(255, 255, 255, 0.05) 100%
+    145deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.06) 100%
   );
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.20);
   padding: 20px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
   position: relative;
   overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glassCard::before {
@@ -123,40 +132,67 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.3) 50%,
     transparent 100%
   );
 }
 
+.glassCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 40% at 50% 0%,
+    rgba(255, 255, 255, 0.08) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
 .glassCard:hover {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-2px);
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .glassCardElevated {
   background: linear-gradient(
-    135deg,
-    rgba(244, 207, 119, 0.1) 0%,
-    rgba(244, 207, 119, 0.03) 100%
+    145deg,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.08) 100%
   );
-  border-color: rgba(244, 207, 119, 0.2);
+  border-color: rgba(255, 255, 255, 0.28);
 }
 
-.glassCardElevated::before {
+.glassCardGold {
+  background: linear-gradient(
+    145deg,
+    rgba(244, 207, 119, 0.12) 0%,
+    rgba(244, 207, 119, 0.06) 50%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+  border-color: rgba(244, 207, 119, 0.25);
+}
+
+.glassCardGold::before {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(244, 207, 119, 0.3) 50%,
+    rgba(244, 207, 119, 0.35) 50%,
     transparent 100%
   );
 }
 
-/* ==== Buttons ==== */
+/* ==== Buttons - Enhanced ==== */
 .button {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 18px 36px;
-  border-radius: 100px;
+  border-radius: 999px;
   font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -165,12 +201,16 @@
   outline: none;
   position: relative;
   overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .buttonPrimary {
-  background: linear-gradient(135deg, #F4CF77 0%, #E9BB51 100%);
-  color: #050716;
-  box-shadow: 0 8px 32px rgba(244, 207, 119, 0.35);
+  background: linear-gradient(135deg, #FAE4A8 0%, #F4CF77 40%, #E9BB51 100%);
+  color: #0B0C1A;
+  box-shadow:
+    0 8px 32px rgba(244, 207, 119, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
 }
 
 .buttonPrimary::before {
@@ -182,15 +222,18 @@
   height: 50%;
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.35) 0%,
     transparent 100%
   );
-  border-radius: 100px 100px 0 0;
+  border-radius: 999px 999px 0 0;
 }
 
 .buttonPrimary:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 12px 40px rgba(244, 207, 119, 0.45);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    0 12px 44px rgba(244, 207, 119, 0.5),
+    0 0 24px rgba(244, 207, 119, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .buttonPrimary:active {
@@ -207,13 +250,13 @@
 .buttonSecondary {
   background: rgba(255, 255, 255, 0.08);
   color: #FFFFFF;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.20);
   backdrop-filter: blur(12px);
 }
 
 .buttonSecondary:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.30);
 }
 
 .buttonGhost {
@@ -224,7 +267,7 @@
 
 .buttonGhost:hover {
   color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .buttonFullWidth {
@@ -248,16 +291,16 @@
   max-width: 340px;
   background: linear-gradient(
     180deg,
-    rgba(40, 35, 80, 0.6) 0%,
-    rgba(30, 25, 60, 0.4) 100%
+    rgba(50, 45, 100, 0.5) 0%,
+    rgba(35, 30, 70, 0.4) 100%
   );
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border-radius: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow:
     0 40px 80px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
   overflow: hidden;
 }
 
@@ -426,8 +469,8 @@
 
 .timeDisplay {
   position: relative;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
   padding: 16px 20px;
   cursor: pointer;
@@ -462,8 +505,8 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: #9BA3C3;
   font-size: 13px;
   font-weight: 600;
@@ -496,7 +539,7 @@
   margin-bottom: 32px;
 }
 
-/* ==== Progress Ring (Alignment Gauge) ==== */
+/* ==== Progress Ring (Alignment Gauge) - Enhanced ==== */
 .progressRing {
   position: relative;
   display: flex;
@@ -524,10 +567,10 @@
   font-size: 14px;
   color: #9BA3C3;
   font-weight: 500;
-  margin-top: 4px;
+  margin-top: 8px;
 }
 
-/* ==== Action Cards ==== */
+/* ==== Action Cards - Enhanced ==== */
 .actionsSection {
   display: flex;
   flex-direction: column;
@@ -542,25 +585,31 @@
   cursor: pointer;
 }
 
+.actionCard:hover {
+  transform: translateY(-2px);
+}
+
 .actionCard:active {
   transform: scale(0.98);
 }
 
 .actionIcon {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, rgba(244, 207, 119, 0.12), rgba(244, 207, 119, 0.04));
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(244, 207, 119, 0.15), rgba(244, 207, 119, 0.08));
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .actionIcon svg {
   width: 22px;
   height: 22px;
   color: #F4CF77;
+  filter: drop-shadow(0 0 8px rgba(244, 207, 119, 0.4));
 }
 
 .actionText {
@@ -571,32 +620,298 @@
   font-size: 16px;
   font-weight: 600;
   color: #FFFFFF;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
 .actionText p {
-  font-size: 13px;
+  font-size: 14px;
   color: #9BA3C3;
   font-weight: 400;
 }
 
 /* ==== Screen Header ==== */
 .screenHeader {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .screenHeader h2 {
-  font-size: 30px;
+  font-size: 32px;
   font-weight: 700;
   color: #FFFFFF;
-  margin-bottom: 6px;
-  letter-spacing: -0.3px;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
 }
 
 .screenHeader p {
-  font-size: 15px;
+  font-size: 16px;
   color: #9BA3C3;
   font-weight: 400;
+}
+
+/* ==== Settings Screen ==== */
+.settingsScreen {
+  padding: 20px;
+  padding-bottom: 40px;
+}
+
+.settingsTitle {
+  font-size: 36px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 32px;
+  letter-spacing: -0.5px;
+}
+
+.settingsGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settingsItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  cursor: pointer;
+}
+
+.settingsItem:hover {
+  transform: translateY(-1px);
+}
+
+.settingsItemLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.settingsIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #C6CBDA;
+}
+
+.settingsIcon svg {
+  width: 22px;
+  height: 22px;
+  opacity: 0.8;
+}
+
+.settingsLabel {
+  font-size: 17px;
+  font-weight: 500;
+  color: #FFFFFF;
+}
+
+.settingsChevron {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* ==== Progress Screen - Enhanced ==== */
+.progressScreen {
+  padding: 20px;
+  padding-bottom: 100px;
+}
+
+.progressTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 24px;
+  text-align: center;
+  letter-spacing: -0.3px;
+}
+
+/* Line Chart Card */
+.lineChartCard {
+  margin-bottom: 20px;
+  padding: 24px 20px;
+}
+
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.chartLabel {
+  font-size: 12px;
+  color: #9BA3C3;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+}
+
+.lineChart {
+  height: 100px;
+  position: relative;
+}
+
+.lineChartSvg {
+  width: 100%;
+  height: 100%;
+}
+
+.chartSubtitle {
+  font-size: 13px;
+  color: #9BA3C3;
+  text-align: center;
+  margin-top: 12px;
+}
+
+/* Metrics Row */
+.metricsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.metricCard {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.metricLabel {
+  font-size: 12px;
+  color: #9BA3C3;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  position: absolute;
+  left: -8px;
+}
+
+.metricIcon {
+  width: 32px;
+  height: 32px;
+  color: #9BA3C3;
+  opacity: 0.6;
+}
+
+/* Small Charts Row */
+.smallChartsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.smallChartCard {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.smallChartLabel {
+  font-size: 11px;
+  color: #9BA3C3;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.smallChartIcon {
+  width: 14px;
+  height: 14px;
+  opacity: 0.6;
+}
+
+/* Circular Gauges */
+.gaugesRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.gaugeCard {
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.gaugeWrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.gaugeSvg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.gaugeTrack {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 8;
+}
+
+.gaugeProgress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease-out;
+}
+
+.gaugeCoherence {
+  stroke: url(#coherenceGradient);
+}
+
+.gaugeConsistency {
+  stroke: url(#consistencyGradient);
+}
+
+.gaugeValue {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.gaugeLabel {
+  font-size: 11px;
+  color: #9BA3C3;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.gaugePercent {
+  font-size: 24px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.gaugeTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #FFFFFF;
 }
 
 /* ==== Meditations Screen ==== */
@@ -620,9 +935,9 @@
 
 .categoryChip {
   padding: 12px 22px;
-  border-radius: 100px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: #9BA3C3;
   font-size: 14px;
   font-weight: 500;
@@ -631,7 +946,7 @@
 }
 
 .categoryChipActive {
-  background: linear-gradient(135deg, rgba(244, 207, 119, 0.2), rgba(244, 207, 119, 0.08));
+  background: linear-gradient(135deg, rgba(244, 207, 119, 0.2), rgba(244, 207, 119, 0.1));
   border-color: rgba(244, 207, 119, 0.4);
   color: #F4CF77;
 }
@@ -654,11 +969,12 @@
   width: 60px;
   height: 60px;
   border-radius: 20px;
-  background: linear-gradient(135deg, rgba(147, 130, 255, 0.2), rgba(244, 207, 119, 0.15));
+  background: linear-gradient(145deg, rgba(147, 130, 255, 0.2), rgba(244, 207, 119, 0.15));
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .meditationIcon svg {
@@ -699,7 +1015,7 @@
 .durationTag {
   padding: 5px 12px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.08);
   font-size: 12px;
   color: #C6CBDA;
   font-weight: 500;
@@ -852,24 +1168,10 @@
   line-height: 1.6;
 }
 
-/* ==== Progress Screen ==== */
-.progressScreen {
-  padding: 20px;
-  padding-bottom: 100px;
-}
-
+/* ==== Bar Chart ==== */
 .chartCard {
   margin-bottom: 20px;
   padding: 24px;
-}
-
-.chartLabel {
-  font-size: 11px;
-  color: #9BA3C3;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-bottom: 24px;
-  font-weight: 600;
 }
 
 .barChart {
@@ -893,6 +1195,7 @@
   background: linear-gradient(180deg, #F4CF77 0%, #9382FF 100%);
   border-radius: 8px 8px 4px 4px;
   transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 12px rgba(244, 207, 119, 0.2);
 }
 
 .barLabel {
@@ -901,40 +1204,7 @@
   font-weight: 500;
 }
 
-.chartSubtitle {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.35);
-  text-align: center;
-  margin-top: 20px;
-}
-
-.metricsRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 28px;
-}
-
-.metricCard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 24px 16px;
-  gap: 12px;
-}
-
-.metricValue {
-  font-size: 16px;
-  font-weight: 700;
-  color: #FFFFFF;
-}
-
-.metricLabel {
-  font-size: 13px;
-  color: #9BA3C3;
-  font-weight: 500;
-}
-
+/* ==== Streak Card ==== */
 .sectionTitle {
   font-size: 18px;
   font-weight: 600;
@@ -1277,9 +1547,9 @@
 
 .durationPill {
   padding: 12px 24px;
-  border-radius: 100px;
+  border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: #9BA3C3;
   font-size: 14px;
   font-weight: 600;
@@ -1365,7 +1635,7 @@
   gap: 10px;
   padding: 10px 20px;
   background: linear-gradient(135deg, rgba(244, 207, 119, 0.15), rgba(147, 130, 255, 0.1));
-  border-radius: 100px;
+  border-radius: 999px;
   border: 1px solid rgba(244, 207, 119, 0.25);
   color: #F4CF77;
   font-size: 14px;
@@ -1445,7 +1715,7 @@
   line-height: 1.5;
 }
 
-/* ==== Tab Bar (Bottom Navigation) ==== */
+/* ==== Tab Bar (Bottom Navigation) - Enhanced ==== */
 .tabBar {
   position: absolute;
   bottom: 0;
@@ -1454,41 +1724,44 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 16px 32px 32px;
+  padding: 12px 24px 28px;
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(5, 7, 22, 0.95) 40%,
-    #050716 100%
+    rgba(5, 7, 22, 0.9) 30%,
+    rgba(5, 7, 22, 0.98) 100%
   );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .tabItem {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px 16px;
+  padding: 10px 18px;
   background: none;
   border: none;
   cursor: pointer;
   position: relative;
   border-radius: 16px;
+  transition: all 0.25s ease;
 }
 
 .tabItem svg {
   width: 24px;
   height: 24px;
-  color: rgba(255, 255, 255, 0.35);
-  transition: color 0.2s ease, filter 0.2s ease;
+  color: rgba(255, 255, 255, 0.4);
+  transition: all 0.25s ease;
 }
 
 .tabItemActive {
-  background: rgba(244, 207, 119, 0.1);
+  background: rgba(244, 207, 119, 0.12);
 }
 
 .tabItemActive svg {
   color: #F4CF77;
-  filter: drop-shadow(0 0 8px rgba(244, 207, 119, 0.5));
+  filter: drop-shadow(0 0 10px rgba(244, 207, 119, 0.6));
 }
 
 .tabIcon {
@@ -1533,4 +1806,8 @@
 
 .glowGold {
   filter: drop-shadow(0 0 12px rgba(244, 207, 119, 0.5));
+}
+
+.glowGoldStrong {
+  filter: drop-shadow(0 0 20px rgba(244, 207, 119, 0.7));
 }
