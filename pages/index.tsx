@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import styles from '../styles/Home.module.css';
 
 // Types
-type Screen = 'welcome' | 'onboarding' | 'rhythm' | 'dashboard' | 'meditations' | 'journal' | 'progress' | 'mentor' | 'settings' | 'profile' | 'player';
+type Screen = 'welcome' | 'onboarding' | 'rhythm' | 'dashboard' | 'meditations' | 'journal' | 'progress' | 'mentor' | 'settings' | 'profile' | 'player' | 'board';
 
 interface UserState {
   onboardingComplete: boolean;
@@ -301,11 +301,11 @@ const Icons = {
 // Tab Bar Component - matches reference with 5 icons
 const TabBar: React.FC<{ activeTab: string; onTabChange: (tab: Screen) => void }> = ({ activeTab, onTabChange }) => {
   const tabs = [
-    { id: 'dashboard', icon: Icons.home },
-    { id: 'journal', icon: Icons.heart },
-    { id: 'meditations', icon: Icons.meditation },
-    { id: 'progress', icon: Icons.chart },
-    { id: 'profile', icon: Icons.profile },
+    { id: 'dashboard', icon: Icons.home, label: 'Home' },
+    { id: 'board', icon: Icons.grid, label: 'Board' },
+    { id: 'meditations', icon: Icons.meditation, label: 'Meditate' },
+    { id: 'progress', icon: Icons.chart, label: 'Goals' },
+    { id: 'profile', icon: Icons.profile, label: 'Profile' },
   ];
 
   return (
@@ -677,66 +677,186 @@ const JournalScreen: React.FC = () => {
   );
 };
 
-// Progress Screen
+// Circular Gauge Component - for Progress screen
+const CircularGauge: React.FC<{
+  value: number;
+  label: string;
+  color: 'coherence' | 'consistency';
+  size?: number;
+}> = ({ value, label, color, size = 110 }) => {
+  const strokeWidth = 10;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (value / 100) * circumference;
+
+  const gradientId = `gauge-${color}`;
+  const gradientColors = color === 'coherence'
+    ? ['#E8E0FF', '#C5B8F0']
+    : ['#F4CF77', '#E9BB51'];
+
+  return (
+    <GlassCard className={styles.gaugeCard}>
+      <div className={styles.gaugeWrapper} style={{ width: size, height: size }}>
+        <svg className={styles.gaugeSvg} width={size} height={size}>
+          <defs>
+            <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor={gradientColors[0]} />
+              <stop offset="100%" stopColor={gradientColors[1]} />
+            </linearGradient>
+          </defs>
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            className={styles.gaugeTrack}
+          />
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            className={styles.gaugeProgress}
+            stroke={`url(#${gradientId})`}
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            style={{ filter: `drop-shadow(0 0 8px ${gradientColors[0]})` }}
+          />
+        </svg>
+        <div className={styles.gaugeCenter}>
+          <span className={styles.gaugeLabelInside}>{label}:</span>
+          <span className={styles.gaugePercent}>{value}%</span>
+        </div>
+      </div>
+    </GlassCard>
+  );
+};
+
+// Progress Screen - Premium design with curved line chart
 const ProgressScreen: React.FC<{ user: UserState }> = ({ user }) => {
-  const weekData = [65, 72, 68, 80, 75, 82, user.alignmentScore];
-  const maxValue = Math.max(...weekData);
+  // Data for line chart (4 weeks)
+  const lineData = [45, 52, 58, 55, 62, 68, 65, 72, 75, 78, 80, user.alignmentScore];
+
+  // Create smooth curve path
+  const createCurvePath = (data: number[], width: number, height: number) => {
+    const maxVal = Math.max(...data);
+    const minVal = Math.min(...data);
+    const range = maxVal - minVal || 1;
+    const padding = 10;
+    const usableHeight = height - padding * 2;
+    const usableWidth = width;
+
+    const points = data.map((val, i) => ({
+      x: (i / (data.length - 1)) * usableWidth,
+      y: padding + usableHeight - ((val - minVal) / range) * usableHeight
+    }));
+
+    // Create smooth bezier curve
+    let path = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1];
+      const curr = points[i];
+      const cpx = (prev.x + curr.x) / 2;
+      path += ` Q ${cpx} ${prev.y} ${curr.x} ${curr.y}`;
+    }
+
+    // Create fill path
+    const fillPath = `${path} L ${points[points.length - 1].x} ${height} L 0 ${height} Z`;
+
+    return { linePath: path, fillPath };
+  };
 
   return (
     <div className={styles.progressScreen}>
-      <header className={styles.screenHeader}>
-        <h2>Your Progress</h2>
-      </header>
+      <h2 className={styles.progressTitle}>Your Progress</h2>
 
-      <GlassCard className={styles.chartCard}>
-        <p className={styles.chartLabel}>Alignment Score</p>
-        <div className={styles.barChart}>
-          {weekData.map((value, index) => (
-            <div key={index} className={styles.barContainer}>
-              <div
-                className={styles.bar}
-                style={{ height: `${(value / maxValue) * 100}%` }}
+      {/* Main Line Chart */}
+      <GlassCard className={styles.lineChartCard}>
+        <div className={styles.chartWithLabel}>
+          <span className={styles.chartYLabel}>Alignment Score</span>
+          <div className={styles.lineChart}>
+            <svg className={styles.lineChartSvg} viewBox="0 0 280 80" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#9BA3C3" />
+                  <stop offset="100%" stopColor="#E8E0FF" />
+                </linearGradient>
+                <linearGradient id="fillGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="rgba(200, 190, 240, 0.3)" />
+                  <stop offset="100%" stopColor="rgba(200, 190, 240, 0)" />
+                </linearGradient>
+              </defs>
+              <path
+                d={createCurvePath(lineData, 280, 80).fillPath}
+                fill="url(#fillGradient)"
               />
-              <span className={styles.barLabel}>
-                {['M', 'T', 'W', 'T', 'F', 'S', 'S'][index]}
-              </span>
-            </div>
-          ))}
+              <path
+                d={createCurvePath(lineData, 280, 80).linePath}
+                fill="none"
+                stroke="url(#lineGradient)"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
         </div>
-        <p className={styles.chartSubtitle}>Last 7 Days</p>
+        <p className={styles.chartSubtitle}>Last 4 Weeks</p>
       </GlassCard>
 
-      <div className={styles.metricsRow}>
-        <GlassCard className={styles.metricCard}>
-          <ProgressRing progress={85} size={80} strokeWidth={6}>
-            <span className={styles.metricValue}>85%</span>
-          </ProgressRing>
-          <span className={styles.metricLabel}>Coherence</span>
+      {/* Small Charts Row */}
+      <div className={styles.smallChartsRow}>
+        {/* Last Week Line Chart */}
+        <GlassCard className={styles.smallChartCard}>
+          <div className={styles.smallChartIcon}>{Icons.heart}</div>
+          <div className={styles.smallChartInner}>
+            <span className={styles.smallChartYLabel}>Alignment Score</span>
+            <div className={styles.smallChartContent}>
+              <div className={styles.smallChartGraph}>
+                <svg width="100%" height="100%" viewBox="0 0 100 40" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="smallLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#9BA3C3" />
+                      <stop offset="100%" stopColor="#C5B8F0" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M0,35 Q25,30 50,20 T100,10"
+                    fill="none"
+                    stroke="url(#smallLineGrad)"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <circle cx="100" cy="10" r="3" fill="#C5B8F0" />
+                </svg>
+              </div>
+              <span className={styles.smallChartXLabel}>Last Week</span>
+            </div>
+          </div>
         </GlassCard>
-        <GlassCard className={styles.metricCard}>
-          <ProgressRing progress={72} size={80} strokeWidth={6}>
-            <span className={styles.metricValue}>72%</span>
-          </ProgressRing>
-          <span className={styles.metricLabel}>Consistency</span>
+
+        {/* Color Bars Chart */}
+        <GlassCard className={styles.smallChartCard}>
+          <div className={styles.smallChartInner}>
+            <span className={styles.smallChartYLabel}>Practices Completed</span>
+            <div className={styles.smallChartContent}>
+              <div className={styles.smallChartGraph}>
+                <div className={styles.colorBars}>
+                  <div className={`${styles.colorBar} ${styles.colorBarMint}`} style={{ height: '60%' }} />
+                  <div className={`${styles.colorBar} ${styles.colorBarLavender}`} style={{ height: '80%' }} />
+                  <div className={`${styles.colorBar} ${styles.colorBarPeach}`} style={{ height: '45%' }} />
+                  <div className={`${styles.colorBar} ${styles.colorBarBlue}`} style={{ height: '90%' }} />
+                  <div className={`${styles.colorBar} ${styles.colorBarYellow}`} style={{ height: '70%' }} />
+                </div>
+              </div>
+              <span className={styles.smallChartXLabel}>Week</span>
+            </div>
+          </div>
         </GlassCard>
       </div>
 
-      <h3 className={styles.sectionTitle}>Streaks</h3>
-      <GlassCard className={styles.streakCard}>
-        <div className={styles.streakInfo}>
-          <div className={styles.streakIconBox}>
-            {Icons.streak}
-          </div>
-          <div>
-            <h4>Overall</h4>
-            <p>Best: 14 days</p>
-          </div>
-        </div>
-        <div className={styles.streakValue}>
-          <span className={styles.bigNumber}>{user.streak}</span>
-          <span>day streak</span>
-        </div>
-      </GlassCard>
+      {/* Gauges Row */}
+      <div className={styles.gaugesRow}>
+        <CircularGauge value={85} label="Coherence" color="coherence" />
+        <CircularGauge value={72} label="Consistency" color="consistency" />
+      </div>
     </div>
   );
 };
@@ -893,7 +1013,7 @@ const PlayerScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   );
 };
 
-// Profile Screen
+// Profile Screen - Clean premium design matching reference
 const ProfileScreen: React.FC<{ user: UserState; onClose: () => void; onSettings: () => void }> = ({ user, onClose, onSettings }) => (
   <div className={styles.profileScreen}>
     <header className={styles.profileHeader}>
@@ -905,48 +1025,71 @@ const ProfileScreen: React.FC<{ user: UserState; onClose: () => void; onSettings
       <div className={styles.avatar}>
         {Icons.profile}
       </div>
-      <h2>{user.displayName}</h2>
-      <p className={styles.email}>user@abundanceflow.app</p>
-
-      <div className={styles.membershipBadge}>
-        {Icons.sparkle}
-        <span>{user.isPremium ? 'Premium Member' : 'Free Member'}</span>
-      </div>
+      <h2>Alex Rivera</h2>
+      <p className={styles.membershipText}>Premium Member</p>
     </div>
 
-    <GlassCard className={styles.statsCard}>
-      <div className={styles.statsRow}>
-        <div className={styles.statItem}>
-          <span className={styles.statValue}>{user.streak}</span>
-          <span className={styles.statLabel}>Day Streak</span>
-        </div>
-        <div className={styles.statDivider} />
-        <div className={styles.statItem}>
-          <span className={styles.statValue}>24</span>
-          <span className={styles.statLabel}>Meditations</span>
-        </div>
-        <div className={styles.statDivider} />
-        <div className={styles.statItem}>
-          <span className={styles.statValue}>3h</span>
-          <span className={styles.statLabel}>Practice</span>
-        </div>
+    <GlassCard className={styles.profileStatsCard}>
+      <div className={styles.profileStatRow}>
+        <span className={styles.profileStatNumber}>42</span>
+        <span className={styles.profileStatIcon}>{Icons.streak}</span>
+        <span className={styles.profileStatLabel}>day streak</span>
+      </div>
+
+      <div className={styles.profileStatDivider} />
+
+      <div className={styles.profileStatRow}>
+        <span className={styles.profileStatNumber}>203</span>
+        <span className={styles.profileStatLabel}>sessions completed</span>
+      </div>
+
+      <div className={styles.profileStatDivider} />
+
+      <div className={styles.profileStatRow}>
+        <span className={styles.profileStatLabel}>Alignment Score: {user.alignmentScore}</span>
       </div>
     </GlassCard>
 
-    {!user.isPremium && (
-      <GlassCard variant="elevated" className={styles.upgradeCard}>
-        <div className={styles.upgradeContent}>
-          {Icons.sparkle}
-          <div>
-            <h4>Unlock Full Potential</h4>
-            <p>Get unlimited meditations, identity exercises, and more.</p>
-          </div>
-        </div>
-        <Button onClick={() => {}}>Upgrade</Button>
-      </GlassCard>
-    )}
+    <button className={styles.editProfileButton}>Edit Profile</button>
   </div>
 );
+
+// Reality Shift Board - Bento grid vision board
+const BoardScreen: React.FC = () => {
+  const boardItems = [
+    { id: 1, type: 'text', content: 'I am abundant', large: true },
+    { id: 2, type: 'image', style: { backgroundImage: 'linear-gradient(135deg, #F9A825 0%, #FF7043 50%, #7B1FA2 100%)' } },
+    { id: 3, type: 'quote', content: '"Create the life you dream of."' },
+    { id: 4, type: 'text', content: 'My future is bright' },
+    { id: 5, type: 'image', large: true, style: { backgroundImage: 'linear-gradient(135deg, #80DEEA 0%, #CE93D8 50%, #FFAB91 100%)' } },
+  ];
+
+  return (
+    <div className={styles.boardScreen}>
+      <div className={styles.boardHeader}>
+        <h1 className={styles.boardTitle}>Reality Shift Board</h1>
+        <p className={styles.boardSubtitle}>Step into your new identity</p>
+      </div>
+
+      <div className={styles.bentoGrid}>
+        {boardItems.map((item) => (
+          <div
+            key={item.id}
+            className={`${styles.bentoCard} ${item.large ? styles.bentoCardLarge : ''} ${item.type === 'image' ? styles.bentoCardImage : styles.bentoCardText}`}
+            style={item.style}
+          >
+            {item.type === 'text' && <span className={styles.bentoText}>{item.content}</span>}
+            {item.type === 'quote' && <span className={styles.bentoQuote}>{item.content}</span>}
+          </div>
+        ))}
+      </div>
+
+      <button className={styles.fab}>
+        {Icons.plus}
+      </button>
+    </div>
+  );
+};
 
 // Settings Screen - matches reference design
 const SettingsScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
@@ -1039,6 +1182,8 @@ export default function Home() {
         return <JournalScreen />;
       case 'progress':
         return <ProgressScreen user={user} />;
+      case 'board':
+        return <BoardScreen />;
       case 'mentor':
         return <MentorScreen onClose={() => setCurrentScreen('dashboard')} />;
       case 'player':
@@ -1052,7 +1197,7 @@ export default function Home() {
     }
   };
 
-  const showTabBar = ['dashboard', 'meditations', 'journal', 'progress', 'profile'].includes(currentScreen);
+  const showTabBar = ['dashboard', 'meditations', 'board', 'progress', 'profile'].includes(currentScreen);
 
   return (
     <main className={styles.main}>

@@ -101,22 +101,21 @@
   animation: glow 3s ease-in-out infinite;
 }
 
-/* ==== Glass Card - Enhanced ==== */
+/* ==== Glass Card - Refined Frosted Effect ==== */
 .glassCard {
   background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.14) 0%,
-    rgba(255, 255, 255, 0.08) 50%,
+    135deg,
+    rgba(255, 255, 255, 0.12) 0%,
     rgba(255, 255, 255, 0.06) 100%
   );
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   padding: 20px;
   box-shadow:
-    0 24px 60px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -132,7 +131,7 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.2) 50%,
     transparent 100%
   );
 }
@@ -142,29 +141,28 @@
   position: absolute;
   inset: 0;
   background: radial-gradient(
-    ellipse 80% 40% at 50% 0%,
-    rgba(255, 255, 255, 0.08) 0%,
-    transparent 60%
+    ellipse 60% 30% at 50% 0%,
+    rgba(255, 255, 255, 0.05) 0%,
+    transparent 50%
   );
   pointer-events: none;
 }
 
 .glassCard:hover {
-  border-color: rgba(255, 255, 255, 0.28);
-  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
   box-shadow:
-    0 28px 70px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    0 12px 40px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .glassCardElevated {
   background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.18) 0%,
-    rgba(255, 255, 255, 0.12) 50%,
+    135deg,
+    rgba(255, 255, 255, 0.15) 0%,
     rgba(255, 255, 255, 0.08) 100%
   );
-  border-color: rgba(255, 255, 255, 0.28);
+  border-color: rgba(255, 255, 255, 0.20);
 }
 
 .glassCardGold {
@@ -713,47 +711,47 @@
   color: rgba(255, 255, 255, 0.3);
 }
 
-/* ==== Progress Screen - Enhanced ==== */
+/* ==== Progress Screen - Premium Design ==== */
 .progressScreen {
   padding: 20px;
   padding-bottom: 100px;
 }
 
 .progressTitle {
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 600;
   color: #FFFFFF;
   margin-bottom: 24px;
   text-align: center;
   letter-spacing: -0.3px;
 }
 
-/* Line Chart Card */
+/* Main Line Chart Card */
 .lineChartCard {
-  margin-bottom: 20px;
-  padding: 24px 20px;
-}
-
-.chartHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 16px;
+  padding: 20px;
+  position: relative;
 }
 
-.chartLabel {
-  font-size: 12px;
+.chartWithLabel {
+  display: flex;
+  gap: 12px;
+}
+
+.chartYLabel {
+  font-size: 10px;
   color: #9BA3C3;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-weight: 500;
   writing-mode: vertical-rl;
   text-orientation: mixed;
   transform: rotate(180deg);
+  white-space: nowrap;
+  letter-spacing: 0.5px;
 }
 
 .lineChart {
-  height: 100px;
+  flex: 1;
+  height: 80px;
   position: relative;
 }
 
@@ -763,46 +761,10 @@
 }
 
 .chartSubtitle {
-  font-size: 13px;
+  font-size: 12px;
   color: #9BA3C3;
   text-align: center;
   margin-top: 12px;
-}
-
-/* Metrics Row */
-.metricsRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.metricCard {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.metricLabel {
-  font-size: 12px;
-  color: #9BA3C3;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  transform: rotate(180deg);
-  position: absolute;
-  left: -8px;
-}
-
-.metricIcon {
-  width: 32px;
-  height: 32px;
-  color: #9BA3C3;
-  opacity: 0.6;
 }
 
 /* Small Charts Row */
@@ -810,7 +772,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .smallChartCard {
@@ -821,28 +783,75 @@
   position: relative;
 }
 
-.smallChartLabel {
-  font-size: 11px;
-  color: #9BA3C3;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.smallChartInner {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  gap: 8px;
+}
+
+.smallChartYLabel {
+  font-size: 9px;
+  color: #9BA3C3;
+  font-weight: 500;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  white-space: nowrap;
+}
+
+.smallChartContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .smallChartIcon {
-  width: 14px;
-  height: 14px;
-  opacity: 0.6;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 16px;
+  height: 16px;
+  color: #9BA3C3;
+  opacity: 0.5;
 }
 
-/* Circular Gauges */
+.smallChartGraph {
+  height: 40px;
+  margin-bottom: 4px;
+}
+
+.smallChartXLabel {
+  font-size: 10px;
+  color: #9BA3C3;
+  text-align: center;
+}
+
+/* Color Bar Chart */
+.colorBars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 100%;
+  gap: 4px;
+  padding: 0 8px;
+}
+
+.colorBar {
+  width: 8px;
+  border-radius: 4px;
+  transition: height 0.3s ease;
+}
+
+.colorBarMint { background: linear-gradient(180deg, #8FE8D0 0%, #5DD4B9 100%); }
+.colorBarLavender { background: linear-gradient(180deg, #C5B8F0 0%, #A799E0 100%); }
+.colorBarPeach { background: linear-gradient(180deg, #FFD4B8 0%, #FFB896 100%); }
+.colorBarBlue { background: linear-gradient(180deg, #A8D4FF 0%, #7BC0FF 100%); }
+.colorBarYellow { background: linear-gradient(180deg, #FFE99A 0%, #FFD966 100%); }
+
+/* Gauges Row */
 .gaugesRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 12px;
 }
 
 .gaugeCard {
@@ -850,13 +859,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
 }
 
 .gaugeWrapper {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 110px;
+  height: 110px;
 }
 
 .gaugeSvg {
@@ -867,26 +875,27 @@
 
 .gaugeTrack {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.08);
-  stroke-width: 8;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 10;
 }
 
 .gaugeProgress {
   fill: none;
-  stroke-width: 8;
+  stroke-width: 10;
   stroke-linecap: round;
   transition: stroke-dashoffset 1s ease-out;
+  filter: drop-shadow(0 0 8px currentColor);
 }
 
 .gaugeCoherence {
-  stroke: url(#coherenceGradient);
+  stroke: #E8E0FF;
 }
 
 .gaugeConsistency {
-  stroke: url(#consistencyGradient);
+  stroke: #F4CF77;
 }
 
-.gaugeValue {
+.gaugeCenter {
   position: absolute;
   inset: 0;
   display: flex;
@@ -895,7 +904,7 @@
   justify-content: center;
 }
 
-.gaugeLabel {
+.gaugeLabelInside {
   font-size: 11px;
   color: #9BA3C3;
   font-weight: 500;
@@ -903,15 +912,39 @@
 }
 
 .gaugePercent {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
   color: #FFFFFF;
 }
 
-.gaugeTitle {
-  font-size: 14px;
+/* Metrics Row - keep for backwards compat */
+.metricsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.metricCard {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.metricValue {
+  font-size: 18px;
   font-weight: 600;
   color: #FFFFFF;
+}
+
+.metricLabel {
+  font-size: 11px;
+  color: #9BA3C3;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* ==== Meditations Screen ==== */
@@ -1564,22 +1597,29 @@
   box-shadow: 0 4px 16px rgba(244, 207, 119, 0.35);
 }
 
-/* ==== Profile Screen ==== */
+/* ==== Profile Screen - Clean Design ==== */
 .profileScreen {
   padding: 20px;
+  padding-top: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .profileHeader {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 36px;
 }
 
 .profileHeader button {
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
   background: rgba(255, 255, 255, 0.08);
   border: none;
   display: flex;
@@ -1596,14 +1636,15 @@
 
 .profileContent {
   text-align: center;
-  margin-bottom: 36px;
+  margin-bottom: 32px;
 }
 
 .avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 32px;
-  background: linear-gradient(135deg, rgba(244, 207, 119, 0.2), rgba(147, 130, 255, 0.2));
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1611,18 +1652,90 @@
 }
 
 .avatar svg {
-  width: 48px;
-  height: 48px;
-  color: #FFFFFF;
+  width: 36px;
+  height: 36px;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .profileContent h2 {
-  font-size: 26px;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 600;
   color: #FFFFFF;
   margin-bottom: 6px;
 }
 
+.membershipText {
+  font-size: 14px;
+  color: #F4CF77;
+  font-weight: 500;
+}
+
+.profileStatsCard {
+  width: 100%;
+  max-width: 320px;
+  padding: 28px 24px;
+  margin-bottom: 24px;
+}
+
+.profileStatRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.profileStatRow:last-child {
+  margin-bottom: 0;
+}
+
+.profileStatNumber {
+  font-size: 32px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.profileStatIcon {
+  color: #F4CF77;
+  margin-left: 4px;
+}
+
+.profileStatIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.profileStatLabel {
+  font-size: 15px;
+  color: #9BA3C3;
+  font-weight: 400;
+}
+
+.profileStatDivider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 16px 0;
+}
+
+.editProfileButton {
+  width: 100%;
+  max-width: 320px;
+  padding: 16px 32px;
+  border-radius: 12px;
+  background: rgba(180, 160, 220, 0.3);
+  border: none;
+  color: #FFFFFF;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editProfileButton:hover {
+  background: rgba(180, 160, 220, 0.4);
+}
+
+/* Legacy profile styles for backwards compat */
 .email {
   font-size: 14px;
   color: #9BA3C3;
@@ -1713,6 +1826,123 @@
   font-size: 14px;
   color: #C6CBDA;
   line-height: 1.5;
+}
+
+/* ==== Reality Shift Board ==== */
+.boardScreen {
+  padding: 20px;
+  padding-bottom: 100px;
+  position: relative;
+}
+
+.boardHeader {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.boardTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+}
+
+.boardSubtitle {
+  font-size: 15px;
+  color: #9BA3C3;
+}
+
+.bentoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
+  gap: 12px;
+}
+
+.bentoCard {
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.bentoCard:hover {
+  transform: scale(1.02);
+}
+
+.bentoCardLarge {
+  grid-row: span 2;
+  min-height: 260px;
+}
+
+.bentoCardText {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.bentoCardImage {
+  background-size: cover;
+  background-position: center;
+}
+
+.bentoCardImage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 50%, rgba(0, 0, 0, 0.5) 100%);
+}
+
+.bentoText {
+  font-size: 18px;
+  font-weight: 600;
+  color: #FFFFFF;
+  text-align: center;
+  padding: 20px;
+  line-height: 1.4;
+}
+
+.bentoQuote {
+  font-size: 14px;
+  font-style: italic;
+  color: #C6CBDA;
+  text-align: center;
+  padding: 16px;
+  line-height: 1.5;
+}
+
+/* Floating Action Button */
+.fab {
+  position: absolute;
+  bottom: 100px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FAE4A8 0%, #F4CF77 50%, #E9BB51 100%);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(244, 207, 119, 0.4);
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.fab:hover {
+  transform: scale(1.08);
+  box-shadow: 0 12px 32px rgba(244, 207, 119, 0.5);
+}
+
+.fab svg {
+  width: 24px;
+  height: 24px;
+  color: #0B0C1A;
 }
 
 /* ==== Tab Bar (Bottom Navigation) - Enhanced ==== */
