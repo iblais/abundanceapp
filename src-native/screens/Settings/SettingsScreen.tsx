@@ -1,7 +1,11 @@
 /**
- * Abundance Flow - Settings Screen
+ * Abundance Flow - Premium Settings Screen
  *
- * Comprehensive settings management organized by category
+ * Matches reference with:
+ * - Title "Settings" at top
+ * - Vertical stack of glass list items
+ * - Each item: left icon, label text, right chevron
+ * - Rounded glass rectangles with equal spacing
  */
 
 import React from 'react';
@@ -17,8 +21,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   ScreenWrapper,
   GlassCard,
-  H2,
-  H4,
+  H1,
   Body,
   BodySmall,
   Label,
@@ -27,12 +30,12 @@ import {
 } from '@components/common';
 import { useAppTheme, useTheme } from '@theme/ThemeContext';
 import { useUserStore } from '@store/useUserStore';
-import { spacing, borderRadius, sizing } from '@theme/spacing';
+import { spacing, borderRadius, sizing, layout } from '@theme/spacing';
 import { RootStackParamList } from '@navigation/types';
 
 type SettingsNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Settings'>;
 
-interface SettingRowProps {
+interface SettingItemProps {
   icon: IconName;
   title: string;
   subtitle?: string;
@@ -41,7 +44,7 @@ interface SettingRowProps {
   showChevron?: boolean;
 }
 
-const SettingRow: React.FC<SettingRowProps> = ({
+const SettingItem: React.FC<SettingItemProps> = ({
   icon,
   title,
   subtitle,
@@ -52,34 +55,41 @@ const SettingRow: React.FC<SettingRowProps> = ({
   const theme = useAppTheme();
 
   const content = (
-    <View style={styles.settingRow}>
-      <View
-        style={[
-          styles.settingIcon,
-          { backgroundColor: theme.colors.glass.background },
-        ]}
-      >
-        <Icon name={icon} size={sizing.iconSm} color={theme.colors.text.secondary} />
+    <GlassCard variant="light" padding="base" style={styles.settingItem}>
+      <View style={styles.settingItemContent}>
+        {/* Icon container */}
+        <View
+          style={[
+            styles.settingIcon,
+            { backgroundColor: theme.colors.halo.violetGlow },
+          ]}
+        >
+          <Icon name={icon} size={sizing.iconSm} color={theme.colors.halo.violet} />
+        </View>
+
+        {/* Text content */}
+        <View style={styles.settingText}>
+          <Label color={theme.colors.text.primary}>{title}</Label>
+          {subtitle && (
+            <BodySmall color={theme.colors.text.muted}>{subtitle}</BodySmall>
+          )}
+        </View>
+
+        {/* Right element or chevron */}
+        {rightElement || (showChevron && onPress && (
+          <Icon
+            name="chevronRight"
+            size={sizing.iconSm}
+            color={theme.colors.text.muted}
+          />
+        ))}
       </View>
-      <View style={styles.settingText}>
-        <Label>{title}</Label>
-        {subtitle && (
-          <BodySmall color={theme.colors.text.tertiary}>{subtitle}</BodySmall>
-        )}
-      </View>
-      {rightElement || (showChevron && onPress && (
-        <Icon
-          name="chevronRight"
-          size={sizing.iconSm}
-          color={theme.colors.text.muted}
-        />
-      ))}
-    </View>
+    </GlassCard>
   );
 
   if (onPress) {
     return (
-      <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
+      <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
         {content}
       </TouchableOpacity>
     );
@@ -88,30 +98,10 @@ const SettingRow: React.FC<SettingRowProps> = ({
   return content;
 };
 
-interface SettingSectionProps {
-  title: string;
-  children: React.ReactNode;
-}
-
-const SettingSection: React.FC<SettingSectionProps> = ({ title, children }) => {
-  const theme = useAppTheme();
-
-  return (
-    <View style={styles.section}>
-      <BodySmall color={theme.colors.text.tertiary} style={styles.sectionTitle}>
-        {title}
-      </BodySmall>
-      <GlassCard variant="light" style={styles.sectionCard}>
-        {children}
-      </GlassCard>
-    </View>
-  );
-};
-
 export const SettingsScreen: React.FC = () => {
   const navigation = useNavigation<SettingsNavigationProp>();
   const theme = useAppTheme();
-  const { themeMode, setThemeMode, toggleTheme } = useTheme();
+  const { themeMode, toggleTheme } = useTheme();
   const { settings, updateSettings, user } = useUserStore();
 
   const handleVoiceSelector = () => {
@@ -141,8 +131,8 @@ export const SettingsScreen: React.FC = () => {
             color={theme.colors.text.primary}
           />
         </TouchableOpacity>
-        <H2>Settings</H2>
-        <View style={styles.backButton} />
+        <H1>Settings</H1>
+        <View style={styles.headerSpacer} />
       </View>
 
       <ScrollView
@@ -150,174 +140,116 @@ export const SettingsScreen: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Preferences */}
-        <SettingSection title="PREFERENCES">
-          <SettingRow
-            icon="bell"
-            title="Daily Rhythm"
-            subtitle={`${settings.dailyRhythm.morningTime} & ${settings.dailyRhythm.eveningTime}`}
-            onPress={handleRhythmScheduler}
-          />
-          <View style={styles.divider} />
-          <SettingRow
-            icon="volume"
-            title="Voice Selection"
-            subtitle={user?.voicePreference || 'Neutral'}
-            onPress={handleVoiceSelector}
-          />
-          <View style={styles.divider} />
-          <SettingRow
-            icon={themeMode === 'dark' ? 'moon' : 'sun'}
-            title="Dark Mode"
-            showChevron={false}
-            rightElement={
-              <Switch
-                value={themeMode === 'dark'}
-                onValueChange={toggleTheme}
-                trackColor={{
-                  false: theme.colors.glass.background,
-                  true: theme.colors.accent.goldSoft,
-                }}
-                thumbColor={
-                  themeMode === 'dark'
-                    ? theme.colors.accent.gold
-                    : theme.colors.neutral.gray300
-                }
-              />
-            }
-          />
-        </SettingSection>
+        {/* Account Section */}
+        <View style={styles.section}>
+          <BodySmall color={theme.colors.text.muted} style={styles.sectionLabel}>
+            ACCOUNT
+          </BodySmall>
+          <View style={styles.itemsContainer}>
+            <SettingItem
+              icon="profile"
+              title="Account"
+              subtitle={user?.email || 'Not signed in'}
+              onPress={() => {}}
+            />
+            <SettingItem
+              icon="star"
+              title="Subscription"
+              subtitle={user?.isPremium ? 'Premium' : 'Free'}
+              onPress={handleManageSubscription}
+            />
+          </View>
+        </View>
 
-        {/* Notifications */}
-        <SettingSection title="NOTIFICATIONS">
-          <SettingRow
-            icon="sun"
-            title="Morning Reminders"
-            showChevron={false}
-            rightElement={
-              <Switch
-                value={settings.notifications.morningReminder}
-                onValueChange={(value) =>
-                  updateSettings({
-                    notifications: { morningReminder: value },
-                  })
-                }
-                trackColor={{
-                  false: theme.colors.glass.background,
-                  true: theme.colors.accent.goldSoft,
-                }}
-                thumbColor={
-                  settings.notifications.morningReminder
-                    ? theme.colors.accent.gold
-                    : theme.colors.neutral.gray300
-                }
-              />
-            }
-          />
-          <View style={styles.divider} />
-          <SettingRow
-            icon="moon"
-            title="Evening Reminders"
-            showChevron={false}
-            rightElement={
-              <Switch
-                value={settings.notifications.eveningReminder}
-                onValueChange={(value) =>
-                  updateSettings({
-                    notifications: { eveningReminder: value },
-                  })
-                }
-                trackColor={{
-                  false: theme.colors.glass.background,
-                  true: theme.colors.accent.goldSoft,
-                }}
-                thumbColor={
-                  settings.notifications.eveningReminder
-                    ? theme.colors.accent.gold
-                    : theme.colors.neutral.gray300
-                }
-              />
-            }
-          />
-          <View style={styles.divider} />
-          <SettingRow
-            icon="streak"
-            title="Streak Reminders"
-            showChevron={false}
-            rightElement={
-              <Switch
-                value={settings.notifications.streakReminders}
-                onValueChange={(value) =>
-                  updateSettings({
-                    notifications: { streakReminders: value },
-                  })
-                }
-                trackColor={{
-                  false: theme.colors.glass.background,
-                  true: theme.colors.accent.goldSoft,
-                }}
-                thumbColor={
-                  settings.notifications.streakReminders
-                    ? theme.colors.accent.gold
-                    : theme.colors.neutral.gray300
-                }
-              />
-            }
-          />
-        </SettingSection>
+        {/* Preferences Section */}
+        <View style={styles.section}>
+          <BodySmall color={theme.colors.text.muted} style={styles.sectionLabel}>
+            PREFERENCES
+          </BodySmall>
+          <View style={styles.itemsContainer}>
+            <SettingItem
+              icon="bell"
+              title="Notifications"
+              subtitle="Morning & evening reminders"
+              onPress={handleRhythmScheduler}
+            />
+            <SettingItem
+              icon="volume"
+              title="Voice Selection"
+              subtitle={user?.voicePreference || 'Neutral'}
+              onPress={handleVoiceSelector}
+            />
+            <SettingItem
+              icon={themeMode === 'dark' ? 'moon' : 'sun'}
+              title="Theme"
+              subtitle={themeMode === 'dark' ? 'Dark Mode' : 'Light Mode'}
+              showChevron={false}
+              rightElement={
+                <Switch
+                  value={themeMode === 'dark'}
+                  onValueChange={toggleTheme}
+                  trackColor={{
+                    false: theme.colors.glass.fill,
+                    true: theme.colors.accent.goldOverlay,
+                  }}
+                  thumbColor={
+                    themeMode === 'dark'
+                      ? theme.colors.accent.gold
+                      : theme.colors.neutral.gray300
+                  }
+                />
+              }
+            />
+          </View>
+        </View>
 
-        {/* Account */}
-        <SettingSection title="ACCOUNT">
-          <SettingRow
-            icon="star"
-            title="Subscription"
-            subtitle={user?.isPremium ? 'Premium' : 'Free'}
-            onPress={handleManageSubscription}
-          />
-          <View style={styles.divider} />
-          <SettingRow
-            icon="profile"
-            title="Account"
-            subtitle={user?.email || 'Not signed in'}
-            onPress={() => {}}
-          />
-        </SettingSection>
+        {/* Data & Privacy Section */}
+        <View style={styles.section}>
+          <BodySmall color={theme.colors.text.muted} style={styles.sectionLabel}>
+            DATA & PRIVACY
+          </BodySmall>
+          <View style={styles.itemsContainer}>
+            <SettingItem
+              icon="shield"
+              title="Data & Privacy"
+              onPress={() => {}}
+            />
+            <SettingItem
+              icon="journal"
+              title="Terms of Service"
+              onPress={() => {}}
+            />
+            <SettingItem
+              icon="journal"
+              title="Privacy Policy"
+              onPress={() => {}}
+            />
+          </View>
+        </View>
 
-        {/* Support */}
-        <SettingSection title="SUPPORT">
-          <SettingRow
-            icon="book"
-            title="Help Center"
-            onPress={() => {}}
-          />
-          <View style={styles.divider} />
-          <SettingRow
-            icon="chat"
-            title="Contact Support"
-            onPress={() => {}}
-          />
-          <View style={styles.divider} />
-          <SettingRow
-            icon="heart"
-            title="Rate App"
-            onPress={() => {}}
-          />
-        </SettingSection>
-
-        {/* Legal */}
-        <SettingSection title="LEGAL">
-          <SettingRow
-            icon="journal"
-            title="Privacy Policy"
-            onPress={() => {}}
-          />
-          <View style={styles.divider} />
-          <SettingRow
-            icon="journal"
-            title="Terms of Service"
-            onPress={() => {}}
-          />
-        </SettingSection>
+        {/* Support Section */}
+        <View style={styles.section}>
+          <BodySmall color={theme.colors.text.muted} style={styles.sectionLabel}>
+            SUPPORT
+          </BodySmall>
+          <View style={styles.itemsContainer}>
+            <SettingItem
+              icon="book"
+              title="Help Center"
+              onPress={() => {}}
+            />
+            <SettingItem
+              icon="chat"
+              title="Contact Support"
+              onPress={() => {}}
+            />
+            <SettingItem
+              icon="heart"
+              title="Rate App"
+              onPress={() => {}}
+            />
+          </View>
+        </View>
 
         {/* Version */}
         <View style={styles.versionContainer}>
@@ -334,52 +266,57 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+    paddingHorizontal: layout.screenPaddingHorizontal,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.xl,
   },
   backButton: {
     width: 44,
-    padding: spacing.sm,
+    height: 44,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.base,
+  },
+  headerSpacer: {
+    flex: 1,
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: layout.screenPaddingHorizontal,
     paddingBottom: spacing['3xl'],
   },
   section: {
     marginBottom: spacing.xl,
   },
-  sectionTitle: {
-    marginBottom: spacing.sm,
-    marginLeft: spacing.sm,
+  sectionLabel: {
+    marginBottom: spacing.md,
+    marginLeft: spacing.xs,
+    letterSpacing: 1,
   },
-  sectionCard: {
-    paddingVertical: spacing.xs,
+  itemsContainer: {
+    gap: spacing.md,
   },
-  settingRow: {
+  settingItem: {
+    marginBottom: 0,
+  },
+  settingItemContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
   },
   settingIcon: {
-    width: 36,
-    height: 36,
+    width: 40,
+    height: 40,
     borderRadius: borderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: spacing.md,
+    marginRight: spacing.base,
   },
   settingText: {
     flex: 1,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    marginLeft: 52,
   },
   versionContainer: {
     alignItems: 'center',

@@ -1,8 +1,12 @@
 /**
- * Abundance Flow - Meditation Player Screen
+ * Abundance Flow - Premium Meditation Player Screen
  *
- * Full-featured audio player for guided meditations
- * Minimalist design with soft glowing wave animation
+ * Matches reference with:
+ * - Top third: abstract gradient waves
+ * - Center: large title text
+ * - Glowing circular play button
+ * - Progress bar with accentGold and muted track
+ * - Duration pill buttons (5 min, 8 min, 12 min)
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -11,7 +15,9 @@ import {
   View,
   TouchableOpacity,
   Dimensions,
+  Text,
 } from 'react-native';
+import Svg, { Path, Defs, LinearGradient, Stop, Circle, Ellipse } from 'react-native-svg';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -21,24 +27,22 @@ import Animated, {
   Easing,
   interpolate,
 } from 'react-native-reanimated';
-import Slider from '@react-native-community/slider';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import LinearGradientView from 'react-native-linear-gradient';
 import {
   ScreenWrapper,
-  GlassCard,
+  H1,
   H3,
-  H4,
   Body,
   BodySmall,
-  Label,
   Icon,
 } from '@components/common';
 import { useAppTheme } from '@theme/ThemeContext';
 import { useMeditationStore, MeditationDuration } from '@store/useMeditationStore';
 import { useProgressStore } from '@store/useProgressStore';
-import { spacing, borderRadius, sizing } from '@theme/spacing';
-import { duration as animDuration } from '@theme/animations';
+import { spacing, borderRadius, sizing, layout } from '@theme/spacing';
+import { textStyles } from '@theme/typography';
 import { RootStackParamList } from '@navigation/types';
 import { MEDITATIONS_DATA } from '@content/meditations';
 
@@ -50,33 +54,15 @@ type MeditationPlayerNavigationProp = NativeStackNavigationProp<
 >;
 type MeditationPlayerRouteProp = RouteProp<RootStackParamList, 'MeditationPlayer'>;
 
-// Animated wave background component
-const WaveBackground: React.FC<{ isPlaying: boolean }> = ({ isPlaying }) => {
+// Abstract gradient wave background
+const AbstractWaves: React.FC<{ isPlaying: boolean }> = ({ isPlaying }) => {
   const theme = useAppTheme();
-  const wave1 = useSharedValue(0);
-  const wave2 = useSharedValue(0);
-  const wave3 = useSharedValue(0);
+  const animation = useSharedValue(0);
 
   useEffect(() => {
     if (isPlaying) {
-      wave1.value = withRepeat(
-        withTiming(1, { duration: 4000, easing: Easing.inOut(Easing.sin) }),
-        -1,
-        true
-      );
-      wave2.value = withRepeat(
-        withSequence(
-          withTiming(0.5, { duration: 500 }),
-          withTiming(1, { duration: 5000, easing: Easing.inOut(Easing.sin) })
-        ),
-        -1,
-        true
-      );
-      wave3.value = withRepeat(
-        withSequence(
-          withTiming(0.3, { duration: 800 }),
-          withTiming(1, { duration: 6000, easing: Easing.inOut(Easing.sin) })
-        ),
+      animation.value = withRepeat(
+        withTiming(1, { duration: 8000, easing: Easing.inOut(Easing.sin) }),
         -1,
         true
       );
@@ -84,98 +70,110 @@ const WaveBackground: React.FC<{ isPlaying: boolean }> = ({ isPlaying }) => {
   }, [isPlaying]);
 
   const wave1Style = useAnimatedStyle(() => ({
-    opacity: interpolate(wave1.value, [0, 0.5, 1], [0.1, 0.3, 0.1]),
-    transform: [
-      { scale: interpolate(wave1.value, [0, 1], [1, 1.2]) },
-    ],
+    opacity: interpolate(animation.value, [0, 0.5, 1], [0.3, 0.5, 0.3]),
+    transform: [{ translateY: interpolate(animation.value, [0, 1], [0, 20]) }],
   }));
 
   const wave2Style = useAnimatedStyle(() => ({
-    opacity: interpolate(wave2.value, [0, 0.5, 1], [0.08, 0.2, 0.08]),
-    transform: [
-      { scale: interpolate(wave2.value, [0, 1], [1.1, 1.4]) },
-    ],
-  }));
-
-  const wave3Style = useAnimatedStyle(() => ({
-    opacity: interpolate(wave3.value, [0, 0.5, 1], [0.05, 0.15, 0.05]),
-    transform: [
-      { scale: interpolate(wave3.value, [0, 1], [1.2, 1.6]) },
-    ],
+    opacity: interpolate(animation.value, [0, 0.5, 1], [0.2, 0.4, 0.2]),
+    transform: [{ translateY: interpolate(animation.value, [0, 1], [10, -10]) }],
   }));
 
   return (
-    <View style={styles.waveContainer}>
-      <Animated.View
-        style={[
-          styles.wave,
-          { backgroundColor: theme.colors.accent.goldSoft },
-          wave3Style,
-        ]}
-      />
-      <Animated.View
-        style={[
-          styles.wave,
-          { backgroundColor: theme.colors.primary.lavender },
-          wave2Style,
-        ]}
-      />
-      <Animated.View
-        style={[
-          styles.wave,
-          { backgroundColor: theme.colors.accent.gold },
-          wave1Style,
-        ]}
-      />
+    <View style={styles.wavesContainer}>
+      <Svg width={SCREEN_WIDTH} height={260} style={styles.wavesSvg}>
+        <Defs>
+          <LinearGradient id="wave1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <Stop offset="0%" stopColor={theme.colors.halo.violet} stopOpacity="0.4" />
+            <Stop offset="100%" stopColor={theme.colors.accent.gold} stopOpacity="0.2" />
+          </LinearGradient>
+          <LinearGradient id="wave2" x1="100%" y1="0%" x2="0%" y2="100%">
+            <Stop offset="0%" stopColor={theme.colors.accent.gold} stopOpacity="0.3" />
+            <Stop offset="100%" stopColor={theme.colors.halo.violetSoft} stopOpacity="0.1" />
+          </LinearGradient>
+        </Defs>
+        {/* Soft abstract shapes */}
+        <Animated.View style={wave1Style}>
+          <Ellipse cx={SCREEN_WIDTH * 0.3} cy="100" rx="180" ry="100" fill="url(#wave1)" />
+        </Animated.View>
+        <Animated.View style={wave2Style}>
+          <Ellipse cx={SCREEN_WIDTH * 0.7} cy="140" rx="200" ry="120" fill="url(#wave2)" />
+        </Animated.View>
+      </Svg>
     </View>
   );
 };
 
-// Duration selector component
-const DurationSelector: React.FC<{
-  durations: MeditationDuration[];
-  selected: MeditationDuration;
-  onSelect: (duration: MeditationDuration) => void;
-  disabled: boolean;
-}> = ({ durations, selected, onSelect, disabled }) => {
+// Duration pill button
+interface DurationPillProps {
+  minutes: number;
+  isSelected: boolean;
+  onPress: () => void;
+}
+
+const DurationPill: React.FC<DurationPillProps> = ({ minutes, isSelected, onPress }) => {
   const theme = useAppTheme();
 
   return (
-    <View style={styles.durationSelector}>
-      {durations.map((dur) => {
-        const isSelected = selected === dur;
-        return (
-          <TouchableOpacity
-            key={dur}
-            onPress={() => !disabled && onSelect(dur)}
-            disabled={disabled}
-            style={[
-              styles.durationButton,
-              {
-                backgroundColor: isSelected
-                  ? theme.colors.accent.goldSoft
-                  : theme.colors.glass.background,
-                borderColor: isSelected
-                  ? theme.colors.accent.gold
-                  : 'transparent',
-                opacity: disabled && !isSelected ? 0.5 : 1,
-              },
-            ]}
-            activeOpacity={0.7}
-          >
-            <Label
-              color={
-                isSelected
-                  ? theme.colors.accent.gold
-                  : theme.colors.text.secondary
-              }
-            >
-              {dur} min
-            </Label>
-          </TouchableOpacity>
-        );
-      })}
-    </View>
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.8}
+      style={[
+        styles.durationPill,
+        {
+          backgroundColor: isSelected
+            ? theme.colors.accent.gold
+            : theme.colors.glass.fill,
+          borderColor: isSelected
+            ? theme.colors.accent.gold
+            : theme.colors.glass.border,
+        },
+      ]}
+    >
+      <Text
+        style={[
+          textStyles.label,
+          {
+            color: isSelected
+              ? theme.colors.text.inverse
+              : theme.colors.text.primary,
+          },
+        ]}
+      >
+        {minutes} min
+      </Text>
+    </TouchableOpacity>
+  );
+};
+
+// Glowing play button
+interface PlayButtonProps {
+  isPlaying: boolean;
+  onPress: () => void;
+}
+
+const PlayButton: React.FC<PlayButtonProps> = ({ isPlaying, onPress }) => {
+  const theme = useAppTheme();
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.9}
+      style={styles.playButtonOuter}
+    >
+      <LinearGradientView
+        colors={theme.colors.gradients.goldButton}
+        style={styles.playButton}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        <Icon
+          name={isPlaying ? 'pause' : 'play'}
+          size={32}
+          color={theme.colors.text.inverse}
+        />
+      </LinearGradientView>
+    </TouchableOpacity>
   );
 };
 
@@ -184,300 +182,211 @@ export const MeditationPlayerScreen: React.FC = () => {
   const route = useRoute<MeditationPlayerRouteProp>();
   const theme = useAppTheme();
   const { completeMeditation } = useProgressStore();
-  const { startMeditation, pauseMeditation, resumeMeditation, stopMeditation } =
-    useMeditationStore();
 
   const { meditationId, duration: initialDuration } = route.params;
-  const meditation = MEDITATIONS_DATA.find((m) => m.id === meditationId);
 
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentPosition, setCurrentPosition] = useState(0);
-  const [selectedDuration, setSelectedDuration] =
-    useState<MeditationDuration>(initialDuration);
-  const totalDuration = selectedDuration * 60; // in seconds
+  const [selectedDuration, setSelectedDuration] = useState<number>(initialDuration || 8);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [totalTime, setTotalTime] = useState(selectedDuration * 60);
 
-  // Format time as MM:SS
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
+  // Get meditation data
+  const meditation = MEDITATIONS_DATA.find((m) => m.id === meditationId);
 
-  // Simulate playback progress
+  // Update total time when duration changes
+  useEffect(() => {
+    setTotalTime(selectedDuration * 60);
+    setCurrentTime(0);
+  }, [selectedDuration]);
+
+  // Playback simulation
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (isPlaying && currentPosition < totalDuration) {
+    if (isPlaying && currentTime < totalTime) {
       interval = setInterval(() => {
-        setCurrentPosition((prev) => {
-          if (prev >= totalDuration) {
-            setIsPlaying(false);
-            handleMeditationComplete();
-            return prev;
-          }
-          return prev + 1;
-        });
+        setCurrentTime((prev) => Math.min(prev + 1, totalTime));
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [isPlaying, totalDuration]);
+  }, [isPlaying, currentTime, totalTime]);
 
-  const handleMeditationComplete = () => {
-    completeMeditation(selectedDuration);
-    // Could show completion modal here
-  };
-
-  const handlePlayPause = () => {
-    if (isPlaying) {
-      pauseMeditation();
-    } else {
-      if (currentPosition === 0 && meditation) {
-        startMeditation(meditation as any, selectedDuration);
-      } else {
-        resumeMeditation();
-      }
+  // Check if completed
+  useEffect(() => {
+    if (currentTime >= totalTime && totalTime > 0) {
+      setIsPlaying(false);
+      completeMeditation(meditationId, selectedDuration);
     }
-    setIsPlaying(!isPlaying);
-  };
-
-  const handleStop = () => {
-    setIsPlaying(false);
-    setCurrentPosition(0);
-    stopMeditation();
-  };
-
-  const handleSeek = (value: number) => {
-    setCurrentPosition(value);
-  };
-
-  const handleDurationChange = (duration: MeditationDuration) => {
-    if (!isPlaying) {
-      setSelectedDuration(duration);
-      setCurrentPosition(0);
-    }
-  };
+  }, [currentTime, totalTime]);
 
   const handleClose = () => {
-    handleStop();
     navigation.goBack();
   };
 
-  if (!meditation) {
-    return null;
-  }
+  const togglePlayback = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const progress = totalTime > 0 ? currentTime / totalTime : 0;
 
   return (
-    <ScreenWrapper style={styles.container}>
-      {/* Wave animation background */}
-      <WaveBackground isPlaying={isPlaying} />
-
+    <ScreenWrapper padded={false}>
       {/* Close button */}
-      <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-        <Icon
-          name="close"
-          size={sizing.iconBase}
-          color={theme.colors.text.primary}
-        />
-      </TouchableOpacity>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+          <Icon name="close" size={sizing.iconBase} color={theme.colors.text.primary} />
+        </TouchableOpacity>
+      </View>
+
+      {/* Abstract waves background */}
+      <AbstractWaves isPlaying={isPlaying} />
 
       {/* Content */}
       <View style={styles.content}>
-        {/* Meditation info */}
-        <View style={styles.infoSection}>
-          <H3 align="center">{meditation.title}</H3>
-          <Body
-            align="center"
-            color={theme.colors.text.secondary}
-            style={styles.description}
-          >
-            {meditation.description}
-          </Body>
+        {/* Title */}
+        <View style={styles.titleContainer}>
+          <H1 align="center" style={styles.title}>
+            {meditation?.title || 'Meditation'}
+          </H1>
+          <BodySmall color={theme.colors.text.muted} align="center">
+            {meditation?.description || 'Guided meditation'}
+          </BodySmall>
         </View>
 
-        {/* Duration selector */}
-        <DurationSelector
-          durations={meditation.durations}
-          selected={selectedDuration}
-          onSelect={handleDurationChange}
-          disabled={isPlaying}
-        />
+        {/* Play button */}
+        <View style={styles.playContainer}>
+          <PlayButton isPlaying={isPlaying} onPress={togglePlayback} />
+        </View>
 
-        {/* Progress slider */}
-        <View style={styles.progressSection}>
-          <Slider
-            style={styles.slider}
-            minimumValue={0}
-            maximumValue={totalDuration}
-            value={currentPosition}
-            onSlidingComplete={handleSeek}
-            minimumTrackTintColor={theme.colors.accent.gold}
-            maximumTrackTintColor={theme.colors.glass.backgroundMedium}
-            thumbTintColor={theme.colors.accent.gold}
-          />
-          <View style={styles.timeLabels}>
-            <BodySmall color={theme.colors.text.tertiary}>
-              {formatTime(currentPosition)}
+        {/* Progress bar */}
+        <View style={styles.progressContainer}>
+          <View style={styles.progressTrack}>
+            <LinearGradientView
+              colors={theme.colors.gradients.progressRing}
+              style={[styles.progressFill, { width: `${progress * 100}%` }]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            />
+          </View>
+          <View style={styles.timeRow}>
+            <BodySmall color={theme.colors.text.muted}>
+              {formatTime(currentTime)}
             </BodySmall>
-            <BodySmall color={theme.colors.text.tertiary}>
-              {formatTime(totalDuration)}
+            <BodySmall color={theme.colors.text.muted}>
+              {formatTime(totalTime)}
             </BodySmall>
           </View>
         </View>
 
-        {/* Controls */}
-        <View style={styles.controls}>
-          <TouchableOpacity
-            style={styles.secondaryControl}
-            onPress={() => setCurrentPosition(Math.max(0, currentPosition - 15))}
-          >
-            <Icon
-              name="back"
-              size={sizing.iconMd}
-              color={theme.colors.text.secondary}
+        {/* Duration pills */}
+        <View style={styles.durationContainer}>
+          {[5, 8, 12].map((mins) => (
+            <DurationPill
+              key={mins}
+              minutes={mins}
+              isSelected={selectedDuration === mins}
+              onPress={() => setSelectedDuration(mins)}
             />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.playButton,
-              { backgroundColor: theme.colors.accent.gold },
-            ]}
-            onPress={handlePlayPause}
-          >
-            <Icon
-              name={isPlaying ? 'pause' : 'play'}
-              size={sizing.iconLg}
-              color={theme.colors.neutral.gray900}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.secondaryControl}
-            onPress={() =>
-              setCurrentPosition(Math.min(totalDuration, currentPosition + 15))
-            }
-          >
-            <Icon
-              name="forward"
-              size={sizing.iconMd}
-              color={theme.colors.text.secondary}
-            />
-          </TouchableOpacity>
+          ))}
         </View>
-
-        {/* Background sound selector */}
-        <TouchableOpacity style={styles.soundSelector}>
-          <GlassCard variant="light" style={styles.soundCard} noPadding>
-            <View style={styles.soundContent}>
-              <Icon
-                name="volume"
-                size={sizing.iconSm}
-                color={theme.colors.text.secondary}
-              />
-              <BodySmall color={theme.colors.text.secondary}>
-                Background Sound: Gentle Rain
-              </BodySmall>
-              <Icon
-                name="chevronRight"
-                size={sizing.iconSm}
-                color={theme.colors.text.muted}
-              />
-            </View>
-          </GlassCard>
-        </TouchableOpacity>
       </View>
     </ScreenWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  waveContainer: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  wave: {
-    position: 'absolute',
-    width: SCREEN_WIDTH * 1.5,
-    height: SCREEN_WIDTH * 1.5,
-    borderRadius: SCREEN_WIDTH * 0.75,
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingHorizontal: layout.screenPaddingHorizontal,
+    paddingTop: spacing.md,
+    zIndex: 10,
   },
   closeButton: {
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  wavesContainer: {
     position: 'absolute',
-    top: spacing['3xl'],
-    right: spacing.lg,
-    zIndex: 10,
-    padding: spacing.sm,
+    top: 60,
+    left: 0,
+    right: 0,
+    height: 260,
+    overflow: 'hidden',
+  },
+  wavesSvg: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
   },
   content: {
     flex: 1,
+    paddingHorizontal: layout.screenPaddingHorizontal,
     justifyContent: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing['3xl'],
+    paddingTop: 80,
   },
-  infoSection: {
+  titleContainer: {
     alignItems: 'center',
     marginBottom: spacing['3xl'],
   },
-  description: {
-    marginTop: spacing.sm,
-    maxWidth: 280,
+  title: {
+    marginBottom: spacing.sm,
   },
-  durationSelector: {
+  playContainer: {
+    alignItems: 'center',
+    marginBottom: spacing['3xl'],
+  },
+  playButtonOuter: {
+    shadowColor: '#F4D180',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 30,
+    elevation: 10,
+  },
+  playButton: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  progressContainer: {
+    marginBottom: spacing['2xl'],
+  },
+  progressTrack: {
+    height: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 2,
+    overflow: 'hidden',
+    marginBottom: spacing.sm,
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 2,
+  },
+  timeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  durationContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     gap: spacing.md,
-    marginBottom: spacing['3xl'],
   },
-  durationButton: {
+  durationPill: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     borderRadius: borderRadius.full,
     borderWidth: 1,
-  },
-  progressSection: {
-    marginBottom: spacing['2xl'],
-  },
-  slider: {
-    width: '100%',
-    height: 40,
-  },
-  timeLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.xs,
-  },
-  controls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing['2xl'],
-    marginBottom: spacing['3xl'],
-  },
-  secondaryControl: {
-    padding: spacing.md,
-  },
-  playButton: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  soundSelector: {
-    marginTop: 'auto',
-  },
-  soundCard: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.base,
-  },
-  soundContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
   },
 });
 
