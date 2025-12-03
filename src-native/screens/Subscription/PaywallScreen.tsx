@@ -1,7 +1,13 @@
 /**
- * Abundance Flow - Paywall Screen
+ * Abundance Flow - Premium Paywall Screen
  *
- * Premium subscription options with elegant design
+ * Matches reference with:
+ * - Title "Unlock Your Full Potential" centered at top
+ * - Subtitle about becoming the version of you
+ * - Two side-by-side glass pricing cards (Monthly / Annual)
+ * - "Best Value" gold ribbon on Annual card
+ * - Feature list with gold checkmarks
+ * - Gold gradient "Start Free Trial" button at bottom
  */
 
 import React, { useState } from 'react';
@@ -10,7 +16,10 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  Dimensions,
+  Text,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
@@ -18,18 +27,19 @@ import {
   GlassCard,
   H2,
   H3,
-  H4,
   Body,
   BodySmall,
-  Label,
-  LabelSmall,
   Icon,
   Button,
 } from '@components/common';
 import { useAppTheme } from '@theme/ThemeContext';
 import { useUserStore } from '@store/useUserStore';
-import { spacing, borderRadius, sizing } from '@theme/spacing';
+import { spacing, borderRadius, sizing, layout } from '@theme/spacing';
+import { textStyles } from '@theme/typography';
 import { RootStackParamList } from '@navigation/types';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const CARD_WIDTH = (SCREEN_WIDTH - layout.screenPaddingHorizontal * 2 - spacing.md) / 2;
 
 type PaywallNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Paywall'>;
 
@@ -38,34 +48,30 @@ interface PlanOption {
   title: string;
   price: string;
   period: string;
-  savings?: string;
-  isPopular?: boolean;
+  isBestValue?: boolean;
 }
 
 const PLANS: PlanOption[] = [
-  {
-    id: 'yearly',
-    title: 'Annual',
-    price: '$59.99',
-    period: '/year',
-    savings: 'Save 50%',
-    isPopular: true,
-  },
   {
     id: 'monthly',
     title: 'Monthly',
     price: '$9.99',
     period: '/month',
   },
+  {
+    id: 'yearly',
+    title: 'Annual',
+    price: '$79.99',
+    period: '/year',
+    isBestValue: true,
+  },
 ];
 
 const FEATURES = [
-  'Unlimited guided meditations',
-  'All identity-shifting exercises',
-  'Full Inner Mentor access',
-  'Advanced progress analytics',
-  'Premium soundscapes',
-  'Ad-free experience',
+  'Unlimited meditations',
+  'Inner Mentor AI',
+  'Reality Shift Board',
+  'Learn & Grow library',
 ];
 
 interface PlanCardProps {
@@ -78,7 +84,27 @@ const PlanCard: React.FC<PlanCardProps> = ({ plan, isSelected, onSelect }) => {
   const theme = useAppTheme();
 
   return (
-    <TouchableOpacity onPress={onSelect} activeOpacity={0.8}>
+    <TouchableOpacity
+      onPress={onSelect}
+      activeOpacity={0.8}
+      style={styles.planCardWrapper}
+    >
+      {/* Best Value ribbon */}
+      {plan.isBestValue && (
+        <View style={styles.ribbonContainer}>
+          <LinearGradient
+            colors={[theme.colors.accent.gold, theme.colors.accent.goldDark || '#B8973D']}
+            style={styles.ribbon}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          >
+            <Text style={[styles.ribbonText, { color: theme.colors.text.inverse }]}>
+              Best{'\n'}Value
+            </Text>
+          </LinearGradient>
+        </View>
+      )}
+
       <GlassCard
         variant={isSelected ? 'accent' : 'light'}
         style={[
@@ -88,55 +114,40 @@ const PlanCard: React.FC<PlanCardProps> = ({ plan, isSelected, onSelect }) => {
             borderWidth: 2,
           },
         ]}
+        padding="lg"
       >
-        {plan.isPopular && (
-          <View
-            style={[
-              styles.popularBadge,
-              { backgroundColor: theme.colors.accent.gold },
-            ]}
-          >
-            <LabelSmall color={theme.colors.neutral.gray900}>
-              Most Popular
-            </LabelSmall>
-          </View>
-        )}
         <View style={styles.planContent}>
-          <View style={styles.planHeader}>
-            <H4>{plan.title}</H4>
-            {isSelected && (
-              <View
-                style={[
-                  styles.checkCircle,
-                  { backgroundColor: theme.colors.accent.gold },
-                ]}
-              >
+          {/* Plan title */}
+          <Body color={theme.colors.text.secondary} style={styles.planTitle}>
+            {plan.title}
+          </Body>
+
+          {/* Price */}
+          <View style={styles.priceContainer}>
+            <Text style={[textStyles.h1, styles.priceText, { color: theme.colors.text.primary }]}>
+              {plan.price}
+            </Text>
+            <BodySmall color={theme.colors.text.muted}>{plan.period}</BodySmall>
+          </View>
+
+          {/* Features */}
+          <View style={styles.planFeatures}>
+            {FEATURES.map((feature, index) => (
+              <View key={index} style={styles.planFeatureRow}>
                 <Icon
                   name="check"
-                  size={sizing.iconXs}
-                  color={theme.colors.neutral.gray900}
+                  size={14}
+                  color={theme.colors.accent.gold}
                 />
+                <BodySmall
+                  color={theme.colors.text.secondary}
+                  style={styles.planFeatureText}
+                >
+                  {feature}
+                </BodySmall>
               </View>
-            )}
+            ))}
           </View>
-          <View style={styles.planPrice}>
-            <H2>{plan.price}</H2>
-            <BodySmall color={theme.colors.text.tertiary}>
-              {plan.period}
-            </BodySmall>
-          </View>
-          {plan.savings && (
-            <View
-              style={[
-                styles.savingsBadge,
-                { backgroundColor: theme.colors.semantic.success + '20' },
-              ]}
-            >
-              <LabelSmall color={theme.colors.semantic.success}>
-                {plan.savings}
-              </LabelSmall>
-            </View>
-          )}
         </View>
       </GlassCard>
     </TouchableOpacity>
@@ -176,7 +187,7 @@ export const PaywallScreen: React.FC = () => {
 
   return (
     <ScreenWrapper padded={false}>
-      {/* Header */}
+      {/* Header with close button */}
       <View style={styles.header}>
         <View style={styles.headerSpacer} />
         <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
@@ -195,54 +206,20 @@ export const PaywallScreen: React.FC = () => {
       >
         {/* Hero */}
         <View style={styles.heroSection}>
-          <View
-            style={[
-              styles.heroIcon,
-              { backgroundColor: theme.colors.accent.goldSoft },
-            ]}
-          >
-            <Icon
-              name="sparkle"
-              size={sizing.iconXl}
-              color={theme.colors.accent.gold}
-            />
-          </View>
           <H2 align="center" style={styles.heroTitle}>
-            Unlock Your Full Potential
+            Unlock Your Full{'\n'}Potential
           </H2>
           <Body
             align="center"
             color={theme.colors.text.secondary}
             style={styles.heroSubtitle}
           >
-            Access the complete Abundance Flow experience and transform your
-            reality.
+            Become the version of you who{'\n'}effortlessly receives abundance
           </Body>
         </View>
 
-        {/* Features */}
-        <View style={styles.featuresSection}>
-          {FEATURES.map((feature, index) => (
-            <View key={index} style={styles.featureRow}>
-              <View
-                style={[
-                  styles.featureCheck,
-                  { backgroundColor: theme.colors.accent.goldSoft },
-                ]}
-              >
-                <Icon
-                  name="check"
-                  size={sizing.iconXs}
-                  color={theme.colors.accent.gold}
-                />
-              </View>
-              <Body color={theme.colors.text.secondary}>{feature}</Body>
-            </View>
-          ))}
-        </View>
-
-        {/* Plans */}
-        <View style={styles.plansSection}>
+        {/* Side-by-side Plan Cards */}
+        <View style={styles.plansRow}>
           {PLANS.map((plan) => (
             <PlanCard
               key={plan.id}
@@ -306,98 +283,97 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: layout.screenPaddingHorizontal,
     paddingVertical: spacing.md,
   },
   headerSpacer: {
     width: 44,
   },
   closeButton: {
-    padding: spacing.sm,
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: layout.screenPaddingHorizontal,
     paddingBottom: spacing['3xl'],
   },
   heroSection: {
     alignItems: 'center',
-    paddingVertical: spacing.xl,
-  },
-  heroIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.lg,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing['2xl'],
   },
   heroTitle: {
-    marginBottom: spacing.sm,
+    marginBottom: spacing.md,
   },
   heroSubtitle: {
     maxWidth: 280,
   },
-  featuresSection: {
-    marginBottom: spacing.xl,
-  },
-  featureRow: {
+  plansRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  featureCheck: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: spacing.md,
-  },
-  plansSection: {
     gap: spacing.md,
-    marginBottom: spacing.xl,
+    marginBottom: spacing['2xl'],
   },
-  planCard: {
-    paddingVertical: spacing.lg,
+  planCardWrapper: {
+    flex: 1,
     position: 'relative',
-    overflow: 'visible',
   },
-  popularBadge: {
+  ribbonContainer: {
     position: 'absolute',
-    top: -12,
-    alignSelf: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
+    top: -8,
+    right: -8,
+    zIndex: 10,
   },
-  planContent: {},
-  planHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  checkCircle: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  planPrice: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: spacing.xs,
-  },
-  savingsBadge: {
-    alignSelf: 'flex-start',
+  ribbon: {
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
-    borderRadius: borderRadius.xs,
-    marginTop: spacing.sm,
+    borderRadius: borderRadius.sm,
+    transform: [{ rotate: '15deg' }],
+  },
+  ribbonText: {
+    fontSize: 10,
+    fontWeight: '700',
+    textAlign: 'center',
+    lineHeight: 12,
+  },
+  planCard: {
+    flex: 1,
+    minHeight: 220,
+  },
+  planContent: {
+    alignItems: 'center',
+  },
+  planTitle: {
+    marginBottom: spacing.sm,
+    fontWeight: '500',
+  },
+  priceContainer: {
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  priceText: {
+    fontSize: 28,
+    fontWeight: '700',
+    lineHeight: 34,
+  },
+  planFeatures: {
+    alignSelf: 'stretch',
+    gap: spacing.sm,
+  },
+  planFeatureRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  planFeatureText: {
+    flex: 1,
+    fontSize: 13,
   },
   buttonSection: {
     marginBottom: spacing.lg,

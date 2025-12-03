@@ -19,6 +19,7 @@ export type RootStackParamList = {
   ArticleDetail: { articleId: string };
   Soundscapes: undefined;
   Learn: undefined;
+  WaterIntentionReset: undefined;
   VoiceSelector: undefined;
   Paywall: undefined;
   Settings: undefined;

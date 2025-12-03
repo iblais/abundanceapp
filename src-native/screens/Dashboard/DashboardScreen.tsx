@@ -132,7 +132,19 @@ export const DashboardScreen: React.FC = () => {
   };
 
   const handleNavigateToQuickShift = () => {
-    // Navigate to quick shifts
+    navigation.navigate('WaterIntentionReset');
+  };
+
+  const handleNavigateToMentor = () => {
+    navigation.navigate('MentorChat');
+  };
+
+  const handleNavigateToSoundscapes = () => {
+    navigation.navigate('Soundscapes');
+  };
+
+  const handleNavigateToLearn = () => {
+    navigation.navigate('Learn');
   };
 
   const handleNavigateToShiftBoard = () => {
@@ -208,6 +220,30 @@ export const DashboardScreen: React.FC = () => {
             icon="grid"
             onPress={handleNavigateToShiftBoard}
             delay={300}
+          />
+
+          <ActionTile
+            title="Inner Mentor"
+            subtitle="Chat with your AI guide."
+            icon="chat"
+            onPress={handleNavigateToMentor}
+            delay={400}
+          />
+
+          <ActionTile
+            title="Soundscapes"
+            subtitle="Ambient sounds for focus."
+            icon="music"
+            onPress={handleNavigateToSoundscapes}
+            delay={500}
+          />
+
+          <ActionTile
+            title="Learn & Grow"
+            subtitle="Articles and insights."
+            icon="book"
+            onPress={handleNavigateToLearn}
+            delay={600}
           />
         </View>
 

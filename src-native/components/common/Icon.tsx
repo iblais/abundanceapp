@@ -59,7 +59,9 @@ export type IconName =
   | 'image'
   | 'camera'
   | 'send'
-  | 'chat';
+  | 'chat'
+  | 'music'
+  | 'shield';
 
 interface IconProps {
   name: IconName;
@@ -408,6 +410,25 @@ export const Icon: React.FC<IconProps> = ({
         return (
           <Path
             d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+            stroke={iconColor}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+        );
+      case 'music':
+        return (
+          <G stroke={iconColor} strokeWidth={strokeWidth} fill="none">
+            <Path d="M9 18V5l12-2v13" strokeLinecap="round" strokeLinejoin="round" />
+            <Circle cx="6" cy="18" r="3" />
+            <Circle cx="18" cy="16" r="3" />
+          </G>
+        );
+      case 'shield':
+        return (
+          <Path
+            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
             stroke={iconColor}
             strokeWidth={strokeWidth}
             strokeLinecap="round"

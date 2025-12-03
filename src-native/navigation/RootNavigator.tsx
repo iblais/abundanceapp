@@ -19,6 +19,7 @@ import MeditationPlayerScreen from '@screens/Meditation/MeditationPlayerScreen';
 import JournalEntryScreen from '@screens/Journal/JournalEntryScreen';
 import MentorChatScreen from '@screens/Mentor/MentorChatScreen';
 import IdentityExerciseScreen from '@screens/Exercises/IdentityExerciseScreen';
+import WaterIntentionResetScreen from '@screens/Exercises/WaterIntentionResetScreen';
 import ArticleDetailScreen from '@screens/Learn/ArticleDetailScreen';
 import LearnScreen from '@screens/Learn/LearnScreen';
 import SoundscapesScreen from '@screens/Soundscapes/SoundscapesScreen';
@@ -126,6 +127,14 @@ export const RootNavigator: React.FC = () => {
           component={SoundscapesScreen}
           options={{
             animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="WaterIntentionReset"
+          component={WaterIntentionResetScreen}
+          options={{
+            animation: 'slide_from_bottom',
+            presentation: 'fullScreenModal',
           }}
         />
         <Stack.Screen
