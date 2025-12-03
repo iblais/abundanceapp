@@ -1,15 +1,21 @@
 /**
- * Abundance Flow - Typography System
+ * Abundance Flow - Premium Typography System
  *
- * Font Family: Inter (or SF Pro fallback)
- * Ensures high contrast and clean, professional typography
+ * Font Family: SF Pro Display, SF Pro Text, Inter
+ * iOS-style calm typography matching the reference screens
  */
 
 import { Platform, TextStyle } from 'react-native';
 
-// Font family with platform-specific fallbacks
+// Font family with platform-specific fallbacks (SF Pro on iOS, Inter on Android)
 const fontFamily = Platform.select({
-  ios: 'Inter',
+  ios: 'SF Pro Display',
+  android: 'Inter',
+  default: 'Inter',
+});
+
+const fontFamilyText = Platform.select({
+  ios: 'SF Pro Text',
   android: 'Inter',
   default: 'Inter',
 });
@@ -22,120 +28,134 @@ export const fontWeights = {
   bold: '700',
 } as const;
 
-// Type scale following 8pt grid
+// Type scale matching the spec exactly
 export const fontSize = {
   xs: 11,
-  sm: 13,
-  base: 15,
-  md: 17,
-  lg: 20,
-  xl: 24,
+  sm: 14,      // Body Small / Caption
+  base: 16,    // Body (exact from spec)
+  md: 18,
+  lg: 20,      // H3 (card titles, metrics)
+  xl: 24,      // H2 (section titles)
   '2xl': 28,
-  '3xl': 34,
+  '3xl': 32,   // H1 (main titles)
   '4xl': 40,
   '5xl': 48,
-  hero: 64,
+  '6xl': 56,
+  hero: 72,    // Large score display
+  mega: 82,    // Alignment score number
 } as const;
 
-// Line heights
+// Line heights (spec: 1.3–1.45)
 export const lineHeight = {
-  tight: 1.1,
-  snug: 1.25,
-  normal: 1.4,
-  relaxed: 1.5,
-  loose: 1.75,
+  tightest: 1.0,
+  tight: 1.15,
+  snug: 1.3,      // For big titles
+  normal: 1.4,    // Default body text
+  relaxed: 1.45,  // Descriptions
+  loose: 1.6,
 } as const;
 
-// Letter spacing
+// Letter spacing (tighter for big titles as per spec)
 export const letterSpacing = {
-  tighter: -0.5,
-  tight: -0.25,
-  normal: 0,
+  tightest: -0.8,  // Big display numbers
+  tighter: -0.5,   // Titles
+  tight: -0.3,     // Headings
+  normal: 0,       // Body
   wide: 0.25,
   wider: 0.5,
   widest: 1,
 } as const;
 
-// Pre-defined text styles
+// Pre-defined text styles matching reference screens exactly
 export const textStyles: Record<string, TextStyle> = {
-  // Display styles - for hero sections
+  // Display styles - for hero sections and large numbers
   displayLarge: {
     fontFamily,
-    fontSize: fontSize.hero,
-    fontWeight: fontWeights.bold,
-    lineHeight: fontSize.hero * lineHeight.tight,
-    letterSpacing: letterSpacing.tighter,
+    fontSize: fontSize.mega,
+    fontWeight: fontWeights.semibold,
+    lineHeight: fontSize.mega * lineHeight.tightest,
+    letterSpacing: letterSpacing.tightest,
   },
   displayMedium: {
     fontFamily,
-    fontSize: fontSize['5xl'],
-    fontWeight: fontWeights.bold,
-    lineHeight: fontSize['5xl'] * lineHeight.tight,
-    letterSpacing: letterSpacing.tight,
+    fontSize: fontSize.hero,
+    fontWeight: fontWeights.semibold,
+    lineHeight: fontSize.hero * lineHeight.tight,
+    letterSpacing: letterSpacing.tightest,
   },
   displaySmall: {
     fontFamily,
-    fontSize: fontSize['4xl'],
-    fontWeight: fontWeights.bold,
-    lineHeight: fontSize['4xl'] * lineHeight.snug,
-    letterSpacing: letterSpacing.tight,
+    fontSize: fontSize['5xl'],
+    fontWeight: fontWeights.semibold,
+    lineHeight: fontSize['5xl'] * lineHeight.tight,
+    letterSpacing: letterSpacing.tighter,
   },
 
-  // Heading styles
+  // H1: 32, semibold (main titles like "Abundance Flow", "Your Progress")
   h1: {
     fontFamily,
-    fontSize: fontSize['3xl'],
-    fontWeight: fontWeights.bold,
+    fontSize: fontSize['3xl'],  // 32
+    fontWeight: fontWeights.semibold,
     lineHeight: fontSize['3xl'] * lineHeight.snug,
-    letterSpacing: letterSpacing.tight,
+    letterSpacing: letterSpacing.tighter,
   },
+
+  // H2: 24, semibold (section titles, screen headers)
   h2: {
     fontFamily,
-    fontSize: fontSize['2xl'],
-    fontWeight: fontWeights.bold,
-    lineHeight: fontSize['2xl'] * lineHeight.snug,
-    letterSpacing: letterSpacing.tight,
-  },
-  h3: {
-    fontFamily,
-    fontSize: fontSize.xl,
+    fontSize: fontSize.xl,  // 24
     fontWeight: fontWeights.semibold,
     lineHeight: fontSize.xl * lineHeight.snug,
-    letterSpacing: letterSpacing.normal,
+    letterSpacing: letterSpacing.tight,
   },
+
+  // H3: 20, medium (card titles, metrics labels)
+  h3: {
+    fontFamily,
+    fontSize: fontSize.lg,  // 20
+    fontWeight: fontWeights.medium,
+    lineHeight: fontSize.lg * lineHeight.snug,
+    letterSpacing: letterSpacing.tight,
+  },
+
+  // H4: 18, medium (smaller card titles)
   h4: {
     fontFamily,
-    fontSize: fontSize.lg,
-    fontWeight: fontWeights.semibold,
-    lineHeight: fontSize.lg * lineHeight.snug,
-    letterSpacing: letterSpacing.normal,
-  },
-  h5: {
-    fontFamily,
-    fontSize: fontSize.md,
-    fontWeight: fontWeights.semibold,
-    lineHeight: fontSize.md * lineHeight.normal,
+    fontSize: fontSize.md,  // 18
+    fontWeight: fontWeights.medium,
+    lineHeight: fontSize.md * lineHeight.snug,
     letterSpacing: letterSpacing.normal,
   },
 
-  // Body styles
-  bodyLarge: {
+  // H5: 16, medium (subtle headers)
+  h5: {
     fontFamily,
-    fontSize: fontSize.md,
+    fontSize: fontSize.base,  // 16
+    fontWeight: fontWeights.medium,
+    lineHeight: fontSize.base * lineHeight.normal,
+    letterSpacing: letterSpacing.normal,
+  },
+
+  // Body: 16, regular
+  bodyLarge: {
+    fontFamily: fontFamilyText,
+    fontSize: fontSize.md,  // 18
     fontWeight: fontWeights.regular,
     lineHeight: fontSize.md * lineHeight.relaxed,
     letterSpacing: letterSpacing.normal,
   },
   body: {
-    fontFamily,
-    fontSize: fontSize.base,
+    fontFamily: fontFamilyText,
+    fontSize: fontSize.base,  // 16 (exact from spec)
     fontWeight: fontWeights.regular,
     lineHeight: fontSize.base * lineHeight.relaxed,
     letterSpacing: letterSpacing.normal,
   },
+
+  // Body Small / Caption: 14, regular
   bodySmall: {
-    fontFamily,
-    fontSize: fontSize.sm,
+    fontFamily: fontFamilyText,
+    fontSize: fontSize.sm,  // 14 (exact from spec)
     fontWeight: fontWeights.regular,
     lineHeight: fontSize.sm * lineHeight.relaxed,
     letterSpacing: letterSpacing.normal,
@@ -143,79 +163,88 @@ export const textStyles: Record<string, TextStyle> = {
 
   // Label styles
   labelLarge: {
-    fontFamily,
+    fontFamily: fontFamilyText,
     fontSize: fontSize.base,
     fontWeight: fontWeights.medium,
     lineHeight: fontSize.base * lineHeight.normal,
-    letterSpacing: letterSpacing.wide,
-  },
-  label: {
-    fontFamily,
-    fontSize: fontSize.sm,
-    fontWeight: fontWeights.medium,
-    lineHeight: fontSize.sm * lineHeight.normal,
-    letterSpacing: letterSpacing.wide,
-  },
-  labelSmall: {
-    fontFamily,
-    fontSize: fontSize.xs,
-    fontWeight: fontWeights.medium,
-    lineHeight: fontSize.xs * lineHeight.normal,
-    letterSpacing: letterSpacing.wider,
-  },
-
-  // Caption and overline
-  caption: {
-    fontFamily,
-    fontSize: fontSize.xs,
-    fontWeight: fontWeights.regular,
-    lineHeight: fontSize.xs * lineHeight.normal,
     letterSpacing: letterSpacing.normal,
   },
+  label: {
+    fontFamily: fontFamilyText,
+    fontSize: fontSize.sm,  // 14
+    fontWeight: fontWeights.medium,
+    lineHeight: fontSize.sm * lineHeight.normal,
+    letterSpacing: letterSpacing.normal,
+  },
+  labelSmall: {
+    fontFamily: fontFamilyText,
+    fontSize: fontSize.xs,  // 11
+    fontWeight: fontWeights.medium,
+    lineHeight: fontSize.xs * lineHeight.normal,
+    letterSpacing: letterSpacing.wide,
+  },
+
+  // Caption: 14, regular (same as bodySmall)
+  caption: {
+    fontFamily: fontFamilyText,
+    fontSize: fontSize.sm,  // 14
+    fontWeight: fontWeights.regular,
+    lineHeight: fontSize.sm * lineHeight.normal,
+    letterSpacing: letterSpacing.normal,
+  },
+
+  // Overline text
   overline: {
-    fontFamily,
+    fontFamily: fontFamilyText,
     fontSize: fontSize.xs,
     fontWeight: fontWeights.semibold,
     lineHeight: fontSize.xs * lineHeight.normal,
-    letterSpacing: letterSpacing.widest,
+    letterSpacing: letterSpacing.wider,
     textTransform: 'uppercase',
   },
 
-  // Button text
+  // Button text: 16, medium (spec says medium weight)
   buttonLarge: {
     fontFamily,
-    fontSize: fontSize.md,
-    fontWeight: fontWeights.semibold,
+    fontSize: fontSize.md,  // 18
+    fontWeight: fontWeights.medium,
     lineHeight: fontSize.md * lineHeight.tight,
-    letterSpacing: letterSpacing.wide,
+    letterSpacing: letterSpacing.normal,
   },
   button: {
     fontFamily,
-    fontSize: fontSize.base,
-    fontWeight: fontWeights.semibold,
+    fontSize: fontSize.base,  // 16 (exact from spec)
+    fontWeight: fontWeights.medium,
     lineHeight: fontSize.base * lineHeight.tight,
-    letterSpacing: letterSpacing.wide,
+    letterSpacing: letterSpacing.normal,
   },
   buttonSmall: {
     fontFamily,
-    fontSize: fontSize.sm,
-    fontWeight: fontWeights.semibold,
+    fontSize: fontSize.sm,  // 14
+    fontWeight: fontWeights.medium,
     lineHeight: fontSize.sm * lineHeight.tight,
-    letterSpacing: letterSpacing.wide,
+    letterSpacing: letterSpacing.normal,
   },
 
-  // Score/number display
+  // Score/number display (alignment score like "82")
   scoreDisplay: {
     fontFamily,
-    fontSize: fontSize.hero,
-    fontWeight: fontWeights.bold,
-    lineHeight: fontSize.hero * lineHeight.tight,
-    letterSpacing: letterSpacing.tighter,
+    fontSize: fontSize.mega,  // 82 - matches the alignment score
+    fontWeight: fontWeights.semibold,
+    lineHeight: fontSize.mega * lineHeight.tightest,
+    letterSpacing: letterSpacing.tightest,
   },
   scoreMedium: {
     fontFamily,
-    fontSize: fontSize['4xl'],
-    fontWeight: fontWeights.bold,
+    fontSize: fontSize['5xl'],  // 48
+    fontWeight: fontWeights.semibold,
+    lineHeight: fontSize['5xl'] * lineHeight.tight,
+    letterSpacing: letterSpacing.tighter,
+  },
+  scoreSmall: {
+    fontFamily,
+    fontSize: fontSize['4xl'],  // 40
+    fontWeight: fontWeights.semibold,
     lineHeight: fontSize['4xl'] * lineHeight.tight,
     letterSpacing: letterSpacing.tighter,
   },
@@ -223,6 +252,7 @@ export const textStyles: Record<string, TextStyle> = {
 
 export default {
   fontFamily,
+  fontFamilyText,
   fontWeights,
   fontSize,
   lineHeight,

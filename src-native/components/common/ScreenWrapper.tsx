@@ -1,8 +1,10 @@
 /**
- * Abundance Flow - Screen Wrapper Component
+ * Abundance Flow - Premium Screen Wrapper Component
  *
- * Provides consistent screen layout with gradient background
- * and safe area handling
+ * Provides consistent screen layout with:
+ * - Deep indigo gradient background (bgPrimaryStart to bgPrimaryEnd)
+ * - Safe area handling
+ * - Optional radial halo effect
  */
 
 import React, { ReactNode } from 'react';
@@ -16,7 +18,7 @@ import {
   StyleProp,
   StatusBar,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import { useAppTheme } from '@theme/ThemeContext';
 import { layout, spacing } from '@theme/spacing';
@@ -32,6 +34,7 @@ interface ScreenWrapperProps {
   showHeader?: boolean;
   headerComponent?: ReactNode;
   backgroundColor?: string[];
+  showHalo?: boolean;
 }
 
 export const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
@@ -45,10 +48,12 @@ export const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
   showHeader = false,
   headerComponent,
   backgroundColor,
+  showHalo = false,
 }) => {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
 
+  // Use new premium background gradient
   const gradientColors = backgroundColor || theme.colors.gradients.primaryBackground;
 
   const paddingStyle: ViewStyle = padded
@@ -97,12 +102,28 @@ export const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
   );
 
   return (
-    <LinearGradient colors={gradientColors} style={styles.gradient}>
+    <LinearGradient
+      colors={gradientColors}
+      start={{ x: 0.5, y: 0 }}
+      end={{ x: 0.5, y: 1 }}
+      style={styles.gradient}
+    >
       <StatusBar
-        barStyle={theme.isDark ? 'light-content' : 'dark-content'}
+        barStyle="light-content"
         backgroundColor="transparent"
         translucent
       />
+
+      {/* Optional halo glow effect */}
+      {showHalo && (
+        <LinearGradient
+          colors={theme.colors.gradients.haloGlow}
+          style={styles.haloGlow}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+        />
+      )}
+
       {keyboardAvoiding ? (
         <KeyboardAvoidingView
           style={styles.keyboardAvoid}
@@ -137,6 +158,15 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingBottom: spacing['3xl'],
+  },
+  haloGlow: {
+    position: 'absolute',
+    top: 0,
+    left: '25%',
+    right: '25%',
+    height: 300,
+    borderRadius: 150,
+    opacity: 0.5,
   },
 });
 

@@ -1,8 +1,10 @@
 /**
- * Abundance Flow - Dashboard Screen
+ * Abundance Flow - Premium Dashboard Screen
  *
- * Primary home screen with Alignment Score hero
- * Quick access to daily practices
+ * Matches reference screen exactly:
+ * - Top: Large circular alignment meter with score
+ * - Below: Stacked glass tiles (Morning Visioneering, Quick Shifts, Reality Shift Board)
+ * - Bottom: Glass bottom nav (handled by TabNavigator)
  */
 
 import React, { useEffect } from 'react';
@@ -12,6 +14,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
+  Text,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -25,20 +28,16 @@ import {
   ScreenWrapper,
   GlassCard,
   ProgressRing,
-  H3,
   H4,
-  Body,
   BodySmall,
-  Label,
-  LabelSmall,
-  ScoreDisplay,
   Icon,
   IconName,
 } from '@components/common';
 import { useAppTheme } from '@theme/ThemeContext';
 import { useProgressStore } from '@store/useProgressStore';
 import { useUserStore } from '@store/useUserStore';
-import { spacing, borderRadius, sizing } from '@theme/spacing';
+import { spacing, borderRadius, sizing, layout } from '@theme/spacing';
+import { textStyles } from '@theme/typography';
 import { duration } from '@theme/animations';
 import { RootStackParamList } from '@navigation/types';
 
@@ -46,7 +45,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 type DashboardNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-interface QuickActionCardProps {
+interface ActionTileProps {
   title: string;
   subtitle: string;
   icon: IconName;
@@ -54,7 +53,8 @@ interface QuickActionCardProps {
   delay: number;
 }
 
-const QuickActionCard: React.FC<QuickActionCardProps> = ({
+// Premium glass action tile matching reference
+const ActionTile: React.FC<ActionTileProps> = ({
   title,
   subtitle,
   icon,
@@ -77,35 +77,36 @@ const QuickActionCard: React.FC<QuickActionCardProps> = ({
 
   return (
     <Animated.View style={animatedStyle}>
-      <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
-        <GlassCard variant="light" style={styles.actionCard}>
-          <View style={styles.actionCardContent}>
-            <View
-              style={[
-                styles.actionIconContainer,
-                { backgroundColor: theme.colors.accent.goldSoft },
-              ]}
-            >
-              <Icon
-                name={icon}
-                size={sizing.iconBase}
-                color={theme.colors.accent.gold}
-              />
-            </View>
-            <View style={styles.actionTextContainer}>
-              <H4>{title}</H4>
-              <BodySmall color={theme.colors.text.tertiary}>
-                {subtitle}
-              </BodySmall>
-            </View>
+      <GlassCard
+        variant="light"
+        onPress={onPress}
+        style={styles.actionTile}
+        padding="lg"
+      >
+        <View style={styles.tileContent}>
+          {/* Icon with subtle glow */}
+          <View
+            style={[
+              styles.tileIconContainer,
+              { backgroundColor: theme.colors.halo.violetGlow },
+            ]}
+          >
+            <Icon
+              name={icon}
+              size={sizing.iconBase}
+              color={theme.colors.halo.violet}
+            />
           </View>
-          <Icon
-            name="chevronRight"
-            size={sizing.iconSm}
-            color={theme.colors.text.muted}
-          />
-        </GlassCard>
-      </TouchableOpacity>
+
+          {/* Text content */}
+          <View style={styles.tileTextContainer}>
+            <H4 style={styles.tileTitle}>{title}</H4>
+            <BodySmall color={theme.colors.text.muted}>
+              {subtitle}
+            </BodySmall>
+          </View>
+        </View>
+      </GlassCard>
     </Animated.View>
   );
 };
@@ -114,43 +115,32 @@ export const DashboardScreen: React.FC = () => {
   const navigation = useNavigation<DashboardNavigationProp>();
   const theme = useAppTheme();
   const { user } = useUserStore();
-  const { todayScore, streaks, calculateAlignmentScore } = useProgressStore();
+  const { todayScore, calculateAlignmentScore } = useProgressStore();
 
   // Recalculate score on mount
   useEffect(() => {
-    const score = calculateAlignmentScore();
+    calculateAlignmentScore();
   }, []);
 
   const alignmentScore = todayScore || calculateAlignmentScore();
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  };
-
   const handleNavigateToMeditation = () => {
     navigation.navigate('MeditationPlayer', {
       meditationId: 'morning-visioneering',
-      duration: 8,
+      duration: 10,
     });
   };
 
   const handleNavigateToQuickShift = () => {
-    // Quick shift is part of dashboard, could expand to dedicated screen
+    // Navigate to quick shifts
   };
 
   const handleNavigateToShiftBoard = () => {
-    navigation.navigate('Main', { screen: 'Journal' });
+    navigation.navigate('Main', { screen: 'Progress' });
   };
 
-  const handleNavigateToMentor = () => {
-    navigation.navigate('MentorChat');
-  };
-
-  const handleNavigateToProfile = () => {
-    navigation.navigate('Profile');
+  const handleNavigateToSettings = () => {
+    navigation.navigate('Settings');
   };
 
   return (
@@ -160,65 +150,43 @@ export const DashboardScreen: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Body color={theme.colors.text.secondary}>{getGreeting()}</Body>
-            <H3>{user?.displayName || 'Welcome back'}</H3>
-          </View>
-          <TouchableOpacity onPress={handleNavigateToProfile}>
-            <View
-              style={[
-                styles.profileButton,
-                { backgroundColor: theme.colors.glass.background },
-              ]}
-            >
-              <Icon
-                name="profile"
-                size={sizing.iconBase}
-                color={theme.colors.text.primary}
-              />
-            </View>
+        {/* Settings icon in top right */}
+        <View style={styles.topBar}>
+          <View style={{ flex: 1 }} />
+          <TouchableOpacity
+            onPress={handleNavigateToSettings}
+            style={styles.settingsButton}
+          >
+            <Icon
+              name="settings"
+              size={sizing.iconBase}
+              color={theme.colors.text.secondary}
+            />
           </TouchableOpacity>
         </View>
 
-        {/* Alignment Score Card */}
+        {/* Large Alignment Score Ring */}
         <View style={styles.scoreSection}>
-          <GlassCard variant="accent" style={styles.scoreCard}>
-            <ProgressRing
-              progress={alignmentScore}
-              size="large"
-              showGlow
-            >
-              <View style={styles.scoreContent}>
-                <ScoreDisplay>{alignmentScore}</ScoreDisplay>
-                <LabelSmall color={theme.colors.text.secondary}>
-                  Alignment Score
-                </LabelSmall>
-              </View>
-            </ProgressRing>
-          </GlassCard>
-        </View>
-
-        {/* Streak indicator */}
-        <View style={styles.streakContainer}>
-          <GlassCard variant="light" style={styles.streakCard} noPadding>
-            <View style={styles.streakContent}>
-              <Icon
-                name="streak"
-                size={sizing.iconSm}
-                color={theme.colors.accent.gold}
-              />
-              <Label style={styles.streakText}>
-                {streaks.overall.currentStreak} day streak
-              </Label>
+          <ProgressRing
+            progress={alignmentScore}
+            size="xl"
+            showGlow
+            animated
+          >
+            <View style={styles.scoreContent}>
+              <Text style={[textStyles.scoreDisplay, styles.scoreNumber]}>
+                {alignmentScore}
+              </Text>
+              <BodySmall color={theme.colors.text.secondary}>
+                Alignment Score
+              </BodySmall>
             </View>
-          </GlassCard>
+          </ProgressRing>
         </View>
 
-        {/* Quick Actions */}
-        <View style={styles.actionsSection}>
-          <QuickActionCard
+        {/* Action Tiles */}
+        <View style={styles.tilesSection}>
+          <ActionTile
             title="Morning Visioneering"
             subtitle="Guided Focus for 10 mins."
             icon="sparkle"
@@ -226,7 +194,7 @@ export const DashboardScreen: React.FC = () => {
             delay={100}
           />
 
-          <QuickActionCard
+          <ActionTile
             title="Quick Shifts"
             subtitle="Instant reset exercises."
             icon="refresh"
@@ -234,66 +202,13 @@ export const DashboardScreen: React.FC = () => {
             delay={200}
           />
 
-          <QuickActionCard
+          <ActionTile
             title="Reality Shift Board"
             subtitle="Track your progress & insights."
             icon="grid"
             onPress={handleNavigateToShiftBoard}
             delay={300}
           />
-
-          <QuickActionCard
-            title="Inner Mentor"
-            subtitle="Chat with your AI guide."
-            icon="chat"
-            onPress={handleNavigateToMentor}
-            delay={400}
-          />
-        </View>
-
-        {/* Quick Shift Tools Grid */}
-        <View style={styles.quickShiftSection}>
-          <H4 style={styles.sectionTitle}>Quick Shifts</H4>
-          <View style={styles.quickShiftGrid}>
-            <TouchableOpacity style={styles.quickShiftItem}>
-              <GlassCard variant="light" style={styles.quickShiftCard}>
-                <Icon
-                  name="sparkle"
-                  size={sizing.iconMd}
-                  color={theme.colors.primary.lavender}
-                />
-                <LabelSmall style={styles.quickShiftLabel}>
-                  60s Breath
-                </LabelSmall>
-              </GlassCard>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.quickShiftItem}>
-              <GlassCard variant="light" style={styles.quickShiftCard}>
-                <Icon
-                  name="heart"
-                  size={sizing.iconMd}
-                  color={theme.colors.accent.gold}
-                />
-                <LabelSmall style={styles.quickShiftLabel}>
-                  Gratitude
-                </LabelSmall>
-              </GlassCard>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.quickShiftItem}>
-              <GlassCard variant="light" style={styles.quickShiftCard}>
-                <Icon
-                  name="meditation"
-                  size={sizing.iconMd}
-                  color={theme.colors.semantic.info}
-                />
-                <LabelSmall style={styles.quickShiftLabel}>
-                  Grounding
-                </LabelSmall>
-              </GlassCard>
-            </TouchableOpacity>
-          </View>
         </View>
 
         {/* Bottom padding for tab bar */}
@@ -308,98 +223,61 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: layout.screenPaddingHorizontal,
   },
-  header: {
+  topBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.xl,
+    justifyContent: 'flex-end',
+    paddingTop: spacing.md,
+    paddingBottom: spacing.lg,
   },
-  profileButton: {
+  settingsButton: {
     width: 44,
     height: 44,
     borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   scoreSection: {
     alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
-  scoreCard: {
-    alignItems: 'center',
     paddingVertical: spacing['2xl'],
-    width: '100%',
+    marginBottom: spacing.xl,
   },
   scoreContent: {
     alignItems: 'center',
   },
-  streakContainer: {
-    alignItems: 'center',
-    marginBottom: spacing['2xl'],
+  scoreNumber: {
+    color: '#FFFFFF',
+    marginBottom: spacing.xs,
   },
-  streakCard: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
+  tilesSection: {
+    gap: spacing.base,
   },
-  streakContent: {
+  actionTile: {
+    marginBottom: 0,
+  },
+  tileContent: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  streakText: {
-    marginLeft: spacing.sm,
-  },
-  actionsSection: {
-    gap: spacing.md,
-    marginBottom: spacing['2xl'],
-  },
-  actionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.base,
-  },
-  actionCardContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  actionIconContainer: {
-    width: 44,
-    height: 44,
+  tileIconContainer: {
+    width: sizing.iconContainerLg,
+    height: sizing.iconContainerLg,
     borderRadius: borderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.base,
   },
-  actionTextContainer: {
+  tileTextContainer: {
     flex: 1,
   },
-  quickShiftSection: {
-    marginBottom: spacing.xl,
-  },
-  sectionTitle: {
-    marginBottom: spacing.base,
-  },
-  quickShiftGrid: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  quickShiftItem: {
-    flex: 1,
-  },
-  quickShiftCard: {
-    alignItems: 'center',
-    paddingVertical: spacing.lg,
-  },
-  quickShiftLabel: {
-    marginTop: spacing.sm,
-    textAlign: 'center',
+  tileTitle: {
+    marginBottom: spacing.xs,
   },
   bottomPadding: {
-    height: sizing.tabBarHeight + spacing['2xl'],
+    height: sizing.tabBarHeight + spacing['3xl'],
   },
 });
 

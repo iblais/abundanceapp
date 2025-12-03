@@ -1,7 +1,10 @@
 /**
- * Abundance Flow - Tab Navigator
+ * Abundance Flow - Premium Tab Navigator
  *
- * Bottom tab navigation with custom styling
+ * Bottom tab navigation with glass styling:
+ * - Semi-transparent glass bar on gradient background
+ * - Icons in textSecondary, active state accentGold or haloViolet
+ * - Small pill/dot indicator under active icon
  */
 
 import React from 'react';
@@ -37,7 +40,7 @@ const TabIcon: React.FC<TabIconProps> = ({ name, focused, color }) => {
       <Icon
         name={name}
         size={sizing.iconBase}
-        color={focused ? theme.colors.accent.gold : color}
+        color={focused ? theme.colors.accent.gold : theme.colors.text.muted}
       />
       {focused && (
         <View
@@ -65,28 +68,27 @@ const TabBarBackground: React.FC = () => {
         },
       ]}
     >
-      {Platform.OS === 'ios' ? (
+      {/* Blur effect for iOS */}
+      {Platform.OS === 'ios' && (
         <BlurView
           style={StyleSheet.absoluteFill}
-          blurType={theme.isDark ? 'dark' : 'light'}
-          blurAmount={20}
-        />
-      ) : (
-        <View
-          style={[
-            StyleSheet.absoluteFill,
-            { backgroundColor: theme.colors.primary.cosmicBlueDeep },
-          ]}
+          blurType="dark"
+          blurAmount={25}
         />
       )}
+
+      {/* Glass gradient overlay */}
       <LinearGradient
         colors={[
-          'rgba(255,255,255,0.08)',
-          'rgba(255,255,255,0.04)',
-          'rgba(255,255,255,0.02)',
+          'rgba(255, 255, 255, 0.12)',
+          'rgba(255, 255, 255, 0.06)',
+          'rgba(255, 255, 255, 0.03)',
         ]}
-        style={[StyleSheet.absoluteFill, { borderRadius: borderRadius.xl }]}
+        style={StyleSheet.absoluteFill}
       />
+
+      {/* Top border line */}
+      <View style={styles.topBorder} />
     </View>
   );
 };
@@ -102,11 +104,10 @@ export const TabNavigator: React.FC = () => {
         tabBarShowLabel: false,
         tabBarStyle: {
           position: 'absolute',
-          bottom: spacing.base,
-          left: spacing.base,
-          right: spacing.base,
-          height: 64,
-          borderRadius: borderRadius.full,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: sizing.tabBarHeight + insets.bottom,
           backgroundColor: 'transparent',
           borderTopWidth: 0,
           elevation: 0,
@@ -114,7 +115,7 @@ export const TabNavigator: React.FC = () => {
         },
         tabBarBackground: () => <TabBarBackground />,
         tabBarActiveTintColor: theme.colors.accent.gold,
-        tabBarInactiveTintColor: theme.colors.text.tertiary,
+        tabBarInactiveTintColor: theme.colors.text.muted,
       }}
     >
       <Tab.Screen
@@ -161,13 +162,13 @@ const styles = StyleSheet.create({
   iconContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: spacing.sm,
+    paddingTop: spacing.md,
   },
   iconContainerFocused: {},
   indicator: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
     marginTop: spacing.xs,
   },
   tabBarBackground: {
@@ -175,9 +176,16 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    borderTopLeftRadius: borderRadius.xl,
-    borderTopRightRadius: borderRadius.xl,
+    backgroundColor: Platform.OS === 'android' ? 'rgba(5, 8, 25, 0.95)' : 'transparent',
     overflow: 'hidden',
+  },
+  topBorder: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
 });
 

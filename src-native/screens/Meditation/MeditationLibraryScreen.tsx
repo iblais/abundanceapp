@@ -1,8 +1,10 @@
 /**
- * Abundance Flow - Meditation Library Screen
+ * Abundance Flow - Premium Meditation Library Screen
  *
- * Browsable, filterable library of guided meditations
- * Categories: Confidence, Calm, Focus, Gratitude, Abundance, Identity
+ * Matches reference screen with:
+ * - Horizontal filter chips at top (glass pills)
+ * - 3-column grid of glass cards
+ * - Each card with title, duration, play icon
  */
 
 import React, { useState, useMemo } from 'react';
@@ -18,7 +20,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   ScreenWrapper,
   GlassCard,
-  H2,
+  H1,
   H4,
   Body,
   BodySmall,
@@ -28,166 +30,110 @@ import {
 } from '@components/common';
 import { useAppTheme } from '@theme/ThemeContext';
 import { useMeditationStore, MeditationCategory } from '@store/useMeditationStore';
-import { spacing, borderRadius, sizing } from '@theme/spacing';
+import { spacing, borderRadius, sizing, layout } from '@theme/spacing';
 import { RootStackParamList } from '@navigation/types';
 import { MEDITATIONS_DATA } from '@content/meditations';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const GRID_SPACING = spacing.md;
+const CARD_WIDTH = (SCREEN_WIDTH - layout.screenPaddingHorizontal * 2 - GRID_SPACING * 2) / 3;
 
 type MeditationLibraryNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-interface CategoryFilterProps {
-  selected: MeditationCategory | 'all';
-  onSelect: (category: MeditationCategory | 'all') => void;
-}
-
+// Category filter chips
 const CATEGORIES: { key: MeditationCategory | 'all'; label: string }[] = [
   { key: 'all', label: 'All' },
-  { key: 'gratitude', label: 'Gratitude' },
-  { key: 'confidence', label: 'Confidence' },
-  { key: 'calm', label: 'Calm' },
   { key: 'focus', label: 'Focus' },
+  { key: 'calm', label: 'Calm' },
+  { key: 'confidence', label: 'Confidence' },
   { key: 'abundance', label: 'Abundance' },
-  { key: 'identity', label: 'Identity' },
 ];
 
-const CategoryFilter: React.FC<CategoryFilterProps> = ({ selected, onSelect }) => {
+interface FilterChipProps {
+  label: string;
+  isSelected: boolean;
+  onPress: () => void;
+}
+
+const FilterChip: React.FC<FilterChipProps> = ({ label, isSelected, onPress }) => {
   const theme = useAppTheme();
 
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.filterContainer}
+    <TouchableOpacity
+      onPress={onPress}
+      style={[
+        styles.filterChip,
+        {
+          backgroundColor: isSelected
+            ? theme.colors.accent.goldOverlay
+            : theme.colors.glass.fill,
+          borderColor: isSelected
+            ? theme.colors.accent.gold
+            : theme.colors.glass.border,
+        },
+      ]}
+      activeOpacity={0.7}
     >
-      {CATEGORIES.map((category) => {
-        const isSelected = selected === category.key;
-        return (
-          <TouchableOpacity
-            key={category.key}
-            onPress={() => onSelect(category.key)}
-            style={[
-              styles.filterChip,
-              {
-                backgroundColor: isSelected
-                  ? theme.colors.accent.goldSoft
-                  : theme.colors.glass.background,
-                borderColor: isSelected
-                  ? theme.colors.accent.gold
-                  : 'transparent',
-              },
-            ]}
-            activeOpacity={0.7}
-          >
-            <Label
-              color={
-                isSelected
-                  ? theme.colors.accent.gold
-                  : theme.colors.text.secondary
-              }
-            >
-              {category.label}
-            </Label>
-          </TouchableOpacity>
-        );
-      })}
-    </ScrollView>
+      <Label
+        color={
+          isSelected ? theme.colors.accent.gold : theme.colors.text.secondary
+        }
+      >
+        {label}
+      </Label>
+    </TouchableOpacity>
   );
 };
 
-interface MeditationCardProps {
-  meditation: (typeof MEDITATIONS_DATA)[0];
+interface MeditationGridCardProps {
+  title: string;
+  duration: string;
   onPress: () => void;
-  isFavorite: boolean;
-  onToggleFavorite: () => void;
 }
 
-const MeditationCard: React.FC<MeditationCardProps> = ({
-  meditation,
+const MeditationGridCard: React.FC<MeditationGridCardProps> = ({
+  title,
+  duration,
   onPress,
-  isFavorite,
-  onToggleFavorite,
 }) => {
   const theme = useAppTheme();
 
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
-      <GlassCard variant="light" style={styles.meditationCard}>
-        <View style={styles.meditationContent}>
+    <GlassCard
+      variant="light"
+      onPress={onPress}
+      style={styles.gridCard}
+      padding="base"
+      rounded="2xl"
+    >
+      <View style={styles.gridCardContent}>
+        <H4 numberOfLines={2} style={styles.gridCardTitle}>
+          {title}
+        </H4>
+        <View style={styles.gridCardMeta}>
+          <LabelSmall color={theme.colors.text.muted}>{duration}</LabelSmall>
           <View
             style={[
-              styles.meditationIcon,
-              { backgroundColor: theme.colors.accent.goldSoft },
+              styles.playIcon,
+              { backgroundColor: theme.colors.glass.fill },
             ]}
           >
             <Icon
-              name="meditation"
-              size={sizing.iconBase}
-              color={theme.colors.accent.gold}
+              name="play"
+              size={sizing.iconSm}
+              color={theme.colors.text.secondary}
             />
           </View>
-          <View style={styles.meditationInfo}>
-            <H4 numberOfLines={1}>{meditation.title}</H4>
-            <BodySmall
-              color={theme.colors.text.tertiary}
-              numberOfLines={2}
-            >
-              {meditation.description}
-            </BodySmall>
-            <View style={styles.meditationMeta}>
-              <View style={styles.durationTags}>
-                {meditation.durations.map((dur) => (
-                  <View
-                    key={dur}
-                    style={[
-                      styles.durationTag,
-                      { backgroundColor: theme.colors.glass.background },
-                    ]}
-                  >
-                    <LabelSmall color={theme.colors.text.tertiary}>
-                      {dur} min
-                    </LabelSmall>
-                  </View>
-                ))}
-              </View>
-              {meditation.isPremium && (
-                <View
-                  style={[
-                    styles.premiumBadge,
-                    { backgroundColor: theme.colors.accent.goldSoft },
-                  ]}
-                >
-                  <LabelSmall color={theme.colors.accent.gold}>
-                    Premium
-                  </LabelSmall>
-                </View>
-              )}
-            </View>
-          </View>
-          <TouchableOpacity
-            onPress={onToggleFavorite}
-            style={styles.favoriteButton}
-          >
-            <Icon
-              name={isFavorite ? 'heartFilled' : 'heart'}
-              size={sizing.iconBase}
-              color={
-                isFavorite
-                  ? theme.colors.accent.gold
-                  : theme.colors.text.muted
-              }
-            />
-          </TouchableOpacity>
         </View>
-      </GlassCard>
-    </TouchableOpacity>
+      </View>
+    </GlassCard>
   );
 };
 
 export const MeditationLibraryScreen: React.FC = () => {
   const navigation = useNavigation<MeditationLibraryNavigationProp>();
   const theme = useAppTheme();
-  const { favorites, toggleFavorite, recentlyPlayed } = useMeditationStore();
+  const { favorites, toggleFavorite } = useMeditationStore();
   const [selectedCategory, setSelectedCategory] = useState<
     MeditationCategory | 'all'
   >('all');
@@ -199,19 +145,21 @@ export const MeditationLibraryScreen: React.FC = () => {
     return MEDITATIONS_DATA.filter((m) => m.category === selectedCategory);
   }, [selectedCategory]);
 
-  const recentMeditations = useMemo(() => {
-    return recentlyPlayed
-      .slice(0, 3)
-      .map((id) => MEDITATIONS_DATA.find((m) => m.id === id))
-      .filter(Boolean);
-  }, [recentlyPlayed]);
-
   const handleMeditationPress = (meditationId: string) => {
     navigation.navigate('MeditationPlayer', {
       meditationId,
-      duration: 8, // Default duration
+      duration: 8,
     });
   };
+
+  // Group meditations into rows of 3
+  const rows = useMemo(() => {
+    const result: (typeof MEDITATIONS_DATA)[] = [];
+    for (let i = 0; i < filteredMeditations.length; i += 3) {
+      result.push(filteredMeditations.slice(i, i + 3));
+    }
+    return result;
+  }, [filteredMeditations]);
 
   return (
     <ScreenWrapper padded={false}>
@@ -222,47 +170,45 @@ export const MeditationLibraryScreen: React.FC = () => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <H2>Meditations</H2>
-          <Body color={theme.colors.text.secondary}>
-            Guided practices for transformation
-          </Body>
+          <H1>Meditations</H1>
         </View>
 
-        {/* Category Filter */}
-        <CategoryFilter
-          selected={selectedCategory}
-          onSelect={setSelectedCategory}
-        />
-
-        {/* Recently Played */}
-        {recentMeditations.length > 0 && selectedCategory === 'all' && (
-          <View style={styles.section}>
-            <H4 style={styles.sectionTitle}>Recently Played</H4>
-            {recentMeditations.map((meditation) => (
-              <MeditationCard
-                key={meditation!.id}
-                meditation={meditation!}
-                onPress={() => handleMeditationPress(meditation!.id)}
-                isFavorite={favorites.includes(meditation!.id)}
-                onToggleFavorite={() => toggleFavorite(meditation!.id)}
-              />
-            ))}
-          </View>
-        )}
-
-        {/* All Meditations */}
-        <View style={styles.section}>
-          {selectedCategory === 'all' && recentMeditations.length > 0 && (
-            <H4 style={styles.sectionTitle}>All Meditations</H4>
-          )}
-          {filteredMeditations.map((meditation) => (
-            <MeditationCard
-              key={meditation.id}
-              meditation={meditation}
-              onPress={() => handleMeditationPress(meditation.id)}
-              isFavorite={favorites.includes(meditation.id)}
-              onToggleFavorite={() => toggleFavorite(meditation.id)}
+        {/* Category Filter Chips */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filterContainer}
+        >
+          {CATEGORIES.map((category) => (
+            <FilterChip
+              key={category.key}
+              label={category.label}
+              isSelected={selectedCategory === category.key}
+              onPress={() => setSelectedCategory(category.key)}
             />
+          ))}
+        </ScrollView>
+
+        {/* Meditation Grid */}
+        <View style={styles.gridContainer}>
+          {rows.map((row, rowIndex) => (
+            <View key={rowIndex} style={styles.gridRow}>
+              {row.map((meditation) => (
+                <MeditationGridCard
+                  key={meditation.id}
+                  title={meditation.title}
+                  duration={`${meditation.durations[0]}-${meditation.durations[meditation.durations.length - 1]} min`}
+                  onPress={() => handleMeditationPress(meditation.id)}
+                />
+              ))}
+              {/* Fill empty spaces in last row */}
+              {row.length < 3 &&
+                Array(3 - row.length)
+                  .fill(null)
+                  .map((_, i) => (
+                    <View key={`empty-${i}`} style={styles.gridCardEmpty} />
+                  ))}
+            </View>
           ))}
         </View>
 
@@ -281,69 +227,55 @@ const styles = StyleSheet.create({
     paddingBottom: spacing['2xl'],
   },
   header: {
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: layout.screenPaddingHorizontal,
     paddingTop: spacing.lg,
-    paddingBottom: spacing.lg,
+    paddingBottom: spacing.base,
   },
   filterContainer: {
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: layout.screenPaddingHorizontal,
     gap: spacing.sm,
-    paddingBottom: spacing.lg,
+    paddingBottom: spacing.xl,
   },
   filterChip: {
     paddingHorizontal: spacing.base,
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.full,
     borderWidth: 1,
-  },
-  section: {
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.lg,
-  },
-  sectionTitle: {
-    marginBottom: spacing.md,
-  },
-  meditationCard: {
-    marginBottom: spacing.md,
-  },
-  meditationContent: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  meditationIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: borderRadius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: spacing.md,
-  },
-  meditationInfo: {
-    flex: 1,
     marginRight: spacing.sm,
   },
-  meditationMeta: {
+  gridContainer: {
+    paddingHorizontal: layout.screenPaddingHorizontal,
+  },
+  gridRow: {
+    flexDirection: 'row',
+    gap: GRID_SPACING,
+    marginBottom: GRID_SPACING,
+  },
+  gridCard: {
+    width: CARD_WIDTH,
+    minHeight: 120,
+  },
+  gridCardEmpty: {
+    width: CARD_WIDTH,
+  },
+  gridCardContent: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  gridCardTitle: {
+    marginBottom: spacing.sm,
+  },
+  gridCardMeta: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: spacing.sm,
+    justifyContent: 'space-between',
   },
-  durationTags: {
-    flexDirection: 'row',
-    gap: spacing.xs,
-  },
-  durationTag: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.xs,
-  },
-  premiumBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.xs,
-    marginLeft: spacing.sm,
-  },
-  favoriteButton: {
-    padding: spacing.xs,
+  playIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   bottomPadding: {
     height: sizing.tabBarHeight + spacing['2xl'],
