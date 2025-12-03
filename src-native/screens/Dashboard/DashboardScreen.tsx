@@ -127,7 +127,7 @@ export const DashboardScreen: React.FC = () => {
   const handleNavigateToMeditation = () => {
     navigation.navigate('MeditationPlayer', {
       meditationId: 'morning-visioneering',
-      duration: 10,
+      duration: 12,
     });
   };
 
