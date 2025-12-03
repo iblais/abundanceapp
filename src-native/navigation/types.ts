@@ -17,6 +17,8 @@ export type RootStackParamList = {
   MentorChat: undefined;
   IdentityExercise: { exerciseId: string };
   ArticleDetail: { articleId: string };
+  Soundscapes: undefined;
+  Learn: undefined;
   VoiceSelector: undefined;
   Paywall: undefined;
   Settings: undefined;

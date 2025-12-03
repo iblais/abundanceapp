@@ -20,6 +20,8 @@ import JournalEntryScreen from '@screens/Journal/JournalEntryScreen';
 import MentorChatScreen from '@screens/Mentor/MentorChatScreen';
 import IdentityExerciseScreen from '@screens/Exercises/IdentityExerciseScreen';
 import ArticleDetailScreen from '@screens/Learn/ArticleDetailScreen';
+import LearnScreen from '@screens/Learn/LearnScreen';
+import SoundscapesScreen from '@screens/Soundscapes/SoundscapesScreen';
 import VoiceSelectorScreen from '@screens/Settings/VoiceSelectorScreen';
 import PaywallScreen from '@screens/Subscription/PaywallScreen';
 import SettingsScreen from '@screens/Settings/SettingsScreen';
@@ -108,6 +110,20 @@ export const RootNavigator: React.FC = () => {
         <Stack.Screen
           name="ArticleDetail"
           component={ArticleDetailScreen}
+          options={{
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="Learn"
+          component={LearnScreen}
+          options={{
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="Soundscapes"
+          component={SoundscapesScreen}
           options={{
             animation: 'slide_from_right',
           }}
