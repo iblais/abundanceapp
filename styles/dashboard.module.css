@@ -1,0 +1,153 @@
+/**
+ * Dashboard Styles - Alignment Score Dashboard
+ */
+
+.container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #050716 0%, #0A0E1F 40%, #171C3F 100%);
+}
+
+.main {
+  padding: 40px 20px;
+  padding-bottom: 120px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.greeting {
+  font-size: 16px;
+  color: #9BA3C3;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.userName {
+  font-size: 24px;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: -0.5px;
+}
+
+/* Score Section */
+.scoreSection {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.scoreValue {
+  font-size: 64px;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.scoreLabel {
+  font-size: 14px;
+  color: #9BA3C3;
+  font-weight: 500;
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* Streak Counter */
+.streakContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  margin: 0 auto 32px;
+  width: fit-content;
+}
+
+.streakIcon {
+  color: #F4CF77;
+  display: flex;
+  align-items: center;
+}
+
+.streakIcon svg {
+  width: 20px;
+  height: 20px;
+  filter: drop-shadow(0 0 6px rgba(244, 207, 119, 0.5));
+}
+
+.streakText {
+  font-size: 18px;
+  font-weight: 700;
+  color: #F4CF77;
+}
+
+.streakDays {
+  font-size: 14px;
+  color: #9BA3C3;
+}
+
+/* Actions Section */
+.actionsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.actionCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  cursor: pointer;
+}
+
+.actionCard:hover {
+  transform: translateY(-2px);
+}
+
+.actionCard:active {
+  transform: scale(0.98);
+}
+
+.actionIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(244, 207, 119, 0.15), rgba(244, 207, 119, 0.08));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.actionIcon svg {
+  width: 22px;
+  height: 22px;
+  color: #F4CF77;
+  filter: drop-shadow(0 0 8px rgba(244, 207, 119, 0.4));
+}
+
+.actionText {
+  flex: 1;
+}
+
+.actionText h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 4px;
+}
+
+.actionText p {
+  font-size: 14px;
+  color: #9BA3C3;
+  font-weight: 400;
+}

@@ -1,0 +1,109 @@
+/**
+ * Placeholder Page Styles
+ */
+
+.container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #050716 0%, #0A0E1F 40%, #171C3F 100%);
+}
+
+.main {
+  padding: 40px 20px;
+  padding-bottom: 120px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  margin-bottom: 32px;
+}
+
+.header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.header p {
+  font-size: 16px;
+  color: #9BA3C3;
+  font-weight: 400;
+}
+
+/* Coming Soon Card */
+.comingSoonCard {
+  text-align: center;
+  padding: 40px 24px;
+}
+
+.iconWrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(244, 207, 119, 0.15), rgba(244, 207, 119, 0.08));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.iconWrapper svg {
+  width: 28px;
+  height: 28px;
+  color: #F4CF77;
+  filter: drop-shadow(0 0 8px rgba(244, 207, 119, 0.4));
+}
+
+.comingSoonCard h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 12px;
+}
+
+.comingSoonCard p {
+  font-size: 15px;
+  color: #9BA3C3;
+  line-height: 1.6;
+}
+
+/* User Card */
+.userCard {
+  text-align: center;
+  padding: 32px 24px;
+  margin-bottom: 16px;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.avatar svg {
+  width: 36px;
+  height: 36px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.userCard h3 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+}
+
+.membershipBadge {
+  font-size: 14px;
+  color: #F4CF77;
+  font-weight: 500;
+}

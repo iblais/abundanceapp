@@ -1,0 +1,183 @@
+/**
+ * Rhythm Scheduler Styles
+ */
+
+.container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #050716 0%, #0A0E1F 40%, #171C3F 100%);
+}
+
+.main {
+  padding: 48px 20px 40px;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 12px;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #9BA3C3;
+  text-align: center;
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+/* Time Card */
+.timeCard {
+  margin-bottom: 16px;
+  padding: 20px 24px;
+}
+
+.timeCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #C6CBDA;
+  margin-bottom: 12px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.timeIcon {
+  display: flex;
+  color: #F4CF77;
+}
+
+.timeIcon svg {
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 0 6px rgba(244, 207, 119, 0.4));
+}
+
+.timeDisplay {
+  position: relative;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 16px 20px;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.timeInputHidden {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.timeValue {
+  font-size: 28px;
+  font-weight: 600;
+  color: #FFFFFF;
+  letter-spacing: 1px;
+}
+
+/* Toggle */
+.toggleContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toggleLabel {
+  font-size: 14px;
+  color: #9BA3C3;
+}
+
+.toggle {
+  width: 52px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  border: none;
+}
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.toggleActive {
+  background: linear-gradient(135deg, #F4CF77, #E9BB51);
+}
+
+.toggleActive::after {
+  transform: translateX(24px);
+}
+
+/* Days Section */
+.daysSection {
+  margin-top: 12px;
+  margin-bottom: 24px;
+}
+
+.daysLabel {
+  font-size: 14px;
+  color: #9BA3C3;
+  text-align: center;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.daysSelector {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.dayButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #9BA3C3;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dayButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dayButtonActive {
+  background: linear-gradient(135deg, #F4CF77, #E9BB51);
+  border-color: transparent;
+  color: #050716;
+  box-shadow: 0 4px 16px rgba(244, 207, 119, 0.35);
+}
+
+/* Button Container */
+.buttonContainer {
+  margin-top: auto;
+  padding-top: 24px;
+}

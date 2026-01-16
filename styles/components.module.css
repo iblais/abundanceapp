@@ -1,0 +1,553 @@
+/**
+ * Abundance Flow - Component Styles
+ * Reusable component styles for the premium design system
+ */
+
+/* ==== Glass Card ==== */
+.glassCard {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 20px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glassCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
+}
+
+.glassCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 60% 30% at 50% 0%,
+    rgba(255, 255, 255, 0.05) 0%,
+    transparent 50%
+  );
+  pointer-events: none;
+}
+
+.glassCard:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.glassCardElevated {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.20);
+}
+
+.glassCardGold {
+  background: linear-gradient(
+    145deg,
+    rgba(244, 207, 119, 0.12) 0%,
+    rgba(244, 207, 119, 0.06) 50%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+  border-color: rgba(244, 207, 119, 0.25);
+}
+
+.glassCardGold::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(244, 207, 119, 0.35) 50%,
+    transparent 100%
+  );
+}
+
+/* ==== Button ==== */
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 36px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.buttonPrimary {
+  background: linear-gradient(135deg, #FAE4A8 0%, #F4CF77 40%, #E9BB51 100%);
+  color: #0B0C1A;
+  box-shadow:
+    0 8px 32px rgba(244, 207, 119, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
+}
+
+.buttonPrimary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.35) 0%,
+    transparent 100%
+  );
+  border-radius: 999px 999px 0 0;
+}
+
+.buttonPrimary:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    0 12px 44px rgba(244, 207, 119, 0.5),
+    0 0 24px rgba(244, 207, 119, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.buttonPrimary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.buttonPrimary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.buttonSecondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(12px);
+}
+
+.buttonSecondary:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.30);
+}
+
+.buttonGhost {
+  background: transparent;
+  color: #C6CBDA;
+  padding: 12px 24px;
+}
+
+.buttonGhost:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.buttonFullWidth {
+  width: 100%;
+}
+
+/* ==== Progress Ring ==== */
+.progressRing {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progressContent {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==== Logo ==== */
+.logoWrapper {
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo {
+  filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.3));
+  animation: glow 3s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2)); }
+  50% { filter: drop-shadow(0 0 35px rgba(255, 255, 255, 0.35)); }
+}
+
+/* ==== Bottom Navigation Bar - Floating Pill ==== */
+.bottomNavBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  padding: 0 20px 28px;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.navPill {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  pointer-events: auto;
+}
+
+.navItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  border-radius: 16px;
+  transition: all 0.25s ease;
+}
+
+.navItem svg {
+  width: 24px;
+  height: 24px;
+  color: rgba(255, 255, 255, 0.4);
+  transition: all 0.25s ease;
+}
+
+.navItemActive {
+  background: rgba(244, 207, 119, 0.15);
+}
+
+.navItemActive svg {
+  color: #F4CF77;
+  filter: drop-shadow(0 0 12px rgba(244, 207, 119, 0.6));
+}
+
+.navIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+/* ==== Action Card (Dashboard) ==== */
+.actionCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  cursor: pointer;
+}
+
+.actionCard:hover {
+  transform: translateY(-2px);
+}
+
+.actionCard:active {
+  transform: scale(0.98);
+}
+
+.actionIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(244, 207, 119, 0.15), rgba(244, 207, 119, 0.08));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.actionIcon svg {
+  width: 22px;
+  height: 22px;
+  color: #F4CF77;
+  filter: drop-shadow(0 0 8px rgba(244, 207, 119, 0.4));
+}
+
+.actionText {
+  flex: 1;
+}
+
+.actionText h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 4px;
+}
+
+.actionText p {
+  font-size: 14px;
+  color: #9BA3C3;
+  font-weight: 400;
+}
+
+/* ==== Time Card (Rhythm Scheduler) ==== */
+.timeCard {
+  margin-bottom: 16px;
+  padding: 20px 24px;
+}
+
+.timeCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #C6CBDA;
+  margin-bottom: 12px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.timeIcon {
+  display: flex;
+  color: #F4CF77;
+}
+
+.timeIcon svg {
+  filter: drop-shadow(0 0 6px rgba(244, 207, 119, 0.4));
+}
+
+.timeDisplay {
+  position: relative;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 16px 20px;
+  cursor: pointer;
+}
+
+.timeInputHidden {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.timeValue {
+  font-size: 28px;
+  font-weight: 600;
+  color: #FFFFFF;
+  letter-spacing: 1px;
+}
+
+.toggleContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.toggleLabel {
+  font-size: 14px;
+  color: #9BA3C3;
+}
+
+.toggle {
+  width: 52px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  border: none;
+}
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.toggleActive {
+  background: linear-gradient(135deg, #F4CF77, #E9BB51);
+}
+
+.toggleActive::after {
+  transform: translateX(24px);
+}
+
+/* ==== Day Selector ==== */
+.daysSelector {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 28px;
+  margin-bottom: 20px;
+}
+
+.dayButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #9BA3C3;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dayButtonActive {
+  background: linear-gradient(135deg, #F4CF77, #E9BB51);
+  border-color: transparent;
+  color: #050716;
+  box-shadow: 0 4px 16px rgba(244, 207, 119, 0.35);
+}
+
+/* ==== Screen Layout ==== */
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px;
+  padding-bottom: 100px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  position: relative;
+}
+
+.screen::-webkit-scrollbar {
+  display: none;
+}
+
+.screenHeader {
+  margin-bottom: 28px;
+}
+
+.screenHeader h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.screenHeader p {
+  font-size: 16px;
+  color: #9BA3C3;
+  font-weight: 400;
+}
+
+/* ==== Score Section (Dashboard) ==== */
+.scoreSection {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.scoreValue {
+  font-size: 64px;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.scoreLabel {
+  font-size: 14px;
+  color: #9BA3C3;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+/* ==== Actions Section (Dashboard) ==== */
+.actionsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ==== Streak Counter ==== */
+.streakContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  align-self: center;
+}
+
+.streakIcon {
+  color: #F4CF77;
+}
+
+.streakIcon svg {
+  width: 20px;
+  height: 20px;
+  filter: drop-shadow(0 0 6px rgba(244, 207, 119, 0.5));
+}
+
+.streakText {
+  font-size: 14px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.streakDays {
+  font-size: 14px;
+  color: #9BA3C3;
+}
