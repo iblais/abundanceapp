@@ -525,6 +525,7 @@ const DashboardScreen: React.FC<{
     { title: 'Morning Visioneering', subtitle: 'Guided meditation for 10 mins.', icon: Icons.sparkle, screen: 'player' as Screen },
     { title: 'Quick Shifts', subtitle: 'Instant reset exercises.', icon: Icons.heart, screen: 'quickshifts' as Screen },
     { title: 'Gratitude Journal', subtitle: 'Capture what you are grateful for.', icon: Icons.journal, screen: 'gratitude' as Screen },
+    { title: 'Inner Mentor', subtitle: 'Chat with your higher self.', icon: Icons.chat, screen: 'mentor' as Screen },
     { title: 'Reality Shift Board', subtitle: 'Visualize your new identity.', icon: Icons.grid, screen: 'board' as Screen },
   ];
 
@@ -1000,26 +1001,85 @@ const ProgressScreen: React.FC<{ user: UserState }> = ({ user }) => {
   );
 };
 
-// Mentor Chat Screen
+// Inner Mentor Chat Screen - AI-powered guidance
 const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [messages, setMessages] = useState([
-    { id: 1, role: 'mentor', content: "Welcome back. I'm here to support your journey. What's on your mind today?" },
+    { id: 1, role: 'mentor', content: "Welcome. I am the voice of your higher self. What clarity are you seeking today?" },
   ]);
   const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+
+  // AI Mentor responses - calm, wise, reflective questions
+  const mentorResponses = [
+    "What would your wisest self say about this?",
+    "I sense there is more beneath the surface. What feels true in your heart?",
+    "You already know the answer. What is it whispering to you?",
+    "Pause for a moment. What does your body tell you about this?",
+    "If fear were not a factor, what would you choose?",
+    "What is the kindest interpretation of this situation?",
+    "You are more powerful than you realize. What strength are you overlooking?",
+    "What would you tell a dear friend facing this same challenge?",
+    "The universe is always conspiring in your favor. What gift might be hidden here?",
+    "You are on the right path. What small step feels right in this moment?",
+    "Trust the timing of your life. What are you learning right now?",
+    "Your intuition speaks softly. What is it saying?",
+    "Release the need to know everything. What can you surrender today?",
+    "You are worthy of all that you desire. What limiting belief is ready to dissolve?",
+    "Every challenge is an invitation to grow. What is this one teaching you?",
+  ];
+
+  const getContextualResponse = (userMessage: string): string => {
+    const lowerMessage = userMessage.toLowerCase();
+
+    // Contextual responses based on keywords
+    if (lowerMessage.includes('anxious') || lowerMessage.includes('worried') || lowerMessage.includes('stress')) {
+      return "I feel your unease. Place your hand on your heart. What does your inner wisdom want you to know about this worry?";
+    }
+    if (lowerMessage.includes('stuck') || lowerMessage.includes('confused') || lowerMessage.includes('lost')) {
+      return "Sometimes stillness reveals the path. What would emerge if you stopped trying so hard to find the answer?";
+    }
+    if (lowerMessage.includes('fear') || lowerMessage.includes('scared') || lowerMessage.includes('afraid')) {
+      return "Fear often guards our greatest transformations. What lies on the other side of this fear?";
+    }
+    if (lowerMessage.includes('love') || lowerMessage.includes('relationship')) {
+      return "Love begins within. What does your heart truly desire to give and receive?";
+    }
+    if (lowerMessage.includes('money') || lowerMessage.includes('abundance') || lowerMessage.includes('wealth')) {
+      return "Abundance flows to those who feel worthy of receiving. What belief about money is asking to be released?";
+    }
+    if (lowerMessage.includes('purpose') || lowerMessage.includes('meaning') || lowerMessage.includes('calling')) {
+      return "Your purpose is not something to find—it is something you become. What lights you up from within?";
+    }
+    if (lowerMessage.includes('grateful') || lowerMessage.includes('thankful') || lowerMessage.includes('blessed')) {
+      return "Gratitude opens the door to more blessings. What else is asking to be appreciated in your life?";
+    }
+    if (lowerMessage.includes('help') || lowerMessage.includes('need')) {
+      return "You are never alone. The guidance you seek is already within you. What does your heart know to be true?";
+    }
+
+    // Return a random wise response for general messages
+    return mentorResponses[Math.floor(Math.random() * mentorResponses.length)];
+  };
 
   const sendMessage = () => {
     if (!input.trim()) return;
 
-    setMessages([...messages, { id: Date.now(), role: 'user', content: input }]);
+    const userMessage = input.trim();
+    setMessages(prev => [...prev, { id: Date.now(), role: 'user', content: userMessage }]);
     setInput('');
+    setIsTyping(true);
+
+    // Simulate AI thinking time (1.5-3 seconds)
+    const thinkingTime = 1500 + Math.random() * 1500;
 
     setTimeout(() => {
+      setIsTyping(false);
       setMessages(prev => [...prev, {
         id: Date.now(),
         role: 'mentor',
-        content: "Thank you for sharing that. Let's explore it together. What feels most important about this for you right now?"
+        content: getContextualResponse(userMessage)
       }]);
-    }, 1500);
+    }, thinkingTime);
   };
 
   return (
@@ -1028,7 +1088,7 @@ const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         <button onClick={onClose}>{Icons.close}</button>
         <div className={styles.mentorTitle}>
           <h3>Inner Mentor</h3>
-          <p>Your personal guide</p>
+          <p>The voice of your higher self</p>
         </div>
         <div style={{ width: 24 }} />
       </header>
@@ -1047,6 +1107,16 @@ const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             </div>
           </div>
         ))}
+        {isTyping && (
+          <div className={`${styles.message} ${styles.messageMentor}`}>
+            <div className={styles.mentorAvatar}>{Icons.sparkle}</div>
+            <div className={`${styles.messageBubble} ${styles.typingIndicator}`}>
+              <span className={styles.typingDot} />
+              <span className={styles.typingDot} />
+              <span className={styles.typingDot} />
+            </div>
+          </div>
+        )}
       </div>
 
       <div className={styles.inputContainer}>
