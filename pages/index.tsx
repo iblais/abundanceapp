@@ -3,8 +3,10 @@
  * Premium visual design matching reference screens
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styles from '../styles/Home.module.css';
+import { journalService, chatService, getAnonymousUserId, JournalEntry } from '../lib/firebase';
+import { aiMentorService } from '../lib/ai-mentor';
 
 // Types
 type Screen = 'welcome' | 'onboarding' | 'rhythm' | 'dashboard' | 'meditations' | 'journal' | 'progress' | 'mentor' | 'settings' | 'profile' | 'player' | 'board' | 'gratitude' | 'quickshifts' | 'breathing';
@@ -1001,85 +1003,97 @@ const ProgressScreen: React.FC<{ user: UserState }> = ({ user }) => {
   );
 };
 
-// Inner Mentor Chat Screen - AI-powered guidance
+// Inner Mentor Chat Screen - AI-powered guidance with Firestore persistence
 const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Array<{ id: number; role: string; content: string }>>([
     { id: 1, role: 'mentor', content: "Welcome. I am the voice of your higher self. What clarity are you seeking today?" },
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
-  // AI Mentor responses - calm, wise, reflective questions
-  const mentorResponses = [
-    "What would your wisest self say about this?",
-    "I sense there is more beneath the surface. What feels true in your heart?",
-    "You already know the answer. What is it whispering to you?",
-    "Pause for a moment. What does your body tell you about this?",
-    "If fear were not a factor, what would you choose?",
-    "What is the kindest interpretation of this situation?",
-    "You are more powerful than you realize. What strength are you overlooking?",
-    "What would you tell a dear friend facing this same challenge?",
-    "The universe is always conspiring in your favor. What gift might be hidden here?",
-    "You are on the right path. What small step feels right in this moment?",
-    "Trust the timing of your life. What are you learning right now?",
-    "Your intuition speaks softly. What is it saying?",
-    "Release the need to know everything. What can you surrender today?",
-    "You are worthy of all that you desire. What limiting belief is ready to dissolve?",
-    "Every challenge is an invitation to grow. What is this one teaching you?",
-  ];
+  // Initialize user ID and load chat history
+  useEffect(() => {
+    const initChat = async () => {
+      try {
+        const uid = await getAnonymousUserId();
+        setUserId(uid);
 
-  const getContextualResponse = (userMessage: string): string => {
-    const lowerMessage = userMessage.toLowerCase();
+        // Load chat history from Firestore
+        const { messages: history, error } = await chatService.getHistory(uid);
+        if (!error && history.length > 0) {
+          setMessages(history.map(m => ({
+            id: parseInt(m.id) || Date.now(),
+            role: m.role,
+            content: m.content,
+          })));
+        }
+      } catch (error) {
+        console.error('Error initializing chat:', error);
+      }
+    };
 
-    // Contextual responses based on keywords
-    if (lowerMessage.includes('anxious') || lowerMessage.includes('worried') || lowerMessage.includes('stress')) {
-      return "I feel your unease. Place your hand on your heart. What does your inner wisdom want you to know about this worry?";
-    }
-    if (lowerMessage.includes('stuck') || lowerMessage.includes('confused') || lowerMessage.includes('lost')) {
-      return "Sometimes stillness reveals the path. What would emerge if you stopped trying so hard to find the answer?";
-    }
-    if (lowerMessage.includes('fear') || lowerMessage.includes('scared') || lowerMessage.includes('afraid')) {
-      return "Fear often guards our greatest transformations. What lies on the other side of this fear?";
-    }
-    if (lowerMessage.includes('love') || lowerMessage.includes('relationship')) {
-      return "Love begins within. What does your heart truly desire to give and receive?";
-    }
-    if (lowerMessage.includes('money') || lowerMessage.includes('abundance') || lowerMessage.includes('wealth')) {
-      return "Abundance flows to those who feel worthy of receiving. What belief about money is asking to be released?";
-    }
-    if (lowerMessage.includes('purpose') || lowerMessage.includes('meaning') || lowerMessage.includes('calling')) {
-      return "Your purpose is not something to find—it is something you become. What lights you up from within?";
-    }
-    if (lowerMessage.includes('grateful') || lowerMessage.includes('thankful') || lowerMessage.includes('blessed')) {
-      return "Gratitude opens the door to more blessings. What else is asking to be appreciated in your life?";
-    }
-    if (lowerMessage.includes('help') || lowerMessage.includes('need')) {
-      return "You are never alone. The guidance you seek is already within you. What does your heart know to be true?";
-    }
+    initChat();
+  }, []);
 
-    // Return a random wise response for general messages
-    return mentorResponses[Math.floor(Math.random() * mentorResponses.length)];
-  };
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!input.trim()) return;
 
     const userMessage = input.trim();
-    setMessages(prev => [...prev, { id: Date.now(), role: 'user', content: userMessage }]);
+    const userMsgId = Date.now();
+
+    // Add user message to UI immediately
+    setMessages(prev => [...prev, { id: userMsgId, role: 'user', content: userMessage }]);
     setInput('');
     setIsTyping(true);
 
-    // Simulate AI thinking time (1.5-3 seconds)
-    const thinkingTime = 1500 + Math.random() * 1500;
+    // Save user message to Firestore
+    if (userId) {
+      chatService.saveMessage(userId, { role: 'user', content: userMessage });
+    }
 
-    setTimeout(() => {
+    try {
+      // Get AI response
+      const conversationHistory = messages.slice(-10).map(m => ({
+        role: m.role,
+        content: m.content,
+      }));
+
+      const { response, error } = await aiMentorService.getResponse(userMessage, conversationHistory);
+
       setIsTyping(false);
+
+      const mentorMsgId = Date.now();
+      const mentorResponse = error ? "I'm here with you. Take a deep breath. What does your heart want to explore?" : response;
+
+      // Add mentor response to UI
+      setMessages(prev => [...prev, {
+        id: mentorMsgId,
+        role: 'mentor',
+        content: mentorResponse,
+      }]);
+
+      // Save mentor response to Firestore
+      if (userId) {
+        chatService.saveMessage(userId, { role: 'mentor', content: mentorResponse });
+      }
+    } catch (error) {
+      console.error('Error getting AI response:', error);
+      setIsTyping(false);
+
+      // Fallback response on error
       setMessages(prev => [...prev, {
         id: Date.now(),
         role: 'mentor',
-        content: getContextualResponse(userMessage)
+        content: "I sense your energy seeking clarity. What truth is waiting to be acknowledged?",
       }]);
-    }, thinkingTime);
+    }
   };
 
   return (
@@ -1117,6 +1131,7 @@ const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             </div>
           </div>
         )}
+        <div ref={messagesEndRef} />
       </div>
 
       <div className={styles.inputContainer}>
@@ -1132,6 +1147,7 @@ const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           <button
             className={`${styles.sendButton} ${input.trim() ? styles.sendButtonActive : ''}`}
             onClick={sendMessage}
+            disabled={isTyping}
           >
             {Icons.send}
           </button>
@@ -1420,14 +1436,14 @@ const BoardScreen: React.FC = () => {
   );
 };
 
-// Gratitude Journal Screen
+// Gratitude Journal Screen - with Firestore integration
 const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [entry, setEntry] = useState('');
   const [showPastEntries, setShowPastEntries] = useState(false);
-  const [entries, setEntries] = useState<{ date: string; prompt: string; entry: string }[]>([
-    { date: '2026-01-17', prompt: 'What made you smile today?', entry: 'The sunshine through my window this morning was beautiful. I felt grateful for a peaceful start to the day.' },
-    { date: '2026-01-16', prompt: 'What are three things you appreciate?', entry: 'My health, my family, and the opportunity to grow every day.' },
-  ]);
+  const [entries, setEntries] = useState<Array<{ id: string; date: string; prompt: string; content: string }>>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const today = new Date();
   const dateString = today.toLocaleDateString('en-US', {
@@ -1446,16 +1462,73 @@ const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) 
 
   const todayPrompt = prompts[today.getDate() % prompts.length];
 
-  const handleSave = () => {
-    if (entry.trim()) {
+  // Load entries from Firestore on mount
+  useEffect(() => {
+    const loadEntries = async () => {
+      try {
+        const uid = await getAnonymousUserId();
+        setUserId(uid);
+
+        const { entries: firestoreEntries, error } = await journalService.getEntries(uid);
+        if (!error && firestoreEntries.length > 0) {
+          setEntries(firestoreEntries.map(e => ({
+            id: e.id,
+            date: e.date,
+            prompt: e.prompt,
+            content: e.content,
+          })));
+        } else {
+          // Fallback to sample entries if no Firestore entries
+          setEntries([
+            { id: '1', date: '2026-01-17', prompt: 'What made you smile today?', content: 'The sunshine through my window this morning was beautiful. I felt grateful for a peaceful start to the day.' },
+            { id: '2', date: '2026-01-16', prompt: 'What are three things you appreciate?', content: 'My health, my family, and the opportunity to grow every day.' },
+          ]);
+        }
+      } catch (error) {
+        console.error('Error loading entries:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadEntries();
+  }, []);
+
+  const handleSave = async () => {
+    if (!entry.trim() || !userId) return;
+
+    setIsSaving(true);
+    try {
       const newEntry = {
         date: today.toISOString().split('T')[0],
         prompt: todayPrompt,
-        entry: entry.trim(),
+        content: entry.trim(),
+        type: 'gratitude' as const,
       };
-      setEntries([newEntry, ...entries]);
-      setEntry('');
-      alert('Entry saved!');
+
+      // Save to Firestore
+      const { id, error } = await journalService.saveEntry(userId, newEntry);
+
+      if (!error) {
+        setEntries([{ ...newEntry, id }, ...entries]);
+        setEntry('');
+        // Show success feedback
+        const successMsg = document.createElement('div');
+        successMsg.className = styles.successToast || '';
+        successMsg.textContent = 'Entry saved!';
+        document.body.appendChild(successMsg);
+        setTimeout(() => successMsg.remove(), 2000);
+      } else {
+        // Fallback to local storage if Firestore fails
+        const localId = Date.now().toString();
+        setEntries([{ ...newEntry, id: localId }, ...entries]);
+        setEntry('');
+        console.log('Saved locally (Firestore unavailable)');
+      }
+    } catch (error) {
+      console.error('Error saving entry:', error);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -1473,15 +1546,23 @@ const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) 
         </header>
 
         <div className={styles.pastEntriesList}>
-          {entries.map((e, idx) => (
-            <GlassCard key={idx} className={styles.pastEntryCard}>
-              <span className={styles.pastEntryDate}>
-                {new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-              </span>
-              <p className={styles.pastEntryPrompt}>{e.prompt}</p>
-              <p className={styles.pastEntryText}>{e.entry}</p>
-            </GlassCard>
-          ))}
+          {isLoading ? (
+            <div className={styles.loadingState}>Loading entries...</div>
+          ) : entries.length === 0 ? (
+            <div className={styles.emptyState}>
+              <p>No entries yet. Start writing!</p>
+            </div>
+          ) : (
+            entries.map((e) => (
+              <GlassCard key={e.id} className={styles.pastEntryCard}>
+                <span className={styles.pastEntryDate}>
+                  {new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </span>
+                <p className={styles.pastEntryPrompt}>{e.prompt}</p>
+                <p className={styles.pastEntryText}>{e.content}</p>
+              </GlassCard>
+            ))
+          )}
         </div>
       </div>
     );
@@ -1515,8 +1596,8 @@ const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) 
         </div>
 
         <div className={styles.journalActions}>
-          <Button onClick={handleSave} fullWidth disabled={!entry.trim()}>
-            Save Entry
+          <Button onClick={handleSave} fullWidth disabled={!entry.trim() || isSaving}>
+            {isSaving ? 'Saving...' : 'Save Entry'}
           </Button>
           <button className={styles.textButton} onClick={() => setShowPastEntries(true)}>
             View Past Entries
@@ -1742,13 +1823,44 @@ export default function Home() {
   });
 
   useEffect(() => {
+    // Check URL path for direct routing
+    const path = window.location.pathname.replace('/', '');
+    const validScreens: Screen[] = ['dashboard', 'meditations', 'gratitude', 'quickshifts', 'mentor', 'board', 'progress', 'profile'];
+
+    // Check sessionStorage for initial screen (set by route pages)
+    const initialScreen = sessionStorage.getItem('initialScreen');
+    if (initialScreen) {
+      sessionStorage.removeItem('initialScreen');
+    }
+
     const savedUser = localStorage.getItem('abundanceUser');
     if (savedUser) {
       const parsed = JSON.parse(savedUser);
       setUser(parsed);
-      if (parsed.onboardingComplete) {
+
+      // If we have a valid path or initialScreen, go there directly
+      if (path && validScreens.includes(path as Screen)) {
+        setCurrentScreen(path as Screen);
+      } else if (initialScreen && validScreens.includes(initialScreen as Screen)) {
+        setCurrentScreen(initialScreen as Screen);
+      } else if (parsed.onboardingComplete) {
         setCurrentScreen('dashboard');
       }
+    } else if (path && validScreens.includes(path as Screen)) {
+      // New user but accessing a direct route - create default user
+      const defaultUser = {
+        onboardingComplete: true,
+        displayName: 'Abundance Seeker',
+        isPremium: false,
+        voicePreference: 'neutral' as const,
+        morningTime: '07:00',
+        eveningTime: '21:00',
+        alignmentScore: 82,
+        streak: 7,
+      };
+      setUser(defaultUser);
+      localStorage.setItem('abundanceUser', JSON.stringify(defaultUser));
+      setCurrentScreen(path as Screen);
     }
   }, []);
 
