@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Animation System
+ * Abundance Recode - Animation System
  *
  * All animations use subtle ease-out cubic timing
  * No fast or jarring motion - smooth and calming

@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Journal Prompts
+ * Abundance Recode - Journal Prompts
  *
  * Open-ended prompts for reflection, not simple answers
  */

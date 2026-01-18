@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Article Detail Screen
+ * Abundance Recode - Article Detail Screen
  *
  * Beautiful reading view for educational articles
  */

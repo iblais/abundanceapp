@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Premium UI Styles
+ * Abundance Recode - Premium UI Styles
  * Refined glass and glow effects matching reference designs
  */
 
@@ -2040,4 +2040,524 @@
 
 .glowGoldStrong {
   filter: drop-shadow(0 0 20px rgba(244, 207, 119, 0.7));
+}
+
+/* ==== Search Bar ==== */
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.searchIcon {
+  color: #9BA3C3;
+  display: flex;
+  align-items: center;
+}
+
+.searchInput {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #FFFFFF;
+  font-size: 15px;
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: #9BA3C3;
+}
+
+/* ==== Category Grid ==== */
+.categoryGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.categoryCard {
+  padding: 24px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.categoryCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.categoryCardIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  color: #FFFFFF;
+}
+
+.categoryCardName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 4px;
+}
+
+.categoryCardCount {
+  font-size: 13px;
+  color: #9BA3C3;
+}
+
+/* ==== Screen Header with Back ==== */
+.screenHeaderWithBack {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.screenHeaderWithBack h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 4px;
+}
+
+.screenHeaderWithBack p {
+  font-size: 14px;
+  color: #9BA3C3;
+}
+
+.backButtonSmall {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #C6CBDA;
+  flex-shrink: 0;
+}
+
+.backButtonSmall:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+}
+
+.playIconButton {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(244, 207, 119, 0.15);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #F4CF77;
+  flex-shrink: 0;
+}
+
+.playIconButton:hover {
+  background: rgba(244, 207, 119, 0.25);
+}
+
+/* ==== Modal Styles ==== */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.modal {
+  background: linear-gradient(180deg, #1A1E36 0%, #12152A 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 340px;
+  padding: 24px;
+  animation: fadeInScale 0.2s ease-out;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.modalHeader h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.modalClose {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #9BA3C3;
+}
+
+.modalClose:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+}
+
+.cardTypeOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cardTypeOption {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.cardTypeOption:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.cardTypeIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(244, 207, 119, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #F4CF77;
+  flex-shrink: 0;
+}
+
+.cardTypeOption span {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.cardTypeOption p {
+  font-size: 13px;
+  color: #9BA3C3;
+  margin: 0;
+}
+
+.cardForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modalInput {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  color: #FFFFFF;
+  font-size: 15px;
+  outline: none;
+}
+
+.modalInput::placeholder {
+  color: #9BA3C3;
+}
+
+.modalInput:focus {
+  border-color: rgba(244, 207, 119, 0.4);
+}
+
+.imagePlaceholder {
+  text-align: center;
+  padding: 24px;
+  color: #9BA3C3;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.modalActions button {
+  flex: 1;
+}
+
+/* ==== Bento Quote Wrapper ==== */
+.bentoQuoteWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px;
+}
+
+.bentoAuthor {
+  font-size: 12px;
+  color: #9BA3C3;
+  margin-top: 8px;
+  font-style: normal;
+}
+
+/* ==== Gratitude Journal Styles ==== */
+.gratitudeContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.journalEditor {
+  flex: 1;
+}
+
+.journalTextarea {
+  width: 100%;
+  height: 200px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  color: #FFFFFF;
+  font-size: 15px;
+  line-height: 1.7;
+  outline: none;
+  resize: none;
+  font-family: inherit;
+}
+
+.journalTextarea::placeholder {
+  color: #9BA3C3;
+}
+
+.journalTextarea:focus {
+  border-color: rgba(244, 207, 119, 0.4);
+}
+
+.journalActions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 24px;
+}
+
+.textButton {
+  background: none;
+  border: none;
+  color: #F4CF77;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 12px;
+}
+
+.textButton:hover {
+  text-decoration: underline;
+}
+
+/* ==== Past Entries ==== */
+.pastEntriesList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 100px;
+}
+
+.pastEntryCard {
+  padding: 20px;
+}
+
+.pastEntryDate {
+  font-size: 12px;
+  color: #F4CF77;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.pastEntryPrompt {
+  font-size: 14px;
+  color: #9BA3C3;
+  margin-bottom: 12px;
+  font-style: italic;
+}
+
+.pastEntryText {
+  font-size: 15px;
+  color: #FFFFFF;
+  line-height: 1.6;
+}
+
+/* ==== Quick Shift Tools ==== */
+.quickShiftsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 100px;
+}
+
+.quickShiftCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  cursor: pointer;
+}
+
+.quickShiftCard:hover {
+  transform: translateY(-2px);
+}
+
+.quickShiftIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(147, 130, 255, 0.2), rgba(244, 207, 119, 0.15));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #F4CF77;
+  flex-shrink: 0;
+}
+
+.quickShiftInfo {
+  flex: 1;
+}
+
+.quickShiftInfo h4 {
+  font-size: 17px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 6px;
+}
+
+.quickShiftInfo p {
+  font-size: 14px;
+  color: #9BA3C3;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.quickShiftDuration {
+  font-size: 12px;
+  color: #F4CF77;
+  font-weight: 600;
+}
+
+.quickShiftArrow {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* ==== Breathing Exercise Screen ==== */
+.breathingScreen {
+  position: relative;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 24px 20px;
+  background: radial-gradient(
+    ellipse 80% 50% at 50% 40%,
+    rgba(147, 130, 255, 0.15) 0%,
+    transparent 60%
+  );
+}
+
+.breathingContent {
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+}
+
+.breathingTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+}
+
+.breathingSubtitle {
+  font-size: 15px;
+  color: #9BA3C3;
+  margin-bottom: 48px;
+}
+
+.breathingCircleContainer {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.breathingCircle {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(147, 130, 255, 0.3), rgba(244, 207, 119, 0.2));
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 0 40px rgba(147, 130, 255, 0.3),
+    0 0 80px rgba(244, 207, 119, 0.1);
+}
+
+.breathingPhase {
+  position: absolute;
+  font-size: 18px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.breathingTimer {
+  font-size: 48px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 32px;
+  letter-spacing: 2px;
 }

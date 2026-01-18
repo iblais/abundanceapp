@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Onboarding Screen
+ * Abundance Recode - Onboarding Screen
  *
  * 4-screen sequence introducing core concepts
  * Universal, science-forward approach

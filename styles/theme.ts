@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Design System Theme
+ * Abundance Recode - Design System Theme
  * Central theme file with all design tokens
  */
 

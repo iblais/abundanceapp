@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Typography System
+ * Abundance Recode - Typography System
  *
  * Font Family: Inter (or SF Pro fallback)
  * Ensures high contrast and clean, professional typography

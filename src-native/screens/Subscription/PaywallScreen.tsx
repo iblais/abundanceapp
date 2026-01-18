@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Paywall Screen
+ * Abundance Recode - Paywall Screen
  *
  * Premium subscription options with elegant design
  */
@@ -215,7 +215,7 @@ export const PaywallScreen: React.FC = () => {
             color={theme.colors.text.secondary}
             style={styles.heroSubtitle}
           >
-            Access the complete Abundance Flow experience and transform your
+            Access the complete Abundance Recode experience and transform your
             reality.
           </Body>
         </View>

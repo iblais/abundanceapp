@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Progress Ring Component
+ * Abundance Recode - Progress Ring Component
  *
  * Circular progress ring for Alignment Score display
  * Features animated progress and soft glow effect

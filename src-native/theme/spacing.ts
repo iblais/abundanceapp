@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Spacing System
+ * Abundance Recode - Spacing System
  *
  * Based on 8pt grid for consistent, harmonious spacing
  */

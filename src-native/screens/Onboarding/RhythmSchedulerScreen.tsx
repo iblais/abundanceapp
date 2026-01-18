@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Daily Rhythm Scheduler Screen
+ * Abundance Recode - Daily Rhythm Scheduler Screen
  *
  * Set preferred times for morning and evening routines
  * Select active days of the week

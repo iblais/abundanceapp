@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Color System
+ * Abundance Recode - Color System
  *
  * Universal Aesthetic: Clean, premium, and universally appealing
  * Inspired by Calm and Opal

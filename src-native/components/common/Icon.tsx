@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Icon Component
+ * Abundance Recode - Icon Component
  *
  * Wrapper for vector icons with consistent styling
  * Uses thin-line minimalist style as per spec

@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Journal Store
+ * Abundance Recode - Journal Store
  *
  * Manages journal entries, gratitude entries, and identity exercises
  */

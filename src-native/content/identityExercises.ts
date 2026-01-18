@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Identity Exercises
+ * Abundance Recode - Identity Exercises
  *
  * Structured written exercises for defining and embodying a new identity
  * Based on memory reconsolidation and identity activation principles

@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Inner Mentor Chat Screen
+ * Abundance Recode - Inner Mentor Chat Screen
  *
  * AI-powered chat interface for guidance and reflection
  * Clinical-warm tone with encouragement and gentle guidance

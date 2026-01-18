@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Next.js Document
+ * Abundance Recode - Next.js Document
  */
 
 import { Html, Head, Main, NextScript } from 'next/document';

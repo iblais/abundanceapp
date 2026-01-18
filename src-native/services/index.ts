@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Services Export
+ * Abundance Recode - Services Export
  */
 
 export { default as firebase, authService, firestoreService, messagingService, storageService } from './firebase';

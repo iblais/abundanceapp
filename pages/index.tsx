@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Main App Page
+ * Abundance Recode - Main App Page
  * Premium visual design matching reference screens
  */
 
@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import styles from '../styles/Home.module.css';
 
 // Types
-type Screen = 'welcome' | 'onboarding' | 'rhythm' | 'dashboard' | 'meditations' | 'journal' | 'progress' | 'mentor' | 'settings' | 'profile' | 'player' | 'board';
+type Screen = 'welcome' | 'onboarding' | 'rhythm' | 'dashboard' | 'meditations' | 'journal' | 'progress' | 'mentor' | 'settings' | 'profile' | 'player' | 'board' | 'gratitude' | 'quickshifts' | 'breathing';
 
 interface UserState {
   onboardingComplete: boolean;
@@ -337,7 +337,7 @@ const WelcomeScreen: React.FC<{ onBegin: () => void }> = ({ onBegin }) => {
         <div className={styles.welcomeCardInner}>
           <div className={styles.welcomeContent}>
             <Logo size={100} />
-            <h1 className={styles.welcomeTitle}>Abundance Flow</h1>
+            <h1 className={styles.welcomeTitle}>Abundance Recode</h1>
             <p className={styles.welcomeTagline}>Shift your state. Reshape your reality.</p>
           </div>
           <Button onClick={onBegin} fullWidth>Begin</Button>
@@ -515,16 +515,17 @@ const RhythmScreen: React.FC<{ onComplete: (morning: string, evening: string) =>
   );
 };
 
-// Dashboard Screen - matches reference with 3 cards
+// Dashboard Screen - matches reference with action cards
 const DashboardScreen: React.FC<{
   user: UserState;
   onNavigate: (screen: Screen) => void;
 }> = ({ user, onNavigate }) => {
 
   const quickActions = [
-    { title: 'Morning Visioneering', subtitle: 'Guided Focus for 10 mins.', icon: Icons.sparkle, screen: 'player' as Screen },
-    { title: 'Quick Shifts', subtitle: 'Instant reset exercises.', icon: Icons.heart, screen: 'meditations' as Screen },
-    { title: 'Reality Shift Board', subtitle: 'Track your progress & insights.', icon: Icons.chart, screen: 'journal' as Screen },
+    { title: 'Morning Visioneering', subtitle: 'Guided meditation for 10 mins.', icon: Icons.sparkle, screen: 'player' as Screen },
+    { title: 'Quick Shifts', subtitle: 'Instant reset exercises.', icon: Icons.heart, screen: 'quickshifts' as Screen },
+    { title: 'Gratitude Journal', subtitle: 'Capture what you are grateful for.', icon: Icons.journal, screen: 'gratitude' as Screen },
+    { title: 'Reality Shift Board', subtitle: 'Visualize your new identity.', icon: Icons.grid, screen: 'board' as Screen },
   ];
 
   return (
@@ -555,60 +556,198 @@ const DashboardScreen: React.FC<{
   );
 };
 
-// Meditations Screen
+// Search Icon
+const SearchIcon = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="8" />
+    <path d="M21 21l-4.35-4.35" />
+  </svg>
+);
+
+// Category Icons for Meditations
+const CategoryIcons: Record<string, JSX.Element> = {
+  focus: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="12" cy="12" r="2" />
+      <circle cx="12" cy="12" r="6" />
+      <circle cx="12" cy="12" r="10" />
+    </svg>
+  ),
+  calm: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M2 12h4l2-8 4 16 4-12 2 4h4" />
+    </svg>
+  ),
+  confidence: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z" />
+    </svg>
+  ),
+  abundance: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6v12M8 10h8M8 14h8" />
+    </svg>
+  ),
+  sleep: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+    </svg>
+  ),
+  walking: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="12" cy="4" r="2" />
+      <path d="M15 22l-3-5m3 5v-8l-2-3m-2-2l-4 6m0 0v7m0-7l4 2" />
+    </svg>
+  ),
+};
+
+// Category gradient colors
+const categoryGradients: Record<string, string> = {
+  focus: 'linear-gradient(135deg, rgba(100, 150, 255, 0.3) 0%, rgba(100, 150, 255, 0.1) 100%)',
+  calm: 'linear-gradient(135deg, rgba(100, 200, 180, 0.3) 0%, rgba(100, 200, 180, 0.1) 100%)',
+  confidence: 'linear-gradient(135deg, rgba(255, 180, 100, 0.3) 0%, rgba(255, 180, 100, 0.1) 100%)',
+  abundance: 'linear-gradient(135deg, rgba(244, 207, 119, 0.3) 0%, rgba(244, 207, 119, 0.1) 100%)',
+  sleep: 'linear-gradient(135deg, rgba(147, 130, 255, 0.3) 0%, rgba(147, 130, 255, 0.1) 100%)',
+  walking: 'linear-gradient(135deg, rgba(150, 220, 150, 0.3) 0%, rgba(150, 220, 150, 0.1) 100%)',
+};
+
+// Meditations Library Screen - Enhanced with search and category grid
 const MeditationsScreen: React.FC<{ onPlay: () => void }> = ({ onPlay }) => {
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const categories = ['All', 'Gratitude', 'Confidence', 'Calm', 'Focus', 'Abundance'];
-
-  const meditations = [
-    { id: 1, title: 'Morning Visioneering', description: 'Start your day by connecting with your highest potential.', durations: [5, 8, 12], category: 'morning' },
-    { id: 2, title: 'Gratitude Expansion', description: 'Cultivate appreciation that attracts more abundance.', durations: [5, 8, 12], category: 'gratitude' },
-    { id: 3, title: 'Confidence Activation', description: 'Awaken your inner certainty and calm assurance.', durations: [5, 8, 12], category: 'confidence' },
-    { id: 4, title: 'Calm Reset', description: 'Return to peaceful clarity when life feels overwhelming.', durations: [5, 8, 12], category: 'calm' },
-    { id: 5, title: 'Focus Flow', description: 'Clear mental clutter and enter deep, productive focus.', durations: [5, 8, 12], category: 'focus', isPremium: true },
-    { id: 6, title: 'Abundance Alignment', description: 'Tune your energy to the frequency of abundance.', durations: [5, 8, 12], category: 'abundance', isPremium: true },
+  const categories = [
+    { id: 'focus', name: 'Focus', count: 4 },
+    { id: 'calm', name: 'Calm', count: 5 },
+    { id: 'confidence', name: 'Confidence', count: 4 },
+    { id: 'abundance', name: 'Abundance', count: 6 },
+    { id: 'sleep', name: 'Sleep', count: 5 },
+    { id: 'walking', name: 'Walking', count: 3 },
   ];
+
+  const allMeditations = [
+    { id: 1, title: 'Morning Visioneering', description: 'Start your day by connecting with your highest potential.', duration: 12, category: 'focus' },
+    { id: 2, title: 'Gratitude Expansion', description: 'Cultivate appreciation that attracts more abundance.', duration: 10, category: 'abundance' },
+    { id: 3, title: 'Confidence Activation', description: 'Awaken your inner certainty and calm assurance.', duration: 15, category: 'confidence' },
+    { id: 4, title: 'Calm Reset', description: 'Return to peaceful clarity when life feels overwhelming.', duration: 8, category: 'calm' },
+    { id: 5, title: 'Focus Flow', description: 'Clear mental clutter and enter deep, productive focus.', duration: 12, category: 'focus' },
+    { id: 6, title: 'Abundance Alignment', description: 'Tune your energy to the frequency of abundance.', duration: 15, category: 'abundance' },
+    { id: 7, title: 'Deep Sleep Journey', description: 'Drift into restful sleep with guided relaxation.', duration: 20, category: 'sleep' },
+    { id: 8, title: 'Walking Meditation', description: 'Find peace and presence in every step.', duration: 15, category: 'walking' },
+    { id: 9, title: 'Stress Release', description: 'Let go of tension and find your center.', duration: 10, category: 'calm' },
+    { id: 10, title: 'Wealthy Mindset', description: 'Reprogram your relationship with abundance.', duration: 18, category: 'abundance' },
+    { id: 11, title: 'Inner Strength', description: 'Connect with your core power and resilience.', duration: 12, category: 'confidence' },
+    { id: 12, title: 'Laser Focus', description: 'Sharpen your concentration and mental clarity.', duration: 8, category: 'focus' },
+  ];
+
+  const filteredMeditations = allMeditations.filter(m => {
+    const matchesSearch = m.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         m.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory ? m.category === selectedCategory : true;
+    return matchesSearch && matchesCategory;
+  });
+
+  // If a category is selected, show meditation list for that category
+  if (selectedCategory) {
+    return (
+      <div className={styles.meditationsScreen}>
+        <header className={styles.screenHeaderWithBack}>
+          <button className={styles.backButtonSmall} onClick={() => setSelectedCategory(null)}>
+            {Icons.back}
+          </button>
+          <div>
+            <h2>{categories.find(c => c.id === selectedCategory)?.name}</h2>
+            <p>{filteredMeditations.length} meditations</p>
+          </div>
+        </header>
+
+        <div className={styles.meditationsList}>
+          {filteredMeditations.map((meditation) => (
+            <GlassCard key={meditation.id} className={styles.meditationCard} onClick={onPlay}>
+              <div className={styles.meditationIcon} style={{ background: categoryGradients[meditation.category] }}>
+                {CategoryIcons[meditation.category] || Icons.meditation}
+              </div>
+              <div className={styles.meditationInfo}>
+                <h4>{meditation.title}</h4>
+                <p>{meditation.description}</p>
+                <div className={styles.meditationMeta}>
+                  <span className={styles.durationTag}>{meditation.duration} min</span>
+                </div>
+              </div>
+              <button className={styles.playIconButton}>{Icons.play}</button>
+            </GlassCard>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.meditationsScreen}>
       <header className={styles.screenHeader}>
         <h2>Meditations</h2>
-        <p>Guided practices for transformation</p>
+        <p>Rewire your mind for abundance.</p>
       </header>
 
-      <div className={styles.categoryFilter}>
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            className={`${styles.categoryChip} ${selectedCategory === cat.toLowerCase() ? styles.categoryChipActive : ''}`}
-            onClick={() => setSelectedCategory(cat.toLowerCase())}
-          >
-            {cat}
-          </button>
-        ))}
+      {/* Search Bar */}
+      <div className={styles.searchBar}>
+        <span className={styles.searchIcon}>{SearchIcon}</span>
+        <input
+          type="text"
+          placeholder="Search meditations..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className={styles.searchInput}
+        />
       </div>
 
-      <div className={styles.meditationsList}>
-        {meditations.map((meditation) => (
-          <GlassCard key={meditation.id} className={styles.meditationCard} onClick={onPlay}>
-            <div className={styles.meditationIcon}>
-              {Icons.meditation}
+      {/* If searching, show results list */}
+      {searchQuery && (
+        <div className={styles.meditationsList}>
+          {filteredMeditations.length > 0 ? (
+            filteredMeditations.map((meditation) => (
+              <GlassCard key={meditation.id} className={styles.meditationCard} onClick={onPlay}>
+                <div className={styles.meditationIcon} style={{ background: categoryGradients[meditation.category] }}>
+                  {CategoryIcons[meditation.category] || Icons.meditation}
+                </div>
+                <div className={styles.meditationInfo}>
+                  <h4>{meditation.title}</h4>
+                  <p>{meditation.description}</p>
+                  <div className={styles.meditationMeta}>
+                    <span className={styles.durationTag}>{meditation.duration} min</span>
+                  </div>
+                </div>
+                <button className={styles.playIconButton}>{Icons.play}</button>
+              </GlassCard>
+            ))
+          ) : (
+            <div className={styles.emptyState}>
+              <p>No meditations found for &quot;{searchQuery}&quot;</p>
             </div>
-            <div className={styles.meditationInfo}>
-              <h4>{meditation.title}</h4>
-              <p>{meditation.description}</p>
-              <div className={styles.meditationMeta}>
-                {meditation.durations.map((dur) => (
-                  <span key={dur} className={styles.durationTag}>{dur} min</span>
-                ))}
-                {meditation.isPremium && <span className={styles.premiumBadge}>Premium</span>}
+          )}
+        </div>
+      )}
+
+      {/* Category Grid - Show when not searching */}
+      {!searchQuery && (
+        <div className={styles.categoryGrid}>
+          {categories.map((category) => (
+            <div
+              key={category.id}
+              className={styles.categoryCard}
+              style={{ background: categoryGradients[category.id] }}
+              onClick={() => setSelectedCategory(category.id)}
+            >
+              <div className={styles.categoryCardIcon}>
+                {CategoryIcons[category.id]}
               </div>
+              <span className={styles.categoryCardName}>{category.name}</span>
+              <span className={styles.categoryCardCount}>{category.count} sessions</span>
             </div>
-            <button className={styles.favoriteButton}>{Icons.heart}</button>
-          </GlassCard>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -1054,15 +1193,57 @@ const ProfileScreen: React.FC<{ user: UserState; onClose: () => void; onSettings
   </div>
 );
 
-// Reality Shift Board - Bento grid vision board
+// Reality Shift Board - Bento grid vision board with add functionality
+interface BoardItem {
+  id: number;
+  type: 'text' | 'image' | 'quote';
+  content?: string;
+  author?: string;
+  large?: boolean;
+  style?: React.CSSProperties;
+}
+
 const BoardScreen: React.FC = () => {
-  const boardItems = [
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [addType, setAddType] = useState<'text' | 'image' | 'quote' | null>(null);
+  const [newContent, setNewContent] = useState('');
+  const [newAuthor, setNewAuthor] = useState('');
+  const [boardItems, setBoardItems] = useState<BoardItem[]>([
     { id: 1, type: 'text', content: 'I am abundant', large: true },
     { id: 2, type: 'image', style: { backgroundImage: 'linear-gradient(135deg, #F9A825 0%, #FF7043 50%, #7B1FA2 100%)' } },
-    { id: 3, type: 'quote', content: '"Create the life you dream of."' },
+    { id: 3, type: 'quote', content: 'Create the life you dream of.', author: 'Unknown' },
     { id: 4, type: 'text', content: 'My future is bright' },
     { id: 5, type: 'image', large: true, style: { backgroundImage: 'linear-gradient(135deg, #80DEEA 0%, #CE93D8 50%, #FFAB91 100%)' } },
-  ];
+  ]);
+
+  const handleAddItem = () => {
+    if (!addType) return;
+
+    const newItem: BoardItem = {
+      id: Date.now(),
+      type: addType,
+      content: newContent || undefined,
+      author: newAuthor || undefined,
+      large: boardItems.length % 3 === 0,
+    };
+
+    if (addType === 'image') {
+      const gradients = [
+        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+        'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+      ];
+      newItem.style = { backgroundImage: gradients[Math.floor(Math.random() * gradients.length)] };
+    }
+
+    setBoardItems([...boardItems, newItem]);
+    setShowAddModal(false);
+    setAddType(null);
+    setNewContent('');
+    setNewAuthor('');
+  };
 
   return (
     <div className={styles.boardScreen}>
@@ -1079,14 +1260,365 @@ const BoardScreen: React.FC = () => {
             style={item.style}
           >
             {item.type === 'text' && <span className={styles.bentoText}>{item.content}</span>}
-            {item.type === 'quote' && <span className={styles.bentoQuote}>{item.content}</span>}
+            {item.type === 'quote' && (
+              <div className={styles.bentoQuoteWrapper}>
+                <span className={styles.bentoQuote}>&quot;{item.content}&quot;</span>
+                {item.author && <span className={styles.bentoAuthor}>— {item.author}</span>}
+              </div>
+            )}
           </div>
         ))}
       </div>
 
-      <button className={styles.fab}>
+      <button className={styles.fab} onClick={() => setShowAddModal(true)}>
         {Icons.plus}
       </button>
+
+      {/* Add Card Modal */}
+      {showAddModal && (
+        <div className={styles.modalOverlay} onClick={() => { setShowAddModal(false); setAddType(null); }}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h3>{addType ? `Add ${addType.charAt(0).toUpperCase() + addType.slice(1)} Card` : 'Choose Card Type'}</h3>
+              <button className={styles.modalClose} onClick={() => { setShowAddModal(false); setAddType(null); }}>
+                {Icons.close}
+              </button>
+            </div>
+
+            {!addType ? (
+              <div className={styles.cardTypeOptions}>
+                <button className={styles.cardTypeOption} onClick={() => setAddType('text')}>
+                  <div className={styles.cardTypeIcon}>{Icons.journal}</div>
+                  <span>Text</span>
+                  <p>Simple affirmation or intention</p>
+                </button>
+                <button className={styles.cardTypeOption} onClick={() => setAddType('image')}>
+                  <div className={styles.cardTypeIcon}>{Icons.grid}</div>
+                  <span>Image</span>
+                  <p>Vision board image</p>
+                </button>
+                <button className={styles.cardTypeOption} onClick={() => setAddType('quote')}>
+                  <div className={styles.cardTypeIcon}>{Icons.sparkle}</div>
+                  <span>Quote</span>
+                  <p>Inspiring quote with attribution</p>
+                </button>
+              </div>
+            ) : (
+              <div className={styles.cardForm}>
+                {addType === 'text' && (
+                  <input
+                    type="text"
+                    placeholder="Enter your affirmation..."
+                    value={newContent}
+                    onChange={(e) => setNewContent(e.target.value)}
+                    className={styles.modalInput}
+                  />
+                )}
+                {addType === 'quote' && (
+                  <>
+                    <input
+                      type="text"
+                      placeholder="Enter the quote..."
+                      value={newContent}
+                      onChange={(e) => setNewContent(e.target.value)}
+                      className={styles.modalInput}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Author (optional)"
+                      value={newAuthor}
+                      onChange={(e) => setNewAuthor(e.target.value)}
+                      className={styles.modalInput}
+                    />
+                  </>
+                )}
+                {addType === 'image' && (
+                  <p className={styles.imagePlaceholder}>
+                    A beautiful gradient image will be added to your board.
+                  </p>
+                )}
+                <div className={styles.modalActions}>
+                  <Button onClick={() => setAddType(null)} variant="ghost">Back</Button>
+                  <Button onClick={handleAddItem} disabled={addType !== 'image' && !newContent}>Add Card</Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Gratitude Journal Screen
+const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  const [entry, setEntry] = useState('');
+  const [showPastEntries, setShowPastEntries] = useState(false);
+  const [entries, setEntries] = useState<{ date: string; prompt: string; entry: string }[]>([
+    { date: '2026-01-17', prompt: 'What made you smile today?', entry: 'The sunshine through my window this morning was beautiful. I felt grateful for a peaceful start to the day.' },
+    { date: '2026-01-16', prompt: 'What are three things you appreciate?', entry: 'My health, my family, and the opportunity to grow every day.' },
+  ]);
+
+  const today = new Date();
+  const dateString = today.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  const prompts = [
+    'What are three things you are grateful for today?',
+    'What moment brought you joy recently?',
+    'Who in your life are you thankful for and why?',
+    'What simple pleasure did you enjoy today?',
+    'What challenge are you grateful for overcoming?',
+  ];
+
+  const todayPrompt = prompts[today.getDate() % prompts.length];
+
+  const handleSave = () => {
+    if (entry.trim()) {
+      const newEntry = {
+        date: today.toISOString().split('T')[0],
+        prompt: todayPrompt,
+        entry: entry.trim(),
+      };
+      setEntries([newEntry, ...entries]);
+      setEntry('');
+      alert('Entry saved!');
+    }
+  };
+
+  if (showPastEntries) {
+    return (
+      <div className={styles.screen}>
+        <header className={styles.screenHeaderWithBack}>
+          <button className={styles.backButtonSmall} onClick={() => setShowPastEntries(false)}>
+            {Icons.back}
+          </button>
+          <div>
+            <h2>Past Entries</h2>
+            <p>{entries.length} entries</p>
+          </div>
+        </header>
+
+        <div className={styles.pastEntriesList}>
+          {entries.map((e, idx) => (
+            <GlassCard key={idx} className={styles.pastEntryCard}>
+              <span className={styles.pastEntryDate}>
+                {new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              </span>
+              <p className={styles.pastEntryPrompt}>{e.prompt}</p>
+              <p className={styles.pastEntryText}>{e.entry}</p>
+            </GlassCard>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.screen}>
+      <header className={styles.screenHeaderWithBack}>
+        <button className={styles.backButtonSmall} onClick={onClose}>
+          {Icons.back}
+        </button>
+        <div>
+          <h2>Gratitude Journal</h2>
+          <p>{dateString}</p>
+        </div>
+      </header>
+
+      <div className={styles.gratitudeContent}>
+        <GlassCard variant="elevated" className={styles.promptCard}>
+          <p className={styles.promptLabel}>Today&apos;s Prompt</p>
+          <p className={styles.promptText}>{todayPrompt}</p>
+        </GlassCard>
+
+        <div className={styles.journalEditor}>
+          <textarea
+            placeholder="Write your gratitude entry here..."
+            value={entry}
+            onChange={(e) => setEntry(e.target.value)}
+            className={styles.journalTextarea}
+          />
+        </div>
+
+        <div className={styles.journalActions}>
+          <Button onClick={handleSave} fullWidth disabled={!entry.trim()}>
+            Save Entry
+          </Button>
+          <button className={styles.textButton} onClick={() => setShowPastEntries(true)}>
+            View Past Entries
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Quick Shift Tools Screen
+const QuickShiftToolsScreen: React.FC<{ onClose: () => void; onBreathing: () => void }> = ({ onClose, onBreathing }) => {
+  const tools = [
+    {
+      id: 'breathing',
+      title: 'Coherent Breathing',
+      description: 'A 3-minute guided breathing exercise to reset your nervous system.',
+      duration: '3 min',
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="12" cy="12" r="6" />
+          <circle cx="12" cy="12" r="2" />
+        </svg>
+      ),
+      action: onBreathing,
+    },
+    {
+      id: 'bodyscan',
+      title: 'Body Scan',
+      description: 'A 5-minute guided audio practice to release tension.',
+      duration: '5 min',
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <circle cx="12" cy="5" r="3" />
+          <path d="M12 8v4m-4 8l2-6h4l2 6m-8-4h8" />
+        </svg>
+      ),
+      action: () => alert('Body Scan audio would play here'),
+    },
+    {
+      id: 'affirmation',
+      title: 'Affirmation Repetition',
+      description: 'A 2-minute practice where you repeat a chosen affirmation.',
+      duration: '2 min',
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74L12 2z" />
+        </svg>
+      ),
+      action: () => alert('Affirmation audio would play here'),
+    },
+  ];
+
+  return (
+    <div className={styles.screen}>
+      <header className={styles.screenHeaderWithBack}>
+        <button className={styles.backButtonSmall} onClick={onClose}>
+          {Icons.back}
+        </button>
+        <div>
+          <h2>Quick Shifts</h2>
+          <p>Instant reset exercises.</p>
+        </div>
+      </header>
+
+      <div className={styles.quickShiftsList}>
+        {tools.map((tool) => (
+          <GlassCard key={tool.id} className={styles.quickShiftCard} onClick={tool.action}>
+            <div className={styles.quickShiftIcon}>
+              {tool.icon}
+            </div>
+            <div className={styles.quickShiftInfo}>
+              <h4>{tool.title}</h4>
+              <p>{tool.description}</p>
+              <span className={styles.quickShiftDuration}>{tool.duration}</span>
+            </div>
+            <div className={styles.quickShiftArrow}>{Icons.chevronRight}</div>
+          </GlassCard>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Breathing Exercise Screen (Coherent Breathing)
+const BreathingExerciseScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  const [isActive, setIsActive] = useState(false);
+  const [phase, setPhase] = useState<'inhale' | 'exhale'>('inhale');
+  const [timeLeft, setTimeLeft] = useState(180); // 3 minutes in seconds
+  const [circleScale, setCircleScale] = useState(1);
+
+  useEffect(() => {
+    let breathingInterval: NodeJS.Timeout;
+    let countdownInterval: NodeJS.Timeout;
+
+    if (isActive && timeLeft > 0) {
+      // Breathing animation: 6 seconds inhale, 6 seconds exhale
+      let breathTime = 0;
+      breathingInterval = setInterval(() => {
+        breathTime += 100;
+        const cycleTime = breathTime % 12000; // 12 second cycle
+
+        if (cycleTime < 6000) {
+          // Inhale phase
+          setPhase('inhale');
+          setCircleScale(1 + (cycleTime / 6000) * 0.5); // Scale from 1 to 1.5
+        } else {
+          // Exhale phase
+          setPhase('exhale');
+          setCircleScale(1.5 - ((cycleTime - 6000) / 6000) * 0.5); // Scale from 1.5 to 1
+        }
+      }, 100);
+
+      countdownInterval = setInterval(() => {
+        setTimeLeft((t) => {
+          if (t <= 1) {
+            setIsActive(false);
+            return 0;
+          }
+          return t - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      clearInterval(breathingInterval);
+      clearInterval(countdownInterval);
+    };
+  }, [isActive, timeLeft]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <div className={styles.breathingScreen}>
+      <button className={styles.closeButton} onClick={onClose}>{Icons.close}</button>
+
+      <div className={styles.breathingContent}>
+        <h2 className={styles.breathingTitle}>Coherent Breathing</h2>
+        <p className={styles.breathingSubtitle}>6 seconds inhale, 6 seconds exhale</p>
+
+        <div className={styles.breathingCircleContainer}>
+          <div
+            className={styles.breathingCircle}
+            style={{
+              transform: `scale(${circleScale})`,
+              transition: 'transform 0.1s linear'
+            }}
+          />
+          <div className={styles.breathingPhase}>
+            {isActive ? (phase === 'inhale' ? 'Breathe In' : 'Breathe Out') : 'Ready'}
+          </div>
+        </div>
+
+        <div className={styles.breathingTimer}>{formatTime(timeLeft)}</div>
+
+        <Button
+          onClick={() => {
+            if (timeLeft === 0) {
+              setTimeLeft(180);
+            }
+            setIsActive(!isActive);
+          }}
+          fullWidth
+        >
+          {isActive ? 'Pause' : (timeLeft === 0 ? 'Restart' : 'Start')}
+        </Button>
+      </div>
     </div>
   );
 };
@@ -1192,6 +1724,12 @@ export default function Home() {
         return <ProfileScreen user={user} onClose={() => setCurrentScreen('dashboard')} onSettings={() => setCurrentScreen('settings')} />;
       case 'settings':
         return <SettingsScreen onClose={() => setCurrentScreen('profile')} />;
+      case 'gratitude':
+        return <GratitudeJournalScreen onClose={() => setCurrentScreen('dashboard')} />;
+      case 'quickshifts':
+        return <QuickShiftToolsScreen onClose={() => setCurrentScreen('dashboard')} onBreathing={() => setCurrentScreen('breathing')} />;
+      case 'breathing':
+        return <BreathingExerciseScreen onClose={() => setCurrentScreen('quickshifts')} />;
       default:
         return <DashboardScreen user={user} onNavigate={setCurrentScreen} />;
     }

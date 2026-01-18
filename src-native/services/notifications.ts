@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Notifications Service
+ * Abundance Recode - Notifications Service
  *
  * Manages push notifications and local reminders
  */
@@ -70,7 +70,7 @@ export const NOTIFICATION_MESSAGES: Record<NotificationType, NotificationData[]>
   ],
   general: [
     {
-      title: 'Abundance Flow',
+      title: 'Abundance Recode',
       body: 'Your transformation journey continues.',
     },
   ],

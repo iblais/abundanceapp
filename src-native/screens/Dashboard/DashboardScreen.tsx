@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Dashboard Screen
+ * Abundance Recode - Dashboard Screen
  *
  * Primary home screen with Alignment Score hero
  * Quick access to daily practices

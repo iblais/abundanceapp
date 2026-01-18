@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Navigation Export
+ * Abundance Recode - Navigation Export
  */
 
 export { RootNavigator } from './RootNavigator';

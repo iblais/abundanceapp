@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Voice Selector Screen
+ * Abundance Recode - Voice Selector Screen
  *
  * Select voice for guided meditations and Inner Mentor
  * Options: Masculine, Feminine, Neutral

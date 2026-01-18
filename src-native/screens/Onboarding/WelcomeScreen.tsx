@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Welcome Screen
+ * Abundance Recode - Welcome Screen
  *
  * Initial screen for new users with logo and tagline
  * "Shift your state. Reshape your reality."
@@ -28,7 +28,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 type WelcomeNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Welcome'>;
 
-// Abundance Flow Logo Component
+// Abundance Recode Logo Component
 const Logo: React.FC<{ size: number }> = ({ size }) => {
   const theme = useAppTheme();
 
@@ -143,7 +143,7 @@ export const WelcomeScreen: React.FC = () => {
         {/* Title and Tagline */}
         <Animated.View style={[styles.textContainer, textAnimatedStyle]}>
           <H1 align="center" style={styles.title}>
-            Abundance Flow
+            Abundance Recode
           </H1>
           <Body align="center" style={styles.tagline}>
             Shift your state. Reshape your reality.

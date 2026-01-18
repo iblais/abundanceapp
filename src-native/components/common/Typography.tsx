@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Typography Components
+ * Abundance Recode - Typography Components
  *
  * Pre-styled text components for consistent typography
  */

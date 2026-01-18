@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Content Exports
+ * Abundance Recode - Content Exports
  */
 
 export { MEDITATIONS_DATA } from './meditations';
