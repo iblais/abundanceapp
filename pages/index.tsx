@@ -8,14 +8,17 @@ import { useRouter } from 'next/router';
 import styles from '../styles/Home.module.css';
 import { journalService, chatService, getAnonymousUserId, JournalEntry } from '../lib/supabase';
 import { aiMentorService } from '../lib/ai-mentor';
+import { revenueCatService, PLANS, PREMIUM_FEATURES, SubscriptionStatus } from '../lib/revenuecat';
 
 // Types
-type Screen = 'welcome' | 'onboarding' | 'rhythm' | 'dashboard' | 'meditations' | 'journal' | 'progress' | 'mentor' | 'settings' | 'profile' | 'player' | 'board' | 'gratitude' | 'quickshifts' | 'breathing' | 'learn' | 'article' | 'visualizations' | 'visualizationPlayer' | 'emotionalReset' | 'soundscapes' | 'audiobooks' | 'paywall' | 'reminders' | 'notifications' | 'energyMode' | 'voiceSelector';
+type Screen = 'welcome' | 'onboarding' | 'rhythm' | 'dashboard' | 'meditations' | 'journal' | 'progress' | 'mentor' | 'settings' | 'profile' | 'player' | 'board' | 'gratitude' | 'quickshifts' | 'breathing' | 'learn' | 'article' | 'visualizations' | 'visualizationPlayer' | 'emotionalReset' | 'soundscapes' | 'audiobooks' | 'paywall' | 'pricing' | 'reminders' | 'notifications' | 'energyMode' | 'voiceSelector';
 
 interface UserState {
   onboardingComplete: boolean;
   displayName: string;
   isPremium: boolean;
+  subscriptionPlan: 'monthly' | 'annual' | null;
+  subscriptionExpiresAt: string | null;
   voicePreference: 'masculine' | 'feminine' | 'neutral';
   morningTime: string;
   eveningTime: string;
@@ -1310,7 +1313,7 @@ const PlayerScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 };
 
 // Profile Screen - Clean premium design matching reference
-const ProfileScreen: React.FC<{ user: UserState; onClose: () => void; onSettings: () => void }> = ({ user, onClose, onSettings }) => (
+const ProfileScreen: React.FC<{ user: UserState; onClose: () => void; onSettings: () => void; onPricing?: () => void }> = ({ user, onClose, onSettings, onPricing }) => (
   <div className={styles.profileScreen}>
     <header className={styles.profileHeader}>
       <button onClick={onClose}>{Icons.back}</button>
@@ -1321,13 +1324,29 @@ const ProfileScreen: React.FC<{ user: UserState; onClose: () => void; onSettings
       <div className={styles.avatar}>
         {Icons.profile}
       </div>
-      <h2>Alex Rivera</h2>
-      <p className={styles.membershipText}>Premium Member</p>
+      <h2>{user.displayName}</h2>
+      <div className={styles.subscriptionStatus}>
+        <span className={`${styles.subscriptionBadge} ${user.isPremium ? styles.subscriptionBadgePremium : styles.subscriptionBadgeFree}`}>
+          {user.isPremium ? 'Premium Member' : 'Free Member'}
+        </span>
+        {user.isPremium && user.subscriptionPlan && (
+          <div className={styles.subscriptionDetails}>
+            <span className={styles.subscriptionPlanName}>
+              {user.subscriptionPlan === 'annual' ? 'Annual Plan' : 'Monthly Plan'}
+            </span>
+          </div>
+        )}
+      </div>
+      {!user.isPremium && onPricing && (
+        <button className={styles.upgradeProfileButton} onClick={onPricing}>
+          Upgrade to Premium
+        </button>
+      )}
     </div>
 
     <GlassCard className={styles.profileStatsCard}>
       <div className={styles.profileStatRow}>
-        <span className={styles.profileStatNumber}>42</span>
+        <span className={styles.profileStatNumber}>{user.streak}</span>
         <span className={styles.profileStatIcon}>{Icons.streak}</span>
         <span className={styles.profileStatLabel}>day streak</span>
       </div>
@@ -2379,8 +2398,13 @@ const EnhancedSettingsScreen: React.FC<{
   onUpdateUser: (updates: Partial<UserState>) => void;
   onReminders: () => void;
   onVoiceSelector: () => void;
-}> = ({ onClose, user, onUpdateUser, onReminders, onVoiceSelector }) => {
+  onPricing: () => void;
+}> = ({ onClose, user, onUpdateUser, onReminders, onVoiceSelector, onPricing }) => {
   const [darkMode, setDarkMode] = useState(false);
+
+  const handleManageSubscription = async () => {
+    await revenueCatService.manageSubscription();
+  };
 
   const settingsSections = [
     {
@@ -2416,6 +2440,46 @@ const EnhancedSettingsScreen: React.FC<{
           <h2>Settings</h2>
         </div>
       </header>
+
+      {/* Subscription Section */}
+      <div className={styles.subscriptionSection}>
+        <h3 className={styles.settingsSectionTitle}>Subscription</h3>
+        <GlassCard className={styles.subscriptionCard}>
+          {user.isPremium ? (
+            <>
+              <div className={styles.subscriptionCardHeader}>
+                <span className={styles.subscriptionCardTitle}>Premium Member</span>
+                <button className={styles.manageButton} onClick={handleManageSubscription}>
+                  Manage
+                </button>
+              </div>
+              <div className={styles.subscriptionCardInfo}>
+                <span className={styles.subscriptionPlanName}>
+                  Current Plan: {user.subscriptionPlan === 'annual' ? 'Annual' : 'Monthly'}
+                </span>
+                {user.subscriptionExpiresAt && (
+                  <span className={styles.subscriptionExpiry}>
+                    Renews on {new Date(user.subscriptionExpiresAt).toLocaleDateString()}
+                  </span>
+                )}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className={styles.subscriptionCardHeader}>
+                <span className={styles.subscriptionCardTitle}>Free Member</span>
+              </div>
+              <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '16px' }}>
+                Upgrade to unlock all premium features
+              </p>
+              <Button onClick={onPricing} fullWidth>
+                Upgrade to Premium
+              </Button>
+            </>
+          )}
+        </GlassCard>
+      </div>
+
       <div className={styles.settingsSections}>
         {settingsSections.map((section, sIdx) => (
           <div key={sIdx} className={styles.settingsSection}>
@@ -2954,6 +3018,215 @@ const VoiceSelectorScreen: React.FC<{
   );
 };
 
+// ============================================
+// SUBSCRIPTION & PAYWALL COMPONENTS
+// ============================================
+
+// Pricing Screen - Full subscription pricing page
+const PricingScreen: React.FC<{
+  onClose: () => void;
+  user: UserState;
+  onSubscribe: (plan: 'monthly' | 'annual') => void;
+}> = ({ onClose, user, onSubscribe }) => {
+  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isRestoring, setIsRestoring] = useState(false);
+
+  const handlePurchase = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await revenueCatService.purchasePackage(selectedPlan);
+      if (result.success) {
+        onSubscribe(selectedPlan);
+      } else {
+        setError(result.error || 'Purchase failed. Please try again.');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRestore = async () => {
+    setIsRestoring(true);
+    setError(null);
+    try {
+      const result = await revenueCatService.restorePurchases();
+      if (result.success) {
+        // Check subscription status and update
+        const status = await revenueCatService.checkSubscriptionStatus();
+        if (status.isSubscribed && status.plan) {
+          onSubscribe(status.plan);
+        }
+      } else {
+        setError(result.error || 'No previous purchases found.');
+      }
+    } catch (err) {
+      setError('Failed to restore purchases. Please try again.');
+    } finally {
+      setIsRestoring(false);
+    }
+  };
+
+  if (user.isPremium) {
+    return (
+      <div className={styles.pricingScreen}>
+        <button className={styles.closeButton} onClick={onClose}>{Icons.close}</button>
+        <div className={styles.pricingContent}>
+          <div className={styles.pricingHeader}>
+            <div className={styles.crownIcon}>{Icons.crown}</div>
+            <h1>You&apos;re a Premium Member!</h1>
+            <p>Thank you for being part of our community.</p>
+          </div>
+          <GlassCard className={styles.premiumStatusCard}>
+            <div className={styles.premiumBadge}>
+              <span className={styles.premiumBadgeIcon}>{Icons.crown}</span>
+              <span>Premium Active</span>
+            </div>
+            <p className={styles.planInfo}>
+              {user.subscriptionPlan === 'annual' ? 'Annual Plan' : 'Monthly Plan'}
+            </p>
+            {user.subscriptionExpiresAt && (
+              <p className={styles.expiresInfo}>
+                Renews on {new Date(user.subscriptionExpiresAt).toLocaleDateString()}
+              </p>
+            )}
+          </GlassCard>
+          <Button onClick={onClose} fullWidth>
+            Continue to App
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.pricingScreen}>
+      <button className={styles.closeButton} onClick={onClose}>{Icons.close}</button>
+      <div className={styles.pricingContent}>
+        <div className={styles.pricingHeader}>
+          <div className={styles.crownIcon}>{Icons.crown}</div>
+          <h1>Unlock Your Full Potential</h1>
+          <p>Choose a plan to access all premium features and accelerate your transformation.</p>
+        </div>
+
+        <div className={styles.pricingCards}>
+          {/* Monthly Plan */}
+          <GlassCard
+            className={`${styles.pricingCard} ${selectedPlan === 'monthly' ? styles.pricingCardSelected : ''}`}
+            onClick={() => setSelectedPlan('monthly')}
+          >
+            <div className={styles.planHeader}>
+              <h3>Monthly</h3>
+              <div className={styles.planPriceDisplay}>
+                <span className={styles.priceCurrency}>$</span>
+                <span className={styles.priceAmount}>14.99</span>
+                <span className={styles.pricePeriod}>per month</span>
+              </div>
+            </div>
+            <div className={styles.planFeaturesList}>
+              {PREMIUM_FEATURES.map((feature, idx) => (
+                <div key={idx} className={styles.planFeature}>
+                  <span className={styles.featureCheck}>✓</span>
+                  <span>{feature}</span>
+                </div>
+              ))}
+            </div>
+            <Button
+              onClick={handlePurchase}
+              fullWidth
+              variant={selectedPlan === 'monthly' ? 'primary' : 'secondary'}
+              disabled={isLoading}
+            >
+              {isLoading && selectedPlan === 'monthly' ? 'Processing...' : 'Start 7-Day Free Trial'}
+            </Button>
+          </GlassCard>
+
+          {/* Annual Plan */}
+          <GlassCard
+            className={`${styles.pricingCard} ${selectedPlan === 'annual' ? styles.pricingCardSelected : ''}`}
+            onClick={() => setSelectedPlan('annual')}
+          >
+            <div className={styles.savingsBadge}>Save 30%</div>
+            <div className={styles.planHeader}>
+              <h3>Annual</h3>
+              <div className={styles.planPriceDisplay}>
+                <span className={styles.priceCurrency}>$</span>
+                <span className={styles.priceAmount}>99.99</span>
+                <span className={styles.pricePeriod}>per year</span>
+              </div>
+            </div>
+            <div className={styles.planFeaturesList}>
+              {PREMIUM_FEATURES.map((feature, idx) => (
+                <div key={idx} className={styles.planFeature}>
+                  <span className={styles.featureCheck}>✓</span>
+                  <span>{feature}</span>
+                </div>
+              ))}
+            </div>
+            <Button
+              onClick={handlePurchase}
+              fullWidth
+              variant={selectedPlan === 'annual' ? 'primary' : 'secondary'}
+              disabled={isLoading}
+            >
+              {isLoading && selectedPlan === 'annual' ? 'Processing...' : 'Start 7-Day Free Trial'}
+            </Button>
+          </GlassCard>
+        </div>
+
+        {error && (
+          <div className={styles.errorMessage}>
+            {error}
+          </div>
+        )}
+
+        <button
+          className={styles.restoreLink}
+          onClick={handleRestore}
+          disabled={isRestoring}
+        >
+          {isRestoring ? 'Restoring...' : 'Already a subscriber? Restore Purchase'}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// PaywallGate Component - Wraps premium content
+const PaywallGate: React.FC<{
+  children: React.ReactNode;
+  isPremium: boolean;
+  featureName: string;
+  onUpgrade: () => void;
+}> = ({ children, isPremium, featureName, onUpgrade }) => {
+  if (isPremium) {
+    return <>{children}</>;
+  }
+
+  return (
+    <div className={styles.paywallGate}>
+      <GlassCard className={styles.paywallGateCard}>
+        <div className={styles.paywallGateIcon}>{Icons.lock}</div>
+        <h2>Premium Feature</h2>
+        <p>{featureName} is available for premium members.</p>
+        <p className={styles.paywallGateSubtext}>
+          Upgrade now to unlock this feature and accelerate your transformation journey.
+        </p>
+        <Button onClick={onUpgrade} fullWidth>
+          Upgrade to Premium
+        </Button>
+        <button className={styles.paywallGateLearnMore} onClick={onUpgrade}>
+          View all premium features →
+        </button>
+      </GlassCard>
+    </div>
+  );
+};
+
 // Main App Component
 export default function Home() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
@@ -2961,6 +3234,8 @@ export default function Home() {
     onboardingComplete: false,
     displayName: 'Abundance Seeker',
     isPremium: false,
+    subscriptionPlan: null,
+    subscriptionExpiresAt: null,
     voicePreference: 'neutral',
     morningTime: '07:00',
     eveningTime: '21:00',
@@ -2996,6 +3271,7 @@ export default function Home() {
     'soundscapes': '/soundscapes',
     'audiobooks': '/audiobooks',
     'paywall': '/subscribe',
+    'pricing': '/pricing',
     'reminders': '/reminders',
     'notifications': '/settings/notifications',
     'energyMode': '/dashboard',
@@ -3045,6 +3321,7 @@ export default function Home() {
       'notifications': 'notifications',
       'settings/notifications': 'notifications',
       'subscribe': 'paywall',
+      'pricing': 'pricing',
       'voice': 'voiceSelector',
     };
 
@@ -3071,11 +3348,13 @@ export default function Home() {
       }
     } else if (screenFromPath) {
       // New user but accessing a direct route - create default user
-      const defaultUser = {
+      const defaultUser: UserState = {
         onboardingComplete: true,
         displayName: 'Abundance Seeker',
         isPremium: false,
-        voicePreference: 'neutral' as const,
+        subscriptionPlan: null,
+        subscriptionExpiresAt: null,
+        voicePreference: 'neutral',
         morningTime: '07:00',
         eveningTime: '21:00',
         alignmentScore: 82,
@@ -3126,7 +3405,7 @@ export default function Home() {
       case 'player':
         return <PlayerScreen onClose={() => setCurrentScreen('dashboard')} />;
       case 'profile':
-        return <ProfileScreen user={user} onClose={() => setCurrentScreen('dashboard')} onSettings={() => setCurrentScreen('settings')} />;
+        return <ProfileScreen user={user} onClose={() => setCurrentScreen('dashboard')} onSettings={() => setCurrentScreen('settings')} onPricing={() => setCurrentScreen('pricing')} />;
       case 'settings':
         return <EnhancedSettingsScreen
           onClose={() => setCurrentScreen('profile')}
@@ -3134,6 +3413,7 @@ export default function Home() {
           onUpdateUser={updateUser}
           onReminders={() => setCurrentScreen('reminders')}
           onVoiceSelector={() => setCurrentScreen('voiceSelector')}
+          onPricing={() => setCurrentScreen('pricing')}
         />;
       case 'gratitude':
         return <GratitudeJournalScreen onClose={() => setCurrentScreen('dashboard')} />;
@@ -3172,6 +3452,22 @@ export default function Home() {
         return <AudiobooksScreen onClose={() => setCurrentScreen('dashboard')} />;
       case 'paywall':
         return <PaywallScreen onClose={() => setCurrentScreen('dashboard')} onSubscribe={() => { updateUser({ isPremium: true }); setCurrentScreen('dashboard'); }} />;
+      case 'pricing':
+        return <PricingScreen
+          onClose={() => setCurrentScreen('dashboard')}
+          user={user}
+          onSubscribe={(plan) => {
+            const expiresAt = new Date();
+            expiresAt.setFullYear(expiresAt.getFullYear() + (plan === 'annual' ? 1 : 0));
+            expiresAt.setMonth(expiresAt.getMonth() + (plan === 'monthly' ? 1 : 0));
+            updateUser({
+              isPremium: true,
+              subscriptionPlan: plan,
+              subscriptionExpiresAt: expiresAt.toISOString(),
+            });
+            setCurrentScreen('dashboard');
+          }}
+        />;
       case 'reminders':
         return <RemindersScreen onClose={() => setCurrentScreen('settings')} />;
       case 'notifications':
