@@ -599,11 +599,7 @@ const DashboardScreen: React.FC<{
   ];
 
   const handleCardClick = (action: typeof quickActions[0]) => {
-    if (action.route) {
-      router.push(action.route);
-    } else {
-      onNavigate(action.screen);
-    }
+    onNavigate(action.screen);
   };
 
   return (
