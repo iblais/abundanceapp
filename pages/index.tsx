@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/router';
 import styles from '../styles/Home.module.css';
 import { journalService, chatService, getAnonymousUserId, JournalEntry } from '../lib/supabase';
 import { aiMentorService } from '../lib/ai-mentor';
@@ -578,19 +579,28 @@ const DashboardScreen: React.FC<{
   user: UserState;
   onNavigate: (screen: Screen) => void;
 }> = ({ user, onNavigate }) => {
+  const router = useRouter();
 
   const quickActions = [
-    { title: 'Morning Visioneering', subtitle: 'Guided meditation for 10 mins.', icon: Icons.sparkle, screen: 'player' as Screen },
-    { title: 'Quick Shifts', subtitle: 'Instant reset exercises.', icon: Icons.heart, screen: 'quickshifts' as Screen },
-    { title: 'Gratitude Journal', subtitle: 'Capture what you are grateful for.', icon: Icons.journal, screen: 'gratitude' as Screen },
-    { title: 'Inner Mentor', subtitle: 'Chat with your higher self.', icon: Icons.chat, screen: 'mentor' as Screen },
-    { title: 'Reality Shift Board', subtitle: 'Visualize your new identity.', icon: Icons.grid, screen: 'board' as Screen },
-    { title: 'Learn & Grow', subtitle: 'Articles for transformation.', icon: Icons.book, screen: 'learn' as Screen },
-    { title: 'Visualization Tools', subtitle: 'See your future self.', icon: Icons.eye, screen: 'visualizations' as Screen },
-    { title: 'Emotional Reset', subtitle: 'Process and release emotions.', icon: Icons.heart, screen: 'emotionalReset' as Screen },
-    { title: 'Soundscapes', subtitle: 'Ambient sounds for focus.', icon: Icons.music, screen: 'soundscapes' as Screen },
-    { title: 'Audiobooks', subtitle: 'Recommended reading.', icon: Icons.headphones, screen: 'audiobooks' as Screen },
+    { title: 'Morning Visioneering', subtitle: 'Guided meditation for 10 mins.', icon: Icons.sparkle, screen: 'player' as Screen, route: null },
+    { title: 'Quick Shifts', subtitle: 'Instant reset exercises.', icon: Icons.heart, screen: 'quickshifts' as Screen, route: null },
+    { title: 'Gratitude Journal', subtitle: 'Capture what you are grateful for.', icon: Icons.journal, screen: 'gratitude' as Screen, route: null },
+    { title: 'Inner Mentor', subtitle: 'Chat with your higher self.', icon: Icons.chat, screen: 'mentor' as Screen, route: null },
+    { title: 'Reality Shift Board', subtitle: 'Visualize your new identity.', icon: Icons.grid, screen: 'board' as Screen, route: null },
+    { title: 'Learn & Grow', subtitle: 'Articles for transformation.', icon: Icons.book, screen: 'learn' as Screen, route: '/learn-grow' },
+    { title: 'Visualization Tools', subtitle: 'See your future self.', icon: Icons.eye, screen: 'visualizations' as Screen, route: null },
+    { title: 'Emotional Reset', subtitle: 'Process and release emotions.', icon: Icons.heart, screen: 'emotionalReset' as Screen, route: null },
+    { title: 'Soundscapes', subtitle: 'Ambient sounds for focus.', icon: Icons.music, screen: 'soundscapes' as Screen, route: null },
+    { title: 'Audiobooks', subtitle: 'Recommended reading.', icon: Icons.headphones, screen: 'audiobooks' as Screen, route: null },
   ];
+
+  const handleCardClick = (action: typeof quickActions[0]) => {
+    if (action.route) {
+      router.push(action.route);
+    } else {
+      onNavigate(action.screen);
+    }
+  };
 
   return (
     <div className={styles.dashboardScreen}>
@@ -606,7 +616,7 @@ const DashboardScreen: React.FC<{
           <GlassCard
             key={index}
             className={styles.actionCard}
-            onClick={() => onNavigate(action.screen)}
+            onClick={() => handleCardClick(action)}
           >
             <div className={styles.actionIcon}>{action.icon}</div>
             <div className={styles.actionText}>
