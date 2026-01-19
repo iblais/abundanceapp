@@ -304,9 +304,9 @@ const Icons = {
 const TabBar: React.FC<{ activeTab: string; onTabChange: (tab: Screen) => void }> = ({ activeTab, onTabChange }) => {
   const tabs = [
     { id: 'dashboard', icon: Icons.home, label: 'Home' },
-    { id: 'board', icon: Icons.grid, label: 'Board' },
-    { id: 'meditations', icon: Icons.meditation, label: 'Meditate' },
-    { id: 'progress', icon: Icons.chart, label: 'Goals' },
+    { id: 'meditations', icon: Icons.grid, label: 'Library' },
+    { id: 'journal', icon: Icons.journal, label: 'Journal' },
+    { id: 'progress', icon: Icons.chart, label: 'Analytics' },
     { id: 'profile', icon: Icons.profile, label: 'Profile' },
   ];
 
@@ -1825,7 +1825,25 @@ export default function Home() {
   useEffect(() => {
     // Check URL path for direct routing
     const path = window.location.pathname.replace('/', '');
-    const validScreens: Screen[] = ['dashboard', 'meditations', 'gratitude', 'quickshifts', 'mentor', 'board', 'progress', 'profile'];
+
+    // Map URL paths to screen names
+    const pathToScreen: Record<string, Screen> = {
+      'dashboard': 'dashboard',
+      'meditations': 'meditations',
+      'library': 'meditations',
+      'gratitude': 'gratitude',
+      'quickshifts': 'quickshifts',
+      'quick-shifts': 'quickshifts',
+      'mentor': 'mentor',
+      'board': 'board',
+      'reality-shift-board': 'board',
+      'progress': 'progress',
+      'analytics': 'progress',
+      'profile': 'profile',
+      'journal': 'journal',
+    };
+
+    const screenFromPath = pathToScreen[path];
 
     // Check sessionStorage for initial screen (set by route pages)
     const initialScreen = sessionStorage.getItem('initialScreen');
@@ -1839,14 +1857,14 @@ export default function Home() {
       setUser(parsed);
 
       // If we have a valid path or initialScreen, go there directly
-      if (path && validScreens.includes(path as Screen)) {
-        setCurrentScreen(path as Screen);
-      } else if (initialScreen && validScreens.includes(initialScreen as Screen)) {
-        setCurrentScreen(initialScreen as Screen);
+      if (screenFromPath) {
+        setCurrentScreen(screenFromPath);
+      } else if (initialScreen && pathToScreen[initialScreen]) {
+        setCurrentScreen(pathToScreen[initialScreen]);
       } else if (parsed.onboardingComplete) {
         setCurrentScreen('dashboard');
       }
-    } else if (path && validScreens.includes(path as Screen)) {
+    } else if (screenFromPath) {
       // New user but accessing a direct route - create default user
       const defaultUser = {
         onboardingComplete: true,
@@ -1860,7 +1878,7 @@ export default function Home() {
       };
       setUser(defaultUser);
       localStorage.setItem('abundanceUser', JSON.stringify(defaultUser));
-      setCurrentScreen(path as Screen);
+      setCurrentScreen(screenFromPath);
     }
   }, []);
 
@@ -1917,7 +1935,7 @@ export default function Home() {
     }
   };
 
-  const showTabBar = ['dashboard', 'meditations', 'board', 'progress', 'profile'].includes(currentScreen);
+  const showTabBar = ['dashboard', 'meditations', 'journal', 'progress', 'profile'].includes(currentScreen);
 
   return (
     <main className={styles.main}>
