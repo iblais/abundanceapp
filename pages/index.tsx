@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import styles from '../styles/Home.module.css';
-import { journalService, chatService, getAnonymousUserId, JournalEntry } from '../lib/firebase';
+import { journalService, chatService, getAnonymousUserId, JournalEntry } from '../lib/supabase';
 import { aiMentorService } from '../lib/ai-mentor';
 
 // Types
