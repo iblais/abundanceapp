@@ -2961,6 +2961,44 @@ export default function Home() {
   const [currentVisualization, setCurrentVisualization] = useState<any>(null);
   const [showEnergyMode, setShowEnergyMode] = useState(false);
 
+  // Screen to URL path mapping
+  const screenToPath: Record<Screen, string> = {
+    'welcome': '/',
+    'onboarding': '/',
+    'rhythm': '/',
+    'dashboard': '/dashboard',
+    'meditations': '/meditations',
+    'journal': '/journal',
+    'progress': '/progress',
+    'mentor': '/mentor',
+    'settings': '/settings',
+    'profile': '/profile',
+    'player': '/player',
+    'board': '/board',
+    'gratitude': '/gratitude',
+    'quickshifts': '/quickshifts',
+    'breathing': '/breathing',
+    'learn': '/learn-grow',
+    'article': '/learn-grow',
+    'visualizations': '/visualizations',
+    'visualizationPlayer': '/visualizations',
+    'emotionalReset': '/emotional-reset',
+    'soundscapes': '/soundscapes',
+    'audiobooks': '/audiobooks',
+    'paywall': '/subscribe',
+    'reminders': '/reminders',
+    'notifications': '/settings/notifications',
+    'energyMode': '/dashboard',
+    'voiceSelector': '/voice',
+  };
+
+  // Navigate to screen and update URL
+  const navigateToScreen = (screen: Screen) => {
+    setCurrentScreen(screen);
+    const path = screenToPath[screen] || '/dashboard';
+    window.history.pushState({}, '', path);
+  };
+
   const updateUser = (updates: Partial<UserState>) => {
     const updatedUser = { ...user, ...updates };
     setUser(updatedUser);
@@ -3064,7 +3102,7 @@ export default function Home() {
       case 'rhythm':
         return <RhythmScreen onComplete={handleRhythmComplete} />;
       case 'dashboard':
-        return <DashboardScreen user={user} onNavigate={setCurrentScreen} />;
+        return <DashboardScreen user={user} onNavigate={navigateToScreen} />;
       case 'meditations':
         return <MeditationsScreen onPlay={() => setCurrentScreen('player')} />;
       case 'journal':
@@ -3137,7 +3175,7 @@ export default function Home() {
       case 'energyMode':
         return null; // Handled as overlay
       default:
-        return <DashboardScreen user={user} onNavigate={setCurrentScreen} />;
+        return <DashboardScreen user={user} onNavigate={navigateToScreen} />;
     }
   };
 
