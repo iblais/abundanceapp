@@ -1,13 +1,15 @@
 /**
- * Abundance Flow - Main App Page
+ * Abundance Recode - Main App Page
  * Premium visual design matching reference screens
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styles from '../styles/Home.module.css';
+import { journalService, chatService, getAnonymousUserId, JournalEntry } from '../lib/supabase';
+import { aiMentorService } from '../lib/ai-mentor';
 
 // Types
-type Screen = 'welcome' | 'onboarding' | 'rhythm' | 'dashboard' | 'meditations' | 'journal' | 'progress' | 'mentor' | 'settings' | 'profile' | 'player' | 'board';
+type Screen = 'welcome' | 'onboarding' | 'rhythm' | 'dashboard' | 'meditations' | 'journal' | 'progress' | 'mentor' | 'settings' | 'profile' | 'player' | 'board' | 'gratitude' | 'quickshifts' | 'breathing' | 'learn' | 'article' | 'visualizations' | 'visualizationPlayer' | 'emotionalReset' | 'soundscapes' | 'audiobooks' | 'paywall' | 'reminders' | 'energyMode' | 'voiceSelector';
 
 interface UserState {
   onboardingComplete: boolean;
@@ -296,15 +298,71 @@ const Icons = {
       <path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c-1.5-2-1.5-6-1.5-6s3.5 2 6 2c2.5 0 4.9-1.4 5.9-3.9C21 6 21 12 17.657 18.657z" />
     </svg>
   ),
+  book: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+    </svg>
+  ),
+  eye: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  ),
+  music: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 18V5l12-2v13" />
+      <circle cx="6" cy="18" r="3" />
+      <circle cx="18" cy="16" r="3" />
+    </svg>
+  ),
+  headphones: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+      <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+    </svg>
+  ),
+  volume: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+      <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+    </svg>
+  ),
+  clock: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </svg>
+  ),
+  crown: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14" />
+    </svg>
+  ),
+  lock: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
+  ),
+  externalLink: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+      <polyline points="15 3 21 3 21 9" />
+      <line x1="10" y1="14" x2="21" y2="3" />
+    </svg>
+  ),
 };
 
 // Tab Bar Component - matches reference with 5 icons
 const TabBar: React.FC<{ activeTab: string; onTabChange: (tab: Screen) => void }> = ({ activeTab, onTabChange }) => {
   const tabs = [
     { id: 'dashboard', icon: Icons.home, label: 'Home' },
-    { id: 'board', icon: Icons.grid, label: 'Board' },
-    { id: 'meditations', icon: Icons.meditation, label: 'Meditate' },
-    { id: 'progress', icon: Icons.chart, label: 'Goals' },
+    { id: 'meditations', icon: Icons.grid, label: 'Library' },
+    { id: 'journal', icon: Icons.journal, label: 'Journal' },
+    { id: 'progress', icon: Icons.chart, label: 'Analytics' },
     { id: 'profile', icon: Icons.profile, label: 'Profile' },
   ];
 
@@ -337,7 +395,7 @@ const WelcomeScreen: React.FC<{ onBegin: () => void }> = ({ onBegin }) => {
         <div className={styles.welcomeCardInner}>
           <div className={styles.welcomeContent}>
             <Logo size={100} />
-            <h1 className={styles.welcomeTitle}>Abundance Flow</h1>
+            <h1 className={styles.welcomeTitle}>Abundance Recode</h1>
             <p className={styles.welcomeTagline}>Shift your state. Reshape your reality.</p>
           </div>
           <Button onClick={onBegin} fullWidth>Begin</Button>
@@ -515,16 +573,23 @@ const RhythmScreen: React.FC<{ onComplete: (morning: string, evening: string) =>
   );
 };
 
-// Dashboard Screen - matches reference with 3 cards
+// Dashboard Screen - matches reference with action cards
 const DashboardScreen: React.FC<{
   user: UserState;
   onNavigate: (screen: Screen) => void;
 }> = ({ user, onNavigate }) => {
 
   const quickActions = [
-    { title: 'Morning Visioneering', subtitle: 'Guided Focus for 10 mins.', icon: Icons.sparkle, screen: 'player' as Screen },
-    { title: 'Quick Shifts', subtitle: 'Instant reset exercises.', icon: Icons.heart, screen: 'meditations' as Screen },
-    { title: 'Reality Shift Board', subtitle: 'Track your progress & insights.', icon: Icons.chart, screen: 'journal' as Screen },
+    { title: 'Morning Visioneering', subtitle: 'Guided meditation for 10 mins.', icon: Icons.sparkle, screen: 'player' as Screen },
+    { title: 'Quick Shifts', subtitle: 'Instant reset exercises.', icon: Icons.heart, screen: 'quickshifts' as Screen },
+    { title: 'Gratitude Journal', subtitle: 'Capture what you are grateful for.', icon: Icons.journal, screen: 'gratitude' as Screen },
+    { title: 'Inner Mentor', subtitle: 'Chat with your higher self.', icon: Icons.chat, screen: 'mentor' as Screen },
+    { title: 'Reality Shift Board', subtitle: 'Visualize your new identity.', icon: Icons.grid, screen: 'board' as Screen },
+    { title: 'Learn & Grow', subtitle: 'Articles for transformation.', icon: Icons.book, screen: 'learn' as Screen },
+    { title: 'Visualization Tools', subtitle: 'See your future self.', icon: Icons.eye, screen: 'visualizations' as Screen },
+    { title: 'Emotional Reset', subtitle: 'Process and release emotions.', icon: Icons.heart, screen: 'emotionalReset' as Screen },
+    { title: 'Soundscapes', subtitle: 'Ambient sounds for focus.', icon: Icons.music, screen: 'soundscapes' as Screen },
+    { title: 'Audiobooks', subtitle: 'Recommended reading.', icon: Icons.headphones, screen: 'audiobooks' as Screen },
   ];
 
   return (
@@ -555,60 +620,198 @@ const DashboardScreen: React.FC<{
   );
 };
 
-// Meditations Screen
+// Search Icon
+const SearchIcon = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="8" />
+    <path d="M21 21l-4.35-4.35" />
+  </svg>
+);
+
+// Category Icons for Meditations
+const CategoryIcons: Record<string, JSX.Element> = {
+  focus: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="12" cy="12" r="2" />
+      <circle cx="12" cy="12" r="6" />
+      <circle cx="12" cy="12" r="10" />
+    </svg>
+  ),
+  calm: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M2 12h4l2-8 4 16 4-12 2 4h4" />
+    </svg>
+  ),
+  confidence: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z" />
+    </svg>
+  ),
+  abundance: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6v12M8 10h8M8 14h8" />
+    </svg>
+  ),
+  sleep: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+    </svg>
+  ),
+  walking: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="12" cy="4" r="2" />
+      <path d="M15 22l-3-5m3 5v-8l-2-3m-2-2l-4 6m0 0v7m0-7l4 2" />
+    </svg>
+  ),
+};
+
+// Category gradient colors
+const categoryGradients: Record<string, string> = {
+  focus: 'linear-gradient(135deg, rgba(100, 150, 255, 0.3) 0%, rgba(100, 150, 255, 0.1) 100%)',
+  calm: 'linear-gradient(135deg, rgba(100, 200, 180, 0.3) 0%, rgba(100, 200, 180, 0.1) 100%)',
+  confidence: 'linear-gradient(135deg, rgba(255, 180, 100, 0.3) 0%, rgba(255, 180, 100, 0.1) 100%)',
+  abundance: 'linear-gradient(135deg, rgba(244, 207, 119, 0.3) 0%, rgba(244, 207, 119, 0.1) 100%)',
+  sleep: 'linear-gradient(135deg, rgba(147, 130, 255, 0.3) 0%, rgba(147, 130, 255, 0.1) 100%)',
+  walking: 'linear-gradient(135deg, rgba(150, 220, 150, 0.3) 0%, rgba(150, 220, 150, 0.1) 100%)',
+};
+
+// Meditations Library Screen - Enhanced with search and category grid
 const MeditationsScreen: React.FC<{ onPlay: () => void }> = ({ onPlay }) => {
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const categories = ['All', 'Gratitude', 'Confidence', 'Calm', 'Focus', 'Abundance'];
-
-  const meditations = [
-    { id: 1, title: 'Morning Visioneering', description: 'Start your day by connecting with your highest potential.', durations: [5, 8, 12], category: 'morning' },
-    { id: 2, title: 'Gratitude Expansion', description: 'Cultivate appreciation that attracts more abundance.', durations: [5, 8, 12], category: 'gratitude' },
-    { id: 3, title: 'Confidence Activation', description: 'Awaken your inner certainty and calm assurance.', durations: [5, 8, 12], category: 'confidence' },
-    { id: 4, title: 'Calm Reset', description: 'Return to peaceful clarity when life feels overwhelming.', durations: [5, 8, 12], category: 'calm' },
-    { id: 5, title: 'Focus Flow', description: 'Clear mental clutter and enter deep, productive focus.', durations: [5, 8, 12], category: 'focus', isPremium: true },
-    { id: 6, title: 'Abundance Alignment', description: 'Tune your energy to the frequency of abundance.', durations: [5, 8, 12], category: 'abundance', isPremium: true },
+  const categories = [
+    { id: 'focus', name: 'Focus', count: 4 },
+    { id: 'calm', name: 'Calm', count: 5 },
+    { id: 'confidence', name: 'Confidence', count: 4 },
+    { id: 'abundance', name: 'Abundance', count: 6 },
+    { id: 'sleep', name: 'Sleep', count: 5 },
+    { id: 'walking', name: 'Walking', count: 3 },
   ];
+
+  const allMeditations = [
+    { id: 1, title: 'Morning Visioneering', description: 'Start your day by connecting with your highest potential.', duration: 12, category: 'focus' },
+    { id: 2, title: 'Gratitude Expansion', description: 'Cultivate appreciation that attracts more abundance.', duration: 10, category: 'abundance' },
+    { id: 3, title: 'Confidence Activation', description: 'Awaken your inner certainty and calm assurance.', duration: 15, category: 'confidence' },
+    { id: 4, title: 'Calm Reset', description: 'Return to peaceful clarity when life feels overwhelming.', duration: 8, category: 'calm' },
+    { id: 5, title: 'Focus Flow', description: 'Clear mental clutter and enter deep, productive focus.', duration: 12, category: 'focus' },
+    { id: 6, title: 'Abundance Alignment', description: 'Tune your energy to the frequency of abundance.', duration: 15, category: 'abundance' },
+    { id: 7, title: 'Deep Sleep Journey', description: 'Drift into restful sleep with guided relaxation.', duration: 20, category: 'sleep' },
+    { id: 8, title: 'Walking Meditation', description: 'Find peace and presence in every step.', duration: 15, category: 'walking' },
+    { id: 9, title: 'Stress Release', description: 'Let go of tension and find your center.', duration: 10, category: 'calm' },
+    { id: 10, title: 'Wealthy Mindset', description: 'Reprogram your relationship with abundance.', duration: 18, category: 'abundance' },
+    { id: 11, title: 'Inner Strength', description: 'Connect with your core power and resilience.', duration: 12, category: 'confidence' },
+    { id: 12, title: 'Laser Focus', description: 'Sharpen your concentration and mental clarity.', duration: 8, category: 'focus' },
+  ];
+
+  const filteredMeditations = allMeditations.filter(m => {
+    const matchesSearch = m.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         m.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory ? m.category === selectedCategory : true;
+    return matchesSearch && matchesCategory;
+  });
+
+  // If a category is selected, show meditation list for that category
+  if (selectedCategory) {
+    return (
+      <div className={styles.meditationsScreen}>
+        <header className={styles.screenHeaderWithBack}>
+          <button className={styles.backButtonSmall} onClick={() => setSelectedCategory(null)}>
+            {Icons.back}
+          </button>
+          <div>
+            <h2>{categories.find(c => c.id === selectedCategory)?.name}</h2>
+            <p>{filteredMeditations.length} meditations</p>
+          </div>
+        </header>
+
+        <div className={styles.meditationsList}>
+          {filteredMeditations.map((meditation) => (
+            <GlassCard key={meditation.id} className={styles.meditationCard} onClick={onPlay}>
+              <div className={styles.meditationIcon} style={{ background: categoryGradients[meditation.category] }}>
+                {CategoryIcons[meditation.category] || Icons.meditation}
+              </div>
+              <div className={styles.meditationInfo}>
+                <h4>{meditation.title}</h4>
+                <p>{meditation.description}</p>
+                <div className={styles.meditationMeta}>
+                  <span className={styles.durationTag}>{meditation.duration} min</span>
+                </div>
+              </div>
+              <button className={styles.playIconButton}>{Icons.play}</button>
+            </GlassCard>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.meditationsScreen}>
       <header className={styles.screenHeader}>
         <h2>Meditations</h2>
-        <p>Guided practices for transformation</p>
+        <p>Rewire your mind for abundance.</p>
       </header>
 
-      <div className={styles.categoryFilter}>
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            className={`${styles.categoryChip} ${selectedCategory === cat.toLowerCase() ? styles.categoryChipActive : ''}`}
-            onClick={() => setSelectedCategory(cat.toLowerCase())}
-          >
-            {cat}
-          </button>
-        ))}
+      {/* Search Bar */}
+      <div className={styles.searchBar}>
+        <span className={styles.searchIcon}>{SearchIcon}</span>
+        <input
+          type="text"
+          placeholder="Search meditations..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className={styles.searchInput}
+        />
       </div>
 
-      <div className={styles.meditationsList}>
-        {meditations.map((meditation) => (
-          <GlassCard key={meditation.id} className={styles.meditationCard} onClick={onPlay}>
-            <div className={styles.meditationIcon}>
-              {Icons.meditation}
+      {/* If searching, show results list */}
+      {searchQuery && (
+        <div className={styles.meditationsList}>
+          {filteredMeditations.length > 0 ? (
+            filteredMeditations.map((meditation) => (
+              <GlassCard key={meditation.id} className={styles.meditationCard} onClick={onPlay}>
+                <div className={styles.meditationIcon} style={{ background: categoryGradients[meditation.category] }}>
+                  {CategoryIcons[meditation.category] || Icons.meditation}
+                </div>
+                <div className={styles.meditationInfo}>
+                  <h4>{meditation.title}</h4>
+                  <p>{meditation.description}</p>
+                  <div className={styles.meditationMeta}>
+                    <span className={styles.durationTag}>{meditation.duration} min</span>
+                  </div>
+                </div>
+                <button className={styles.playIconButton}>{Icons.play}</button>
+              </GlassCard>
+            ))
+          ) : (
+            <div className={styles.emptyState}>
+              <p>No meditations found for &quot;{searchQuery}&quot;</p>
             </div>
-            <div className={styles.meditationInfo}>
-              <h4>{meditation.title}</h4>
-              <p>{meditation.description}</p>
-              <div className={styles.meditationMeta}>
-                {meditation.durations.map((dur) => (
-                  <span key={dur} className={styles.durationTag}>{dur} min</span>
-                ))}
-                {meditation.isPremium && <span className={styles.premiumBadge}>Premium</span>}
+          )}
+        </div>
+      )}
+
+      {/* Category Grid - Show when not searching */}
+      {!searchQuery && (
+        <div className={styles.categoryGrid}>
+          {categories.map((category) => (
+            <div
+              key={category.id}
+              className={styles.categoryCard}
+              style={{ background: categoryGradients[category.id] }}
+              onClick={() => setSelectedCategory(category.id)}
+            >
+              <div className={styles.categoryCardIcon}>
+                {CategoryIcons[category.id]}
               </div>
+              <span className={styles.categoryCardName}>{category.name}</span>
+              <span className={styles.categoryCardCount}>{category.count} sessions</span>
             </div>
-            <button className={styles.favoriteButton}>{Icons.heart}</button>
-          </GlassCard>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -861,26 +1064,97 @@ const ProgressScreen: React.FC<{ user: UserState }> = ({ user }) => {
   );
 };
 
-// Mentor Chat Screen
+// Inner Mentor Chat Screen - AI-powered guidance with Firestore persistence
 const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const [messages, setMessages] = useState([
-    { id: 1, role: 'mentor', content: "Welcome back. I'm here to support your journey. What's on your mind today?" },
+  const [messages, setMessages] = useState<Array<{ id: number; role: string; content: string }>>([
+    { id: 1, role: 'mentor', content: "Welcome. I am the voice of your higher self. What clarity are you seeking today?" },
   ]);
   const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
-  const sendMessage = () => {
+  // Initialize user ID and load chat history
+  useEffect(() => {
+    const initChat = async () => {
+      try {
+        const uid = await getAnonymousUserId();
+        setUserId(uid);
+
+        // Load chat history from Firestore
+        const { messages: history, error } = await chatService.getHistory(uid);
+        if (!error && history.length > 0) {
+          setMessages(history.map(m => ({
+            id: parseInt(m.id) || Date.now(),
+            role: m.role,
+            content: m.content,
+          })));
+        }
+      } catch (error) {
+        console.error('Error initializing chat:', error);
+      }
+    };
+
+    initChat();
+  }, []);
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const sendMessage = async () => {
     if (!input.trim()) return;
 
-    setMessages([...messages, { id: Date.now(), role: 'user', content: input }]);
-    setInput('');
+    const userMessage = input.trim();
+    const userMsgId = Date.now();
 
-    setTimeout(() => {
+    // Add user message to UI immediately
+    setMessages(prev => [...prev, { id: userMsgId, role: 'user', content: userMessage }]);
+    setInput('');
+    setIsTyping(true);
+
+    // Save user message to Firestore
+    if (userId) {
+      chatService.saveMessage(userId, { role: 'user', content: userMessage });
+    }
+
+    try {
+      // Get AI response
+      const conversationHistory = messages.slice(-10).map(m => ({
+        role: m.role,
+        content: m.content,
+      }));
+
+      const { response, error } = await aiMentorService.getResponse(userMessage, conversationHistory);
+
+      setIsTyping(false);
+
+      const mentorMsgId = Date.now();
+      const mentorResponse = error ? "I'm here with you. Take a deep breath. What does your heart want to explore?" : response;
+
+      // Add mentor response to UI
+      setMessages(prev => [...prev, {
+        id: mentorMsgId,
+        role: 'mentor',
+        content: mentorResponse,
+      }]);
+
+      // Save mentor response to Firestore
+      if (userId) {
+        chatService.saveMessage(userId, { role: 'mentor', content: mentorResponse });
+      }
+    } catch (error) {
+      console.error('Error getting AI response:', error);
+      setIsTyping(false);
+
+      // Fallback response on error
       setMessages(prev => [...prev, {
         id: Date.now(),
         role: 'mentor',
-        content: "Thank you for sharing that. Let's explore it together. What feels most important about this for you right now?"
+        content: "I sense your energy seeking clarity. What truth is waiting to be acknowledged?",
       }]);
-    }, 1500);
+    }
   };
 
   return (
@@ -889,7 +1163,7 @@ const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         <button onClick={onClose}>{Icons.close}</button>
         <div className={styles.mentorTitle}>
           <h3>Inner Mentor</h3>
-          <p>Your personal guide</p>
+          <p>The voice of your higher self</p>
         </div>
         <div style={{ width: 24 }} />
       </header>
@@ -908,6 +1182,17 @@ const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             </div>
           </div>
         ))}
+        {isTyping && (
+          <div className={`${styles.message} ${styles.messageMentor}`}>
+            <div className={styles.mentorAvatar}>{Icons.sparkle}</div>
+            <div className={`${styles.messageBubble} ${styles.typingIndicator}`}>
+              <span className={styles.typingDot} />
+              <span className={styles.typingDot} />
+              <span className={styles.typingDot} />
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
       </div>
 
       <div className={styles.inputContainer}>
@@ -923,6 +1208,7 @@ const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           <button
             className={`${styles.sendButton} ${input.trim() ? styles.sendButtonActive : ''}`}
             onClick={sendMessage}
+            disabled={isTyping}
           >
             {Icons.send}
           </button>
@@ -1054,15 +1340,57 @@ const ProfileScreen: React.FC<{ user: UserState; onClose: () => void; onSettings
   </div>
 );
 
-// Reality Shift Board - Bento grid vision board
+// Reality Shift Board - Bento grid vision board with add functionality
+interface BoardItem {
+  id: number;
+  type: 'text' | 'image' | 'quote';
+  content?: string;
+  author?: string;
+  large?: boolean;
+  style?: React.CSSProperties;
+}
+
 const BoardScreen: React.FC = () => {
-  const boardItems = [
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [addType, setAddType] = useState<'text' | 'image' | 'quote' | null>(null);
+  const [newContent, setNewContent] = useState('');
+  const [newAuthor, setNewAuthor] = useState('');
+  const [boardItems, setBoardItems] = useState<BoardItem[]>([
     { id: 1, type: 'text', content: 'I am abundant', large: true },
     { id: 2, type: 'image', style: { backgroundImage: 'linear-gradient(135deg, #F9A825 0%, #FF7043 50%, #7B1FA2 100%)' } },
-    { id: 3, type: 'quote', content: '"Create the life you dream of."' },
+    { id: 3, type: 'quote', content: 'Create the life you dream of.', author: 'Unknown' },
     { id: 4, type: 'text', content: 'My future is bright' },
     { id: 5, type: 'image', large: true, style: { backgroundImage: 'linear-gradient(135deg, #80DEEA 0%, #CE93D8 50%, #FFAB91 100%)' } },
-  ];
+  ]);
+
+  const handleAddItem = () => {
+    if (!addType) return;
+
+    const newItem: BoardItem = {
+      id: Date.now(),
+      type: addType,
+      content: newContent || undefined,
+      author: newAuthor || undefined,
+      large: boardItems.length % 3 === 0,
+    };
+
+    if (addType === 'image') {
+      const gradients = [
+        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+        'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+      ];
+      newItem.style = { backgroundImage: gradients[Math.floor(Math.random() * gradients.length)] };
+    }
+
+    setBoardItems([...boardItems, newItem]);
+    setShowAddModal(false);
+    setAddType(null);
+    setNewContent('');
+    setNewAuthor('');
+  };
 
   return (
     <div className={styles.boardScreen}>
@@ -1079,14 +1407,430 @@ const BoardScreen: React.FC = () => {
             style={item.style}
           >
             {item.type === 'text' && <span className={styles.bentoText}>{item.content}</span>}
-            {item.type === 'quote' && <span className={styles.bentoQuote}>{item.content}</span>}
+            {item.type === 'quote' && (
+              <div className={styles.bentoQuoteWrapper}>
+                <span className={styles.bentoQuote}>&quot;{item.content}&quot;</span>
+                {item.author && <span className={styles.bentoAuthor}>— {item.author}</span>}
+              </div>
+            )}
           </div>
         ))}
       </div>
 
-      <button className={styles.fab}>
+      <button className={styles.fab} onClick={() => setShowAddModal(true)}>
         {Icons.plus}
       </button>
+
+      {/* Add Card Modal */}
+      {showAddModal && (
+        <div className={styles.modalOverlay} onClick={() => { setShowAddModal(false); setAddType(null); }}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h3>{addType ? `Add ${addType.charAt(0).toUpperCase() + addType.slice(1)} Card` : 'Choose Card Type'}</h3>
+              <button className={styles.modalClose} onClick={() => { setShowAddModal(false); setAddType(null); }}>
+                {Icons.close}
+              </button>
+            </div>
+
+            {!addType ? (
+              <div className={styles.cardTypeOptions}>
+                <button className={styles.cardTypeOption} onClick={() => setAddType('text')}>
+                  <div className={styles.cardTypeIcon}>{Icons.journal}</div>
+                  <span>Text</span>
+                  <p>Simple affirmation or intention</p>
+                </button>
+                <button className={styles.cardTypeOption} onClick={() => setAddType('image')}>
+                  <div className={styles.cardTypeIcon}>{Icons.grid}</div>
+                  <span>Image</span>
+                  <p>Vision board image</p>
+                </button>
+                <button className={styles.cardTypeOption} onClick={() => setAddType('quote')}>
+                  <div className={styles.cardTypeIcon}>{Icons.sparkle}</div>
+                  <span>Quote</span>
+                  <p>Inspiring quote with attribution</p>
+                </button>
+              </div>
+            ) : (
+              <div className={styles.cardForm}>
+                {addType === 'text' && (
+                  <input
+                    type="text"
+                    placeholder="Enter your affirmation..."
+                    value={newContent}
+                    onChange={(e) => setNewContent(e.target.value)}
+                    className={styles.modalInput}
+                  />
+                )}
+                {addType === 'quote' && (
+                  <>
+                    <input
+                      type="text"
+                      placeholder="Enter the quote..."
+                      value={newContent}
+                      onChange={(e) => setNewContent(e.target.value)}
+                      className={styles.modalInput}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Author (optional)"
+                      value={newAuthor}
+                      onChange={(e) => setNewAuthor(e.target.value)}
+                      className={styles.modalInput}
+                    />
+                  </>
+                )}
+                {addType === 'image' && (
+                  <p className={styles.imagePlaceholder}>
+                    A beautiful gradient image will be added to your board.
+                  </p>
+                )}
+                <div className={styles.modalActions}>
+                  <Button onClick={() => setAddType(null)} variant="ghost">Back</Button>
+                  <Button onClick={handleAddItem} disabled={addType !== 'image' && !newContent}>Add Card</Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Gratitude Journal Screen - with Firestore integration
+const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  const [entry, setEntry] = useState('');
+  const [showPastEntries, setShowPastEntries] = useState(false);
+  const [entries, setEntries] = useState<Array<{ id: string; date: string; prompt: string; content: string }>>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  const today = new Date();
+  const dateString = today.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  const prompts = [
+    'What are three things you are grateful for today?',
+    'What moment brought you joy recently?',
+    'Who in your life are you thankful for and why?',
+    'What simple pleasure did you enjoy today?',
+    'What challenge are you grateful for overcoming?',
+  ];
+
+  const todayPrompt = prompts[today.getDate() % prompts.length];
+
+  // Load entries from Firestore on mount
+  useEffect(() => {
+    const loadEntries = async () => {
+      try {
+        const uid = await getAnonymousUserId();
+        setUserId(uid);
+
+        const { entries: firestoreEntries, error } = await journalService.getEntries(uid);
+        if (!error && firestoreEntries.length > 0) {
+          setEntries(firestoreEntries.map(e => ({
+            id: e.id,
+            date: e.date,
+            prompt: e.prompt,
+            content: e.content,
+          })));
+        } else {
+          // Fallback to sample entries if no Firestore entries
+          setEntries([
+            { id: '1', date: '2026-01-17', prompt: 'What made you smile today?', content: 'The sunshine through my window this morning was beautiful. I felt grateful for a peaceful start to the day.' },
+            { id: '2', date: '2026-01-16', prompt: 'What are three things you appreciate?', content: 'My health, my family, and the opportunity to grow every day.' },
+          ]);
+        }
+      } catch (error) {
+        console.error('Error loading entries:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadEntries();
+  }, []);
+
+  const handleSave = async () => {
+    if (!entry.trim() || !userId) return;
+
+    setIsSaving(true);
+    try {
+      const newEntry = {
+        date: today.toISOString().split('T')[0],
+        prompt: todayPrompt,
+        content: entry.trim(),
+        type: 'gratitude' as const,
+      };
+
+      // Save to Firestore
+      const { id, error } = await journalService.saveEntry(userId, newEntry);
+
+      if (!error) {
+        setEntries([{ ...newEntry, id }, ...entries]);
+        setEntry('');
+        // Show success feedback
+        const successMsg = document.createElement('div');
+        successMsg.className = styles.successToast || '';
+        successMsg.textContent = 'Entry saved!';
+        document.body.appendChild(successMsg);
+        setTimeout(() => successMsg.remove(), 2000);
+      } else {
+        // Fallback to local storage if Firestore fails
+        const localId = Date.now().toString();
+        setEntries([{ ...newEntry, id: localId }, ...entries]);
+        setEntry('');
+        console.log('Saved locally (Firestore unavailable)');
+      }
+    } catch (error) {
+      console.error('Error saving entry:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (showPastEntries) {
+    return (
+      <div className={styles.screen}>
+        <header className={styles.screenHeaderWithBack}>
+          <button className={styles.backButtonSmall} onClick={() => setShowPastEntries(false)}>
+            {Icons.back}
+          </button>
+          <div>
+            <h2>Past Entries</h2>
+            <p>{entries.length} entries</p>
+          </div>
+        </header>
+
+        <div className={styles.pastEntriesList}>
+          {isLoading ? (
+            <div className={styles.loadingState}>Loading entries...</div>
+          ) : entries.length === 0 ? (
+            <div className={styles.emptyState}>
+              <p>No entries yet. Start writing!</p>
+            </div>
+          ) : (
+            entries.map((e) => (
+              <GlassCard key={e.id} className={styles.pastEntryCard}>
+                <span className={styles.pastEntryDate}>
+                  {new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </span>
+                <p className={styles.pastEntryPrompt}>{e.prompt}</p>
+                <p className={styles.pastEntryText}>{e.content}</p>
+              </GlassCard>
+            ))
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.screen}>
+      <header className={styles.screenHeaderWithBack}>
+        <button className={styles.backButtonSmall} onClick={onClose}>
+          {Icons.back}
+        </button>
+        <div>
+          <h2>Gratitude Journal</h2>
+          <p>{dateString}</p>
+        </div>
+      </header>
+
+      <div className={styles.gratitudeContent}>
+        <GlassCard variant="elevated" className={styles.promptCard}>
+          <p className={styles.promptLabel}>Today&apos;s Prompt</p>
+          <p className={styles.promptText}>{todayPrompt}</p>
+        </GlassCard>
+
+        <div className={styles.journalEditor}>
+          <textarea
+            placeholder="Write your gratitude entry here..."
+            value={entry}
+            onChange={(e) => setEntry(e.target.value)}
+            className={styles.journalTextarea}
+          />
+        </div>
+
+        <div className={styles.journalActions}>
+          <Button onClick={handleSave} fullWidth disabled={!entry.trim() || isSaving}>
+            {isSaving ? 'Saving...' : 'Save Entry'}
+          </Button>
+          <button className={styles.textButton} onClick={() => setShowPastEntries(true)}>
+            View Past Entries
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Quick Shift Tools Screen
+const QuickShiftToolsScreen: React.FC<{ onClose: () => void; onBreathing: () => void }> = ({ onClose, onBreathing }) => {
+  const tools = [
+    {
+      id: 'breathing',
+      title: 'Coherent Breathing',
+      description: 'A 3-minute guided breathing exercise to reset your nervous system.',
+      duration: '3 min',
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="12" cy="12" r="6" />
+          <circle cx="12" cy="12" r="2" />
+        </svg>
+      ),
+      action: onBreathing,
+    },
+    {
+      id: 'bodyscan',
+      title: 'Body Scan',
+      description: 'A 5-minute guided audio practice to release tension.',
+      duration: '5 min',
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <circle cx="12" cy="5" r="3" />
+          <path d="M12 8v4m-4 8l2-6h4l2 6m-8-4h8" />
+        </svg>
+      ),
+      action: () => alert('Body Scan audio would play here'),
+    },
+    {
+      id: 'affirmation',
+      title: 'Affirmation Repetition',
+      description: 'A 2-minute practice where you repeat a chosen affirmation.',
+      duration: '2 min',
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74L12 2z" />
+        </svg>
+      ),
+      action: () => alert('Affirmation audio would play here'),
+    },
+  ];
+
+  return (
+    <div className={styles.screen}>
+      <header className={styles.screenHeaderWithBack}>
+        <button className={styles.backButtonSmall} onClick={onClose}>
+          {Icons.back}
+        </button>
+        <div>
+          <h2>Quick Shifts</h2>
+          <p>Instant reset exercises.</p>
+        </div>
+      </header>
+
+      <div className={styles.quickShiftsList}>
+        {tools.map((tool) => (
+          <GlassCard key={tool.id} className={styles.quickShiftCard} onClick={tool.action}>
+            <div className={styles.quickShiftIcon}>
+              {tool.icon}
+            </div>
+            <div className={styles.quickShiftInfo}>
+              <h4>{tool.title}</h4>
+              <p>{tool.description}</p>
+              <span className={styles.quickShiftDuration}>{tool.duration}</span>
+            </div>
+            <div className={styles.quickShiftArrow}>{Icons.chevronRight}</div>
+          </GlassCard>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Breathing Exercise Screen (Coherent Breathing)
+const BreathingExerciseScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  const [isActive, setIsActive] = useState(false);
+  const [phase, setPhase] = useState<'inhale' | 'exhale'>('inhale');
+  const [timeLeft, setTimeLeft] = useState(180); // 3 minutes in seconds
+  const [circleScale, setCircleScale] = useState(1);
+
+  useEffect(() => {
+    let breathingInterval: NodeJS.Timeout;
+    let countdownInterval: NodeJS.Timeout;
+
+    if (isActive && timeLeft > 0) {
+      // Breathing animation: 6 seconds inhale, 6 seconds exhale
+      let breathTime = 0;
+      breathingInterval = setInterval(() => {
+        breathTime += 100;
+        const cycleTime = breathTime % 12000; // 12 second cycle
+
+        if (cycleTime < 6000) {
+          // Inhale phase
+          setPhase('inhale');
+          setCircleScale(1 + (cycleTime / 6000) * 0.5); // Scale from 1 to 1.5
+        } else {
+          // Exhale phase
+          setPhase('exhale');
+          setCircleScale(1.5 - ((cycleTime - 6000) / 6000) * 0.5); // Scale from 1.5 to 1
+        }
+      }, 100);
+
+      countdownInterval = setInterval(() => {
+        setTimeLeft((t) => {
+          if (t <= 1) {
+            setIsActive(false);
+            return 0;
+          }
+          return t - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      clearInterval(breathingInterval);
+      clearInterval(countdownInterval);
+    };
+  }, [isActive, timeLeft]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <div className={styles.breathingScreen}>
+      <button className={styles.closeButton} onClick={onClose}>{Icons.close}</button>
+
+      <div className={styles.breathingContent}>
+        <h2 className={styles.breathingTitle}>Coherent Breathing</h2>
+        <p className={styles.breathingSubtitle}>6 seconds inhale, 6 seconds exhale</p>
+
+        <div className={styles.breathingCircleContainer}>
+          <div
+            className={styles.breathingCircle}
+            style={{
+              transform: `scale(${circleScale})`,
+              transition: 'transform 0.1s linear'
+            }}
+          />
+          <div className={styles.breathingPhase}>
+            {isActive ? (phase === 'inhale' ? 'Breathe In' : 'Breathe Out') : 'Ready'}
+          </div>
+        </div>
+
+        <div className={styles.breathingTimer}>{formatTime(timeLeft)}</div>
+
+        <Button
+          onClick={() => {
+            if (timeLeft === 0) {
+              setTimeLeft(180);
+            }
+            setIsActive(!isActive);
+          }}
+          fullWidth
+        >
+          {isActive ? 'Pause' : (timeLeft === 0 ? 'Restart' : 'Start')}
+        </Button>
+      </div>
     </div>
   );
 };
@@ -1125,6 +1869,805 @@ const SettingsScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   );
 };
 
+// ============================================
+// PART 1: CONTENT LIBRARIES
+// ============================================
+
+// 1. Learn & Grow - Article Library Screen
+const LearnAndGrowScreen: React.FC<{ onClose: () => void; onArticle: (article: any) => void }> = ({ onClose, onArticle }) => {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const categories = [
+    { id: 'mindset', title: 'Mindset', icon: Icons.sparkle, color: '#8B5CF6' },
+    { id: 'energy', title: 'Energy', icon: Icons.streak, color: '#F59E0B' },
+    { id: 'abundance', title: 'Abundance', icon: Icons.crown, color: '#10B981' },
+    { id: 'neuroscience', title: 'Neuroscience', icon: Icons.chart, color: '#3B82F6' },
+  ];
+
+  const articles: Record<string, Array<{ id: string; title: string; description: string; content: string; imageUrl: string }>> = {
+    mindset: [
+      { id: '1', title: 'The Power of Belief', description: 'How your beliefs shape your reality', content: 'Your beliefs are the invisible architects of your life. Every thought you consistently think becomes a belief, and every belief shapes the actions you take. When you believe something is possible, your brain begins to find evidence to support that belief, creating a self-fulfilling prophecy.\n\nThe science behind this is fascinating. Your reticular activating system (RAS) filters information based on what you deem important. When you believe in abundance, you start noticing opportunities everywhere. When you believe in scarcity, you see only limitations.\n\nTo shift your beliefs, start by questioning the thoughts you accept as truth. Ask yourself: "Is this belief serving me?" If not, consciously choose a new belief and look for evidence to support it. Over time, this new belief will become your default operating system.', imageUrl: '' },
+      { id: '2', title: 'Growth vs Fixed Mindset', description: 'Embrace challenges as opportunities', content: 'Carol Dweck\'s research on mindset has transformed how we understand human potential. A fixed mindset believes abilities are static—you either have them or you don\'t. A growth mindset understands that abilities can be developed through dedication and hard work.\n\nPeople with growth mindsets embrace challenges, persist through obstacles, learn from criticism, and find inspiration in others\' success. They understand that effort is the path to mastery.\n\nTo cultivate a growth mindset, replace "I can\'t" with "I can\'t yet." Celebrate your efforts, not just outcomes. View failures as valuable feedback rather than evidence of inadequacy.', imageUrl: '' },
+    ],
+    energy: [
+      { id: '3', title: 'Morning Energy Rituals', description: 'Start your day with power', content: 'How you start your morning sets the tone for your entire day. The first hour after waking is when your brain is most receptive to programming. Use this time wisely.\n\nA powerful morning routine might include: 5 minutes of deep breathing to activate your parasympathetic nervous system, 10 minutes of movement to increase blood flow and release endorphins, 5 minutes of visualization to prime your mind for success, and 10 minutes of journaling to clarify your intentions.\n\nConsistency is key. Your morning ritual doesn\'t need to be elaborate—it needs to be sustainable. Start small and build from there.', imageUrl: '' },
+      { id: '4', title: 'Energy Management', description: 'Protect and amplify your vital force', content: 'Energy is your most precious resource. Unlike time, which passes regardless of what you do, energy can be cultivated and protected.\n\nThere are four dimensions of energy: physical (sleep, nutrition, exercise), emotional (positive relationships, self-compassion), mental (focus, creativity), and spiritual (purpose, values). Neglecting any dimension affects the others.\n\nProtect your energy by setting boundaries, limiting exposure to negativity, and scheduling regular recovery time. Amplify your energy through practices that fill you up—nature, creativity, meaningful connection, and purposeful work.', imageUrl: '' },
+    ],
+    abundance: [
+      { id: '5', title: 'The Abundance Frequency', description: 'Tune into unlimited possibility', content: 'Abundance is not just about money—it\'s a state of being. It\'s the recognition that the universe is infinitely generous and that there is always enough.\n\nWhen you operate from abundance, you give freely because you know more is coming. You celebrate others\' success because you understand that their win doesn\'t diminish yours. You take inspired action without desperation because you trust in the timing of your life.\n\nTo tune into the abundance frequency, practice gratitude daily. What you appreciate, appreciates. Notice the abundance already present in your life—the air you breathe, the relationships you have, the opportunities before you.', imageUrl: '' },
+      { id: '6', title: 'Money Mindset Mastery', description: 'Transform your relationship with wealth', content: 'Your relationship with money often mirrors your relationship with yourself. If you feel unworthy of love, you likely feel unworthy of wealth. The inner work is the real work.\n\nCommon money blocks include: believing money is evil, feeling guilty about wanting more, fearing judgment from others, and associating wealth with negative characteristics.\n\nTo transform your money mindset, first become aware of your current beliefs. Journal about your earliest money memories. Notice the emotions that arise when you think about wealth. Then consciously choose new beliefs that align with who you want to become.', imageUrl: '' },
+    ],
+    neuroscience: [
+      { id: '7', title: 'Neuroplasticity & Change', description: 'Your brain can rewire itself', content: 'For decades, scientists believed the adult brain was fixed. We now know this isn\'t true. Neuroplasticity—the brain\'s ability to reorganize itself by forming new neural connections—continues throughout life.\n\nEvery thought you think, every action you take, physically changes your brain. Neurons that fire together wire together. This means you can literally rewire your brain through consistent practice.\n\nThis is both empowering and sobering. It means change is always possible. It also means that negative thought patterns are constantly reinforcing themselves. Choose your mental habits wisely—they\'re building your brain.', imageUrl: '' },
+      { id: '8', title: 'The Science of Habits', description: 'Automate your success', content: 'Habits are the brain\'s way of conserving energy. Once a behavior becomes habitual, it requires almost no conscious thought. This is why habits are so powerful—they operate on autopilot.\n\nThe habit loop consists of three parts: cue (trigger), routine (behavior), and reward (benefit). To change a habit, you need to identify the cue and reward, then insert a new routine.\n\nTo build new habits, start incredibly small. Want to meditate? Start with one minute. Want to exercise? Start with one pushup. Make it so easy you can\'t say no. Then gradually increase as the habit solidifies.', imageUrl: '' },
+    ],
+  };
+
+  if (selectedCategory) {
+    const categoryArticles = articles[selectedCategory] || [];
+    return (
+      <div className={styles.screen}>
+        <header className={styles.screenHeaderWithBack}>
+          <button className={styles.backButtonSmall} onClick={() => setSelectedCategory(null)}>
+            {Icons.back}
+          </button>
+          <div>
+            <h2>{categories.find(c => c.id === selectedCategory)?.title}</h2>
+            <p>{categoryArticles.length} articles</p>
+          </div>
+        </header>
+        <div className={styles.articleList}>
+          {categoryArticles.map((article) => (
+            <GlassCard key={article.id} className={styles.articleCard} onClick={() => onArticle(article)}>
+              <h3 className={styles.articleTitle}>{article.title}</h3>
+              <p className={styles.articleDescription}>{article.description}</p>
+              <div className={styles.articleMeta}>
+                <span>5 min read</span>
+                {Icons.chevronRight}
+              </div>
+            </GlassCard>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.screen}>
+      <header className={styles.screenHeaderWithBack}>
+        <button className={styles.backButtonSmall} onClick={onClose}>
+          {Icons.back}
+        </button>
+        <div>
+          <h2>Learn & Grow</h2>
+          <p>Expand your awareness</p>
+        </div>
+      </header>
+      <div className={styles.categoryGrid}>
+        {categories.map((category) => (
+          <GlassCard
+            key={category.id}
+            className={styles.categoryCard}
+            onClick={() => setSelectedCategory(category.id)}
+          >
+            <div className={styles.categoryIcon} style={{ color: category.color }}>
+              {category.icon}
+            </div>
+            <span className={styles.categoryTitle}>{category.title}</span>
+          </GlassCard>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Article Reader Screen
+const ArticleReaderScreen: React.FC<{ article: any; onClose: () => void }> = ({ article, onClose }) => {
+  return (
+    <div className={styles.screen}>
+      <header className={styles.screenHeaderWithBack}>
+        <button className={styles.backButtonSmall} onClick={onClose}>
+          {Icons.back}
+        </button>
+        <div>
+          <h2>Article</h2>
+        </div>
+      </header>
+      <div className={styles.articleReader}>
+        <h1 className={styles.articleReaderTitle}>{article.title}</h1>
+        <p className={styles.articleReaderMeta}>5 min read</p>
+        <div className={styles.articleReaderContent}>
+          {article.content.split('\n\n').map((paragraph: string, idx: number) => (
+            <p key={idx}>{paragraph}</p>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 2. Visualization Tools Screen
+const VisualizationsScreen: React.FC<{ onClose: () => void; onPlay: (viz: any) => void }> = ({ onClose, onPlay }) => {
+  const visualizations = [
+    { id: '1', title: 'Future Self Visualization', duration: '10 min', description: 'Meet your highest potential self', prompts: ['Close your eyes and take three deep breaths...', 'Imagine yourself one year from now, having achieved all your goals...', 'Notice how you carry yourself. What do you see?', 'How do you feel in your body?', 'What does your daily life look like?', 'What beliefs do you hold about yourself?', 'What message does your future self have for you today?', 'Carry this vision with you as you open your eyes...'] },
+    { id: '2', title: 'Abundance Visualization', duration: '8 min', description: 'Tune into unlimited prosperity', prompts: ['Breathe deeply and relax your body...', 'Imagine a golden light surrounding you, representing infinite abundance...', 'Feel the energy of prosperity flowing through you...', 'See yourself receiving unexpected blessings...', 'Notice how it feels to have more than enough...', 'Express gratitude for all the abundance in your life...', 'Know that you are worthy of all that you desire...', 'Carry this feeling of abundance with you...'] },
+    { id: '3', title: 'Healing Light Visualization', duration: '12 min', description: 'Restore and rejuvenate', prompts: ['Find a comfortable position and close your eyes...', 'Imagine a warm, healing light above your head...', 'Let this light slowly descend through your body...', 'Feel it dissolving any tension or discomfort...', 'Allow it to heal any emotional wounds...', 'Let it fill every cell with vibrant energy...', 'You are whole, healed, and complete...', 'Open your eyes when you are ready...'] },
+    { id: '4', title: 'Confidence Activation', duration: '7 min', description: 'Embody unshakable self-belief', prompts: ['Stand or sit tall with your shoulders back...', 'Remember a time when you felt completely confident...', 'Let that feeling expand throughout your body...', 'See yourself succeeding in your current challenges...', 'Notice how powerful and capable you feel...', 'This confidence is always available to you...', 'You are ready for whatever comes your way...', 'Carry this confidence into your day...'] },
+  ];
+
+  return (
+    <div className={styles.screen}>
+      <header className={styles.screenHeaderWithBack}>
+        <button className={styles.backButtonSmall} onClick={onClose}>
+          {Icons.back}
+        </button>
+        <div>
+          <h2>Visualization Tools</h2>
+          <p>See your future self</p>
+        </div>
+      </header>
+      <div className={styles.visualizationList}>
+        {visualizations.map((viz) => (
+          <GlassCard key={viz.id} className={styles.visualizationCard} onClick={() => onPlay(viz)}>
+            <div className={styles.visualizationIcon}>{Icons.eye}</div>
+            <div className={styles.visualizationInfo}>
+              <h3>{viz.title}</h3>
+              <p>{viz.description}</p>
+              <span className={styles.visualizationDuration}>{viz.duration}</span>
+            </div>
+            <div className={styles.playIconSmall}>{Icons.play}</div>
+          </GlassCard>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Visualization Player Screen
+const VisualizationPlayerScreen: React.FC<{ visualization: any; onClose: () => void }> = ({ visualization, onClose }) => {
+  const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    const interval = setInterval(() => {
+      setCurrentPromptIndex((prev) => {
+        if (prev >= visualization.prompts.length - 1) {
+          setIsPlaying(false);
+          return prev;
+        }
+        return prev + 1;
+      });
+    }, 30000); // 30 seconds per prompt
+
+    return () => clearInterval(interval);
+  }, [isPlaying, visualization.prompts.length]);
+
+  return (
+    <div className={styles.visualizationPlayer}>
+      <button className={styles.closeButton} onClick={onClose}>{Icons.close}</button>
+      <div className={styles.visualizationContent}>
+        <h2 className={styles.visualizationTitle}>{visualization.title}</h2>
+        <div className={styles.promptContainer}>
+          <p className={styles.promptText}>{visualization.prompts[currentPromptIndex]}</p>
+        </div>
+        <div className={styles.promptProgress}>
+          {visualization.prompts.map((_: any, idx: number) => (
+            <div
+              key={idx}
+              className={`${styles.promptDot} ${idx === currentPromptIndex ? styles.promptDotActive : ''} ${idx < currentPromptIndex ? styles.promptDotComplete : ''}`}
+            />
+          ))}
+        </div>
+        <div className={styles.visualizationControls}>
+          <button
+            className={styles.vizControlButton}
+            onClick={() => setCurrentPromptIndex(Math.max(0, currentPromptIndex - 1))}
+          >
+            {Icons.back}
+          </button>
+          <button
+            className={styles.vizPlayButton}
+            onClick={() => setIsPlaying(!isPlaying)}
+          >
+            {isPlaying ? Icons.pause : Icons.play}
+          </button>
+          <button
+            className={styles.vizControlButton}
+            onClick={() => setCurrentPromptIndex(Math.min(visualization.prompts.length - 1, currentPromptIndex + 1))}
+          >
+            <div style={{ transform: 'rotate(180deg)' }}>{Icons.back}</div>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 3. Emotional Reset Screen
+const EmotionalResetScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  const [playing, setPlaying] = useState<string | null>(null);
+
+  const practices = [
+    { id: '1', title: 'Releasing Anxiety', duration: '5 min', description: 'Calm your nervous system' },
+    { id: '2', title: 'Processing Frustration', duration: '7 min', description: 'Transform anger into clarity' },
+    { id: '3', title: 'Healing Sadness', duration: '10 min', description: 'Honor and release grief' },
+    { id: '4', title: 'Overcoming Fear', duration: '8 min', description: 'Face fear with courage' },
+    { id: '5', title: 'Letting Go', duration: '6 min', description: 'Release what no longer serves you' },
+  ];
+
+  return (
+    <div className={styles.screen}>
+      <header className={styles.screenHeaderWithBack}>
+        <button className={styles.backButtonSmall} onClick={onClose}>
+          {Icons.back}
+        </button>
+        <div>
+          <h2>Emotional Reset</h2>
+          <p>Process and release</p>
+        </div>
+      </header>
+      <div className={styles.emotionalResetList}>
+        {practices.map((practice) => (
+          <GlassCard
+            key={practice.id}
+            className={`${styles.emotionalResetCard} ${playing === practice.id ? styles.emotionalResetCardActive : ''}`}
+            onClick={() => setPlaying(playing === practice.id ? null : practice.id)}
+          >
+            <div className={styles.emotionalResetIcon}>{Icons.heart}</div>
+            <div className={styles.emotionalResetInfo}>
+              <h3>{practice.title}</h3>
+              <p>{practice.description}</p>
+              <span className={styles.emotionalResetDuration}>{practice.duration}</span>
+            </div>
+            <button className={styles.playIconSmall}>
+              {playing === practice.id ? Icons.pause : Icons.play}
+            </button>
+          </GlassCard>
+        ))}
+      </div>
+      {playing && (
+        <div className={styles.audioPlayerBar}>
+          <div className={styles.audioPlayerInfo}>
+            <span>{practices.find(p => p.id === playing)?.title}</span>
+            <span className={styles.audioPlayerTime}>0:00 / {practices.find(p => p.id === playing)?.duration}</span>
+          </div>
+          <div className={styles.audioPlayerProgress}>
+            <div className={styles.audioPlayerProgressBar} style={{ width: '30%' }} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// 4. Soundscapes Screen
+const SoundscapesScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  const [playing, setPlaying] = useState<string | null>(null);
+  const [volume, setVolume] = useState(80);
+
+  const soundscapes = [
+    { id: '1', title: 'Rainfall', description: 'Gentle rain on leaves', icon: '🌧️' },
+    { id: '2', title: 'Ocean Waves', description: 'Soothing coastal sounds', icon: '🌊' },
+    { id: '3', title: 'Forest Ambience', description: 'Birds and rustling leaves', icon: '🌲' },
+    { id: '4', title: 'Binaural Beats', description: 'Focus enhancement (40Hz)', icon: '🧠' },
+    { id: '5', title: 'Tibetan Bowls', description: 'Healing sound frequencies', icon: '🔔' },
+    { id: '6', title: 'White Noise', description: 'Consistent ambient sound', icon: '📻' },
+  ];
+
+  return (
+    <div className={styles.screen}>
+      <header className={styles.screenHeaderWithBack}>
+        <button className={styles.backButtonSmall} onClick={onClose}>
+          {Icons.back}
+        </button>
+        <div>
+          <h2>Soundscapes</h2>
+          <p>Ambient sounds for focus</p>
+        </div>
+      </header>
+      <div className={styles.soundscapeGrid}>
+        {soundscapes.map((sound) => (
+          <GlassCard
+            key={sound.id}
+            className={`${styles.soundscapeCard} ${playing === sound.id ? styles.soundscapeCardActive : ''}`}
+            onClick={() => setPlaying(playing === sound.id ? null : sound.id)}
+          >
+            <span className={styles.soundscapeEmoji}>{sound.icon}</span>
+            <h3 className={styles.soundscapeTitle}>{sound.title}</h3>
+            <p className={styles.soundscapeDesc}>{sound.description}</p>
+            {playing === sound.id && (
+              <div className={styles.soundscapePlaying}>
+                <span className={styles.soundWave} />
+                <span className={styles.soundWave} />
+                <span className={styles.soundWave} />
+              </div>
+            )}
+          </GlassCard>
+        ))}
+      </div>
+      {playing && (
+        <div className={styles.soundscapeControls}>
+          <div className={styles.volumeControl}>
+            {Icons.volume}
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={volume}
+              onChange={(e) => setVolume(Number(e.target.value))}
+              className={styles.volumeSlider}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// 5. Audiobooks Screen
+const AudiobooksScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  const audiobooks = [
+    { id: '1', title: 'The Power of Now', author: 'Eckhart Tolle', cover: '📘', audibleUrl: 'https://www.audible.com/pd/The-Power-of-Now-Audiobook/B002V0PN36' },
+    { id: '2', title: 'Atomic Habits', author: 'James Clear', cover: '📗', audibleUrl: 'https://www.audible.com/pd/Atomic-Habits-Audiobook/1524779261' },
+    { id: '3', title: 'Think and Grow Rich', author: 'Napoleon Hill', cover: '📙', audibleUrl: 'https://www.audible.com/pd/Think-and-Grow-Rich-Audiobook/B002V5D950' },
+    { id: '4', title: 'Breaking The Habit of Being Yourself', author: 'Dr. Joe Dispenza', cover: '📕', audibleUrl: 'https://www.audible.com/pd/Breaking-the-Habit-of-Being-Yourself-Audiobook/B007CLYA9C' },
+    { id: '5', title: 'The Untethered Soul', author: 'Michael A. Singer', cover: '📓', audibleUrl: 'https://www.audible.com/pd/The-Untethered-Soul-Audiobook/B006LSZUK8' },
+    { id: '6', title: 'You Are a Badass', author: 'Jen Sincero', cover: '📔', audibleUrl: 'https://www.audible.com/pd/You-Are-a-Badass-Audiobook/B00BW240I6' },
+  ];
+
+  return (
+    <div className={styles.screen}>
+      <header className={styles.screenHeaderWithBack}>
+        <button className={styles.backButtonSmall} onClick={onClose}>
+          {Icons.back}
+        </button>
+        <div>
+          <h2>Recommended Audiobooks</h2>
+          <p>Transform through listening</p>
+        </div>
+      </header>
+      <div className={styles.audiobookList}>
+        {audiobooks.map((book) => (
+          <GlassCard key={book.id} className={styles.audiobookCard}>
+            <div className={styles.audiobookCover}>{book.cover}</div>
+            <div className={styles.audiobookInfo}>
+              <h3 className={styles.audiobookTitle}>{book.title}</h3>
+              <p className={styles.audiobookAuthor}>by {book.author}</p>
+            </div>
+            <a
+              href={book.audibleUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.audibleButton}
+            >
+              Listen on Audible {Icons.externalLink}
+            </a>
+          </GlassCard>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ============================================
+// PART 2: PREMIUM & PERSONALIZATION FEATURES
+// ============================================
+
+// 6. Subscription Paywall Screen
+const PaywallScreen: React.FC<{ onClose: () => void; onSubscribe: () => void }> = ({ onClose, onSubscribe }) => {
+  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
+
+  const features = [
+    'Unlimited guided meditations',
+    'All visualization tools',
+    'Complete article library',
+    'Emotional reset practices',
+    'Premium soundscapes',
+    'Inner Mentor AI chat',
+    'Advanced analytics',
+    'Priority support',
+  ];
+
+  return (
+    <div className={styles.paywallScreen}>
+      <button className={styles.closeButton} onClick={onClose}>{Icons.close}</button>
+      <div className={styles.paywallContent}>
+        <div className={styles.paywallHeader}>
+          <div className={styles.crownIcon}>{Icons.crown}</div>
+          <h1>Unlock Your Full Potential</h1>
+          <p>Get unlimited access to all features</p>
+        </div>
+
+        <div className={styles.planCards}>
+          <GlassCard
+            className={`${styles.planCard} ${selectedPlan === 'monthly' ? styles.planCardSelected : ''}`}
+            onClick={() => setSelectedPlan('monthly')}
+          >
+            <h3>Monthly</h3>
+            <div className={styles.planPrice}>
+              <span className={styles.currency}>$</span>
+              <span className={styles.amount}>14.99</span>
+              <span className={styles.period}>/mo</span>
+            </div>
+          </GlassCard>
+
+          <GlassCard
+            className={`${styles.planCard} ${selectedPlan === 'annual' ? styles.planCardSelected : ''}`}
+            onClick={() => setSelectedPlan('annual')}
+          >
+            <div className={styles.bestValueBadge}>Best Value</div>
+            <h3>Annual</h3>
+            <div className={styles.planPrice}>
+              <span className={styles.currency}>$</span>
+              <span className={styles.amount}>99.99</span>
+              <span className={styles.period}>/yr</span>
+            </div>
+            <p className={styles.planSavings}>Save 44%</p>
+          </GlassCard>
+        </div>
+
+        <div className={styles.featureList}>
+          {features.map((feature, idx) => (
+            <div key={idx} className={styles.featureItem}>
+              <span className={styles.checkIcon}>✓</span>
+              <span>{feature}</span>
+            </div>
+          ))}
+        </div>
+
+        <Button onClick={onSubscribe} fullWidth>
+          Unlock All Features
+        </Button>
+
+        <p className={styles.paywallDisclaimer}>
+          Cancel anytime. 7-day free trial included.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// 7 & 8. Enhanced Settings Screen (replaces existing)
+const EnhancedSettingsScreen: React.FC<{
+  onClose: () => void;
+  user: UserState;
+  onUpdateUser: (updates: Partial<UserState>) => void;
+  onReminders: () => void;
+  onVoiceSelector: () => void;
+}> = ({ onClose, user, onUpdateUser, onReminders, onVoiceSelector }) => {
+  const [darkMode, setDarkMode] = useState(false);
+
+  const settingsSections = [
+    {
+      title: 'Account',
+      items: [
+        { icon: Icons.user, label: 'Profile', action: () => {} },
+        { icon: Icons.bell, label: 'Notifications', action: onReminders },
+      ],
+    },
+    {
+      title: 'Preferences',
+      items: [
+        { icon: Icons.mic, label: 'Voice Selection', action: onVoiceSelector, value: user.voicePreference },
+        { icon: Icons.palette, label: 'Dark Mode', action: () => setDarkMode(!darkMode), toggle: true, value: darkMode },
+      ],
+    },
+    {
+      title: 'Support',
+      items: [
+        { icon: Icons.shield, label: 'Data & Privacy', action: () => {} },
+        { icon: Icons.chat, label: 'Help & Feedback', action: () => {} },
+      ],
+    },
+  ];
+
+  return (
+    <div className={styles.screen}>
+      <header className={styles.screenHeaderWithBack}>
+        <button className={styles.backButtonSmall} onClick={onClose}>
+          {Icons.back}
+        </button>
+        <div>
+          <h2>Settings</h2>
+        </div>
+      </header>
+      <div className={styles.settingsSections}>
+        {settingsSections.map((section, sIdx) => (
+          <div key={sIdx} className={styles.settingsSection}>
+            <h3 className={styles.settingsSectionTitle}>{section.title}</h3>
+            {section.items.map((item, iIdx) => (
+              <GlassCard key={iIdx} className={styles.settingsItem} onClick={item.action}>
+                <div className={styles.settingsItemLeft}>
+                  <div className={styles.settingsIcon}>{item.icon}</div>
+                  <span className={styles.settingsLabel}>{item.label}</span>
+                </div>
+                <div className={styles.settingsItemRight}>
+                  {'toggle' in item && item.toggle ? (
+                    <div className={`${styles.toggle} ${'value' in item && item.value ? styles.toggleActive : ''}`}>
+                      <div className={styles.toggleKnob} />
+                    </div>
+                  ) : 'value' in item && item.value ? (
+                    <span className={styles.settingsValue}>{String(item.value)}</span>
+                  ) : (
+                    Icons.chevronRight
+                  )}
+                </div>
+              </GlassCard>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// 9. Enhanced Progress & Analytics Screen
+const EnhancedProgressScreen: React.FC<{ user: UserState }> = ({ user }) => {
+  const [activeTab, setActiveTab] = useState<'overview' | 'calendar'>('overview');
+
+  // Mock data for charts
+  const weeklyScores = [72, 75, 78, 82, 80, 85, user.alignmentScore];
+  const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+  const sessionData = [
+    { day: 'Mon', sessions: 2 },
+    { day: 'Tue', sessions: 3 },
+    { day: 'Wed', sessions: 1 },
+    { day: 'Thu', sessions: 2 },
+    { day: 'Fri', sessions: 3 },
+    { day: 'Sat', sessions: 2 },
+    { day: 'Sun', sessions: 1 },
+  ];
+
+  // Calendar data
+  const today = new Date();
+  const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).getDay();
+  const streakDays = Array.from({ length: user.streak }, (_, i) => today.getDate() - i).filter(d => d > 0);
+
+  return (
+    <div className={styles.screen}>
+      <header className={styles.screenHeader}>
+        <h2>Progress & Analytics</h2>
+        <p>Your transformation journey</p>
+      </header>
+
+      <div className={styles.tabSelector}>
+        <button
+          className={`${styles.tabButton} ${activeTab === 'overview' ? styles.tabButtonActive : ''}`}
+          onClick={() => setActiveTab('overview')}
+        >
+          Overview
+        </button>
+        <button
+          className={`${styles.tabButton} ${activeTab === 'calendar' ? styles.tabButtonActive : ''}`}
+          onClick={() => setActiveTab('calendar')}
+        >
+          Calendar
+        </button>
+      </div>
+
+      {activeTab === 'overview' ? (
+        <div className={styles.analyticsContent}>
+          <GlassCard className={styles.statsRow}>
+            <div className={styles.statItem}>
+              <span className={styles.statValue}>{user.streak}</span>
+              <span className={styles.statLabel}>Day Streak</span>
+            </div>
+            <div className={styles.statDivider} />
+            <div className={styles.statItem}>
+              <span className={styles.statValue}>42</span>
+              <span className={styles.statLabel}>Sessions</span>
+            </div>
+            <div className={styles.statDivider} />
+            <div className={styles.statItem}>
+              <span className={styles.statValue}>{user.alignmentScore}</span>
+              <span className={styles.statLabel}>Score</span>
+            </div>
+          </GlassCard>
+
+          <GlassCard className={styles.chartCard}>
+            <h3>Alignment Score</h3>
+            <div className={styles.lineChart}>
+              <div className={styles.chartLine}>
+                {weeklyScores.map((score, idx) => (
+                  <div
+                    key={idx}
+                    className={styles.chartPoint}
+                    style={{
+                      left: `${(idx / 6) * 100}%`,
+                      bottom: `${((score - 60) / 40) * 100}%`,
+                    }}
+                  >
+                    <div className={styles.chartDot} />
+                    <span className={styles.chartLabel}>{weekDays[idx]}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </GlassCard>
+
+          <GlassCard className={styles.chartCard}>
+            <h3>Session Consistency</h3>
+            <div className={styles.barChart}>
+              {sessionData.map((data, idx) => (
+                <div key={idx} className={styles.barContainer}>
+                  <div
+                    className={styles.bar}
+                    style={{ height: `${(data.sessions / 3) * 100}%` }}
+                  />
+                  <span className={styles.barLabel}>{data.day}</span>
+                </div>
+              ))}
+            </div>
+          </GlassCard>
+        </div>
+      ) : (
+        <div className={styles.calendarContent}>
+          <GlassCard className={styles.calendarCard}>
+            <h3>{today.toLocaleString('default', { month: 'long', year: 'numeric' })}</h3>
+            <div className={styles.calendarGrid}>
+              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => (
+                <div key={idx} className={styles.calendarDayHeader}>{day}</div>
+              ))}
+              {Array.from({ length: firstDayOfMonth }).map((_, idx) => (
+                <div key={`empty-${idx}`} className={styles.calendarDayEmpty} />
+              ))}
+              {Array.from({ length: daysInMonth }).map((_, idx) => {
+                const dayNum = idx + 1;
+                const isStreak = streakDays.includes(dayNum);
+                const isToday = dayNum === today.getDate();
+                return (
+                  <div
+                    key={dayNum}
+                    className={`${styles.calendarDay} ${isStreak ? styles.calendarDayStreak : ''} ${isToday ? styles.calendarDayToday : ''}`}
+                  >
+                    {dayNum}
+                  </div>
+                );
+              })}
+            </div>
+          </GlassCard>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// 11. Custom Reminders Screen
+const RemindersScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  const [reminders, setReminders] = useState([
+    { id: '1', time: '07:00', message: 'Morning meditation time', enabled: true },
+    { id: '2', time: '12:00', message: 'Midday gratitude check-in', enabled: true },
+    { id: '3', time: '21:00', message: 'Evening reflection', enabled: true },
+  ]);
+
+  const toggleReminder = (id: string) => {
+    setReminders(reminders.map(r =>
+      r.id === id ? { ...r, enabled: !r.enabled } : r
+    ));
+  };
+
+  return (
+    <div className={styles.screen}>
+      <header className={styles.screenHeaderWithBack}>
+        <button className={styles.backButtonSmall} onClick={onClose}>
+          {Icons.back}
+        </button>
+        <div>
+          <h2>Reminders</h2>
+          <p>Stay on track</p>
+        </div>
+      </header>
+      <div className={styles.remindersList}>
+        {reminders.map((reminder) => (
+          <GlassCard key={reminder.id} className={styles.reminderCard}>
+            <div className={styles.reminderInfo}>
+              <div className={styles.reminderTime}>{reminder.time}</div>
+              <div className={styles.reminderMessage}>{reminder.message}</div>
+            </div>
+            <div
+              className={`${styles.toggle} ${reminder.enabled ? styles.toggleActive : ''}`}
+              onClick={() => toggleReminder(reminder.id)}
+            >
+              <div className={styles.toggleKnob} />
+            </div>
+          </GlassCard>
+        ))}
+        <Button variant="secondary" fullWidth onClick={() => {}}>
+          + Add Reminder
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// 12. Energy Mode Selector Screen
+const EnergyModeScreen: React.FC<{ onClose: () => void; onSelect: (mode: string) => void }> = ({ onClose, onSelect }) => {
+  const moods = [
+    { id: 'energized', label: 'Energized', emoji: '⚡', color: '#F59E0B', suggestion: 'visualization' },
+    { id: 'calm', label: 'Calm', emoji: '🧘', color: '#10B981', suggestion: 'meditation' },
+    { id: 'anxious', label: 'Anxious', emoji: '😰', color: '#EF4444', suggestion: 'breathing' },
+    { id: 'tired', label: 'Tired', emoji: '😴', color: '#6366F1', suggestion: 'energizing' },
+    { id: 'focused', label: 'Focused', emoji: '🎯', color: '#3B82F6', suggestion: 'soundscape' },
+    { id: 'grateful', label: 'Grateful', emoji: '🙏', color: '#EC4899', suggestion: 'gratitude' },
+  ];
+
+  return (
+    <div className={styles.energyModeOverlay}>
+      <GlassCard className={styles.energyModeCard}>
+        <button className={styles.closeButtonSmall} onClick={onClose}>{Icons.close}</button>
+        <h2>How are you feeling?</h2>
+        <p>We&apos;ll suggest content based on your energy</p>
+        <div className={styles.moodGrid}>
+          {moods.map((mood) => (
+            <button
+              key={mood.id}
+              className={styles.moodButton}
+              onClick={() => onSelect(mood.id)}
+              style={{ '--mood-color': mood.color } as React.CSSProperties}
+            >
+              <span className={styles.moodEmoji}>{mood.emoji}</span>
+              <span className={styles.moodLabel}>{mood.label}</span>
+            </button>
+          ))}
+        </div>
+      </GlassCard>
+    </div>
+  );
+};
+
+// 13. Voice Selector Screen
+const VoiceSelectorScreen: React.FC<{
+  onClose: () => void;
+  currentVoice: string;
+  onSelect: (voice: 'masculine' | 'feminine' | 'neutral') => void;
+}> = ({ onClose, currentVoice, onSelect }) => {
+  const voices = [
+    { id: 'masculine', label: 'Masculine', description: 'Deep, grounding voice' },
+    { id: 'feminine', label: 'Feminine', description: 'Warm, nurturing voice' },
+    { id: 'neutral', label: 'Neutral', description: 'Balanced, calm voice' },
+  ];
+
+  return (
+    <div className={styles.screen}>
+      <header className={styles.screenHeaderWithBack}>
+        <button className={styles.backButtonSmall} onClick={onClose}>
+          {Icons.back}
+        </button>
+        <div>
+          <h2>Voice Selection</h2>
+          <p>Choose your guide&apos;s voice</p>
+        </div>
+      </header>
+      <div className={styles.voiceList}>
+        {voices.map((voice) => (
+          <GlassCard
+            key={voice.id}
+            className={`${styles.voiceCard} ${currentVoice === voice.id ? styles.voiceCardSelected : ''}`}
+            onClick={() => onSelect(voice.id as 'masculine' | 'feminine' | 'neutral')}
+          >
+            <div className={styles.voiceInfo}>
+              <h3>{voice.label}</h3>
+              <p>{voice.description}</p>
+            </div>
+            {currentVoice === voice.id && (
+              <div className={styles.checkmark}>✓</div>
+            )}
+          </GlassCard>
+        ))}
+      </div>
+      <div className={styles.voicePreview}>
+        <Button variant="secondary" fullWidth onClick={() => {}}>
+          Preview Voice
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 // Main App Component
 export default function Home() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
@@ -1138,15 +2681,81 @@ export default function Home() {
     alignmentScore: 82,
     streak: 7,
   });
+  const [currentArticle, setCurrentArticle] = useState<any>(null);
+  const [currentVisualization, setCurrentVisualization] = useState<any>(null);
+  const [showEnergyMode, setShowEnergyMode] = useState(false);
+
+  const updateUser = (updates: Partial<UserState>) => {
+    const updatedUser = { ...user, ...updates };
+    setUser(updatedUser);
+    localStorage.setItem('abundanceUser', JSON.stringify(updatedUser));
+  };
 
   useEffect(() => {
+    // Check URL path for direct routing
+    const path = window.location.pathname.replace('/', '');
+
+    // Map URL paths to screen names
+    const pathToScreen: Record<string, Screen> = {
+      'dashboard': 'dashboard',
+      'meditations': 'meditations',
+      'library': 'meditations',
+      'gratitude': 'gratitude',
+      'quickshifts': 'quickshifts',
+      'quick-shifts': 'quickshifts',
+      'mentor': 'mentor',
+      'board': 'board',
+      'reality-shift-board': 'board',
+      'progress': 'progress',
+      'analytics': 'progress',
+      'profile': 'profile',
+      'journal': 'journal',
+      'learn': 'learn',
+      'visualizations': 'visualizations',
+      'emotional-reset': 'emotionalReset',
+      'soundscapes': 'soundscapes',
+      'audiobooks': 'audiobooks',
+      'settings': 'settings',
+      'reminders': 'reminders',
+      'voice': 'voiceSelector',
+    };
+
+    const screenFromPath = pathToScreen[path];
+
+    // Check sessionStorage for initial screen (set by route pages)
+    const initialScreen = sessionStorage.getItem('initialScreen');
+    if (initialScreen) {
+      sessionStorage.removeItem('initialScreen');
+    }
+
     const savedUser = localStorage.getItem('abundanceUser');
     if (savedUser) {
       const parsed = JSON.parse(savedUser);
       setUser(parsed);
-      if (parsed.onboardingComplete) {
+
+      // If we have a valid path or initialScreen, go there directly
+      if (screenFromPath) {
+        setCurrentScreen(screenFromPath);
+      } else if (initialScreen && pathToScreen[initialScreen]) {
+        setCurrentScreen(pathToScreen[initialScreen]);
+      } else if (parsed.onboardingComplete) {
         setCurrentScreen('dashboard');
       }
+    } else if (screenFromPath) {
+      // New user but accessing a direct route - create default user
+      const defaultUser = {
+        onboardingComplete: true,
+        displayName: 'Abundance Seeker',
+        isPremium: false,
+        voicePreference: 'neutral' as const,
+        morningTime: '07:00',
+        eveningTime: '21:00',
+        alignmentScore: 82,
+        streak: 7,
+      };
+      setUser(defaultUser);
+      localStorage.setItem('abundanceUser', JSON.stringify(defaultUser));
+      setCurrentScreen(screenFromPath);
     }
   }, []);
 
@@ -1181,7 +2790,7 @@ export default function Home() {
       case 'journal':
         return <JournalScreen />;
       case 'progress':
-        return <ProgressScreen user={user} />;
+        return <EnhancedProgressScreen user={user} />;
       case 'board':
         return <BoardScreen />;
       case 'mentor':
@@ -1191,19 +2800,78 @@ export default function Home() {
       case 'profile':
         return <ProfileScreen user={user} onClose={() => setCurrentScreen('dashboard')} onSettings={() => setCurrentScreen('settings')} />;
       case 'settings':
-        return <SettingsScreen onClose={() => setCurrentScreen('profile')} />;
+        return <EnhancedSettingsScreen
+          onClose={() => setCurrentScreen('profile')}
+          user={user}
+          onUpdateUser={updateUser}
+          onReminders={() => setCurrentScreen('reminders')}
+          onVoiceSelector={() => setCurrentScreen('voiceSelector')}
+        />;
+      case 'gratitude':
+        return <GratitudeJournalScreen onClose={() => setCurrentScreen('dashboard')} />;
+      case 'quickshifts':
+        return <QuickShiftToolsScreen onClose={() => setCurrentScreen('dashboard')} onBreathing={() => setCurrentScreen('breathing')} />;
+      case 'breathing':
+        return <BreathingExerciseScreen onClose={() => setCurrentScreen('quickshifts')} />;
+      // New Phase 4 screens
+      case 'learn':
+        return <LearnAndGrowScreen
+          onClose={() => setCurrentScreen('dashboard')}
+          onArticle={(article) => { setCurrentArticle(article); setCurrentScreen('article'); }}
+        />;
+      case 'article':
+        return currentArticle ? (
+          <ArticleReaderScreen article={currentArticle} onClose={() => setCurrentScreen('learn')} />
+        ) : (
+          <LearnAndGrowScreen onClose={() => setCurrentScreen('dashboard')} onArticle={(article) => { setCurrentArticle(article); setCurrentScreen('article'); }} />
+        );
+      case 'visualizations':
+        return <VisualizationsScreen
+          onClose={() => setCurrentScreen('dashboard')}
+          onPlay={(viz) => { setCurrentVisualization(viz); setCurrentScreen('visualizationPlayer'); }}
+        />;
+      case 'visualizationPlayer':
+        return currentVisualization ? (
+          <VisualizationPlayerScreen visualization={currentVisualization} onClose={() => setCurrentScreen('visualizations')} />
+        ) : (
+          <VisualizationsScreen onClose={() => setCurrentScreen('dashboard')} onPlay={(viz) => { setCurrentVisualization(viz); setCurrentScreen('visualizationPlayer'); }} />
+        );
+      case 'emotionalReset':
+        return <EmotionalResetScreen onClose={() => setCurrentScreen('dashboard')} />;
+      case 'soundscapes':
+        return <SoundscapesScreen onClose={() => setCurrentScreen('dashboard')} />;
+      case 'audiobooks':
+        return <AudiobooksScreen onClose={() => setCurrentScreen('dashboard')} />;
+      case 'paywall':
+        return <PaywallScreen onClose={() => setCurrentScreen('dashboard')} onSubscribe={() => { updateUser({ isPremium: true }); setCurrentScreen('dashboard'); }} />;
+      case 'reminders':
+        return <RemindersScreen onClose={() => setCurrentScreen('settings')} />;
+      case 'voiceSelector':
+        return <VoiceSelectorScreen
+          onClose={() => setCurrentScreen('settings')}
+          currentVoice={user.voicePreference}
+          onSelect={(voice) => { updateUser({ voicePreference: voice }); setCurrentScreen('settings'); }}
+        />;
+      case 'energyMode':
+        return null; // Handled as overlay
       default:
         return <DashboardScreen user={user} onNavigate={setCurrentScreen} />;
     }
   };
 
-  const showTabBar = ['dashboard', 'meditations', 'board', 'progress', 'profile'].includes(currentScreen);
+  const showTabBar = ['dashboard', 'meditations', 'journal', 'progress', 'profile'].includes(currentScreen);
 
   return (
     <main className={styles.main}>
       <div className={styles.phoneFrame}>
         {renderScreen()}
         {showTabBar && <TabBar activeTab={currentScreen} onTabChange={setCurrentScreen} />}
+        {showEnergyMode && (
+          <EnergyModeScreen
+            onClose={() => setShowEnergyMode(false)}
+            onSelect={(mode) => { setShowEnergyMode(false); /* Handle mode selection */ }}
+          />
+        )}
       </div>
     </main>
   );

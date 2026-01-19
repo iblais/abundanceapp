@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Settings Screen
+ * Abundance Recode - Settings Screen
  *
  * Comprehensive settings management organized by category
  */
@@ -322,7 +322,7 @@ export const SettingsScreen: React.FC = () => {
         {/* Version */}
         <View style={styles.versionContainer}>
           <BodySmall color={theme.colors.text.muted}>
-            Abundance Flow v1.0.0
+            Abundance Recode v1.0.0
           </BodySmall>
         </View>
       </ScrollView>

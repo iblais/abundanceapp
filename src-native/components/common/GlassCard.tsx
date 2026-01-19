@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Glass Card Component
+ * Abundance Recode - Glass Card Component
  *
  * Premium glassmorphic card with translucent effect
  * Default border radius: 20px as per spec

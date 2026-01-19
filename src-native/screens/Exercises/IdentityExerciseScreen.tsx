@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Identity Exercise Screen
+ * Abundance Recode - Identity Exercise Screen
  *
  * Structured written exercises for defining and embodying a new identity
  * Based on memory reconsolidation and identity activation principles

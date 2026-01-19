@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Meditation Store
+ * Abundance Recode - Meditation Store
  *
  * Manages meditation playback state and library
  */

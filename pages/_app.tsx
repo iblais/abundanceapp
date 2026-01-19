@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Next.js App Entry
+ * Abundance Recode - Next.js App Entry
  * Premium Design System with Plus Jakarta Sans
  */
 
@@ -11,7 +11,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Abundance Flow</title>
+        <title>Abundance Recode</title>
         <meta name="description" content="Shift your state. Reshape your reality." />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <meta name="theme-color" content="#050716" />

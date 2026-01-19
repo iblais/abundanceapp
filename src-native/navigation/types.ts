@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Navigation Types
+ * Abundance Recode - Navigation Types
  *
  * Type definitions for all navigation routes
  */

@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Root Navigator
+ * Abundance Recode - Root Navigator
  *
  * Main navigation container with all routes
  */

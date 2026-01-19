@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Meditations Data
+ * Abundance Recode - Meditations Data
  *
  * Library of guided meditations with synchronized 5, 8, and 12-minute versions
  */

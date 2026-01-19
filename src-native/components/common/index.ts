@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Common Components Export
+ * Abundance Recode - Common Components Export
  */
 
 export { GlassCard } from './GlassCard';

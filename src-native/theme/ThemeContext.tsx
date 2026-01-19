@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Theme Context Provider
+ * Abundance Recode - Theme Context Provider
  *
  * Provides theme context throughout the app
  * Supports dark mode (default) and light mode

@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Store Exports
+ * Abundance Recode - Store Exports
  *
  * Central export for all Zustand stores
  */

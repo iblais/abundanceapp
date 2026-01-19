@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - User Store
+ * Abundance Recode - User Store
  *
  * Manages user authentication state and profile data
  */

@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Profile Screen
+ * Abundance Recode - Profile Screen
  *
  * User profile with stats and quick access to settings
  */

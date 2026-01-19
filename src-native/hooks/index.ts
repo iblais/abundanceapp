@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Hooks Export
+ * Abundance Recode - Hooks Export
  */
 
 export { useAppState } from './useAppState';

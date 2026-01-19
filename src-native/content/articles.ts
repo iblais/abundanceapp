@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Educational Articles
+ * Abundance Recode - Educational Articles
  *
  * Short, readable articles on personal growth, neuroscience,
  * and emotional well-being in clinical-warm tone

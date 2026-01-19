@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Progress Store
+ * Abundance Recode - Progress Store
  *
  * Manages user progress, streaks, and alignment scores
  */

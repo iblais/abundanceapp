@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Main Application Entry Point
+ * Abundance Recode - Main Application Entry Point
  *
  * Premium mindset and transformation app
  * Built with React Native for iOS and Android

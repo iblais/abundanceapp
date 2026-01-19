@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - App State Hook
+ * Abundance Recode - App State Hook
  *
  * Tracks app foreground/background state
  */

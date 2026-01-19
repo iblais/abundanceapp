@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Meditation Player Screen
+ * Abundance Recode - Meditation Player Screen
  *
  * Full-featured audio player for guided meditations
  * Minimalist design with soft glowing wave animation

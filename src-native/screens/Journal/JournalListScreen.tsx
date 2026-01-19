@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Journal List Screen
+ * Abundance Recode - Journal List Screen
  *
  * Displays journal entries with access to gratitude, freeform,
  * identity exercises, and the Reality Shift Board

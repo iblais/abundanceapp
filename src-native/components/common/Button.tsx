@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Button Component
+ * Abundance Recode - Button Component
  *
  * Premium pill-shaped buttons with Muted Gold accent
  * Supports multiple variants: primary, secondary, ghost

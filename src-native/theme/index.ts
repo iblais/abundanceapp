@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Theme Export
+ * Abundance Recode - Theme Export
  *
  * Central export for all theme-related modules
  */

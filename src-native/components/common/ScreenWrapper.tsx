@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Screen Wrapper Component
+ * Abundance Recode - Screen Wrapper Component
  *
  * Provides consistent screen layout with gradient background
  * and safe area handling

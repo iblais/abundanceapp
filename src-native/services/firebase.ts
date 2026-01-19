@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Firebase Service
+ * Abundance Recode - Firebase Service
  *
  * Firebase configuration and utilities
  */

@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Tab Navigator
+ * Abundance Recode - Tab Navigator
  *
  * Bottom tab navigation with custom styling
  */

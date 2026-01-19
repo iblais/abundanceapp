@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Journal Entry Screen
+ * Abundance Recode - Journal Entry Screen
  *
  * Rich text editor for journaling with prompts
  * Supports gratitude, identity, freeform, and reflection entries

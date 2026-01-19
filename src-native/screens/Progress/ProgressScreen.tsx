@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Progress Screen
+ * Abundance Recode - Progress Screen
  *
  * Visualizes user journey with charts and metrics
  * Alignment Score, streaks, and practices completed

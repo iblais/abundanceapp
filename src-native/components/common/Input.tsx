@@ -1,5 +1,5 @@
 /**
- * Abundance Flow - Input Component
+ * Abundance Recode - Input Component
  *
  * Glassmorphic text input with consistent styling
  */
