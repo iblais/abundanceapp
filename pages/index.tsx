@@ -9,7 +9,7 @@ import { journalService, chatService, getAnonymousUserId, JournalEntry } from '.
 import { aiMentorService } from '../lib/ai-mentor';
 
 // Types
-type Screen = 'welcome' | 'onboarding' | 'rhythm' | 'dashboard' | 'meditations' | 'journal' | 'progress' | 'mentor' | 'settings' | 'profile' | 'player' | 'board' | 'gratitude' | 'quickshifts' | 'breathing' | 'learn' | 'article' | 'visualizations' | 'visualizationPlayer' | 'emotionalReset' | 'soundscapes' | 'audiobooks' | 'paywall' | 'reminders' | 'energyMode' | 'voiceSelector';
+type Screen = 'welcome' | 'onboarding' | 'rhythm' | 'dashboard' | 'meditations' | 'journal' | 'progress' | 'mentor' | 'settings' | 'profile' | 'player' | 'board' | 'gratitude' | 'quickshifts' | 'breathing' | 'learn' | 'article' | 'visualizations' | 'visualizationPlayer' | 'emotionalReset' | 'soundscapes' | 'audiobooks' | 'paywall' | 'reminders' | 'notifications' | 'energyMode' | 'voiceSelector';
 
 interface UserState {
   onboardingComplete: boolean;
@@ -2260,15 +2260,39 @@ const PaywallScreen: React.FC<{ onClose: () => void; onSubscribe: () => void }> 
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
 
   const features = [
-    'Unlimited guided meditations',
+    'Unlock All Meditations',
+    'AI Inner Mentor Chat',
+    'Advanced Analytics',
     'All visualization tools',
     'Complete article library',
     'Emotional reset practices',
     'Premium soundscapes',
-    'Inner Mentor AI chat',
-    'Advanced analytics',
     'Priority support',
   ];
+
+  // RevenueCat integration placeholder
+  const handleSubscribe = async () => {
+    try {
+      // TODO: Implement RevenueCat SDK integration
+      // import Purchases from 'react-native-purchases';
+      // const offerings = await Purchases.getOfferings();
+      // const selectedPackage = selectedPlan === 'monthly'
+      //   ? offerings.current?.monthly
+      //   : offerings.current?.annual;
+      // if (selectedPackage) {
+      //   const { customerInfo } = await Purchases.purchasePackage(selectedPackage);
+      //   if (customerInfo.entitlements.active['premium']) {
+      //     onSubscribe();
+      //   }
+      // }
+
+      // For now, simulate successful subscription
+      console.log(`RevenueCat: Initiating ${selectedPlan} subscription`);
+      onSubscribe();
+    } catch (error) {
+      console.error('Subscription error:', error);
+    }
+  };
 
   return (
     <div className={styles.paywallScreen}>
@@ -2277,7 +2301,7 @@ const PaywallScreen: React.FC<{ onClose: () => void; onSubscribe: () => void }> 
         <div className={styles.paywallHeader}>
           <div className={styles.crownIcon}>{Icons.crown}</div>
           <h1>Unlock Your Full Potential</h1>
-          <p>Get unlimited access to all features</p>
+          <p>Choose your plan to begin the journey.</p>
         </div>
 
         <div className={styles.planCards}>
@@ -2289,8 +2313,19 @@ const PaywallScreen: React.FC<{ onClose: () => void; onSubscribe: () => void }> 
             <div className={styles.planPrice}>
               <span className={styles.currency}>$</span>
               <span className={styles.amount}>14.99</span>
-              <span className={styles.period}>/mo</span>
+              <span className={styles.period}>/month</span>
             </div>
+            <div className={styles.planFeatures}>
+              {features.slice(0, 4).map((feature, idx) => (
+                <div key={idx} className={styles.planFeatureItem}>
+                  <span className={styles.checkIcon}>✓</span>
+                  <span>{feature}</span>
+                </div>
+              ))}
+            </div>
+            <Button onClick={handleSubscribe} fullWidth variant={selectedPlan === 'monthly' ? 'primary' : 'secondary'}>
+              Start 7-Day Free Trial
+            </Button>
           </GlassCard>
 
           <GlassCard
@@ -2302,27 +2337,25 @@ const PaywallScreen: React.FC<{ onClose: () => void; onSubscribe: () => void }> 
             <div className={styles.planPrice}>
               <span className={styles.currency}>$</span>
               <span className={styles.amount}>99.99</span>
-              <span className={styles.period}>/yr</span>
+              <span className={styles.period}>/year</span>
             </div>
             <p className={styles.planSavings}>Save 44%</p>
+            <div className={styles.planFeatures}>
+              {features.slice(0, 4).map((feature, idx) => (
+                <div key={idx} className={styles.planFeatureItem}>
+                  <span className={styles.checkIcon}>✓</span>
+                  <span>{feature}</span>
+                </div>
+              ))}
+            </div>
+            <Button onClick={handleSubscribe} fullWidth variant={selectedPlan === 'annual' ? 'primary' : 'secondary'}>
+              Start 7-Day Free Trial
+            </Button>
           </GlassCard>
         </div>
 
-        <div className={styles.featureList}>
-          {features.map((feature, idx) => (
-            <div key={idx} className={styles.featureItem}>
-              <span className={styles.checkIcon}>✓</span>
-              <span>{feature}</span>
-            </div>
-          ))}
-        </div>
-
-        <Button onClick={onSubscribe} fullWidth>
-          Unlock All Features
-        </Button>
-
         <p className={styles.paywallDisclaimer}>
-          Cancel anytime. 7-day free trial included.
+          Cancel anytime during your free trial. No charge until trial ends.
         </p>
       </div>
     </div>
@@ -2584,6 +2617,249 @@ const RemindersScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   );
 };
 
+// Enhanced Notifications Screen with Custom Reminders
+const NotificationsScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  const [showAddReminder, setShowAddReminder] = useState(false);
+  const [notifications, setNotifications] = useState({
+    morningVisioneering: true,
+    eveningReflection: true,
+    dailyGratitude: false,
+    weeklyProgress: true,
+  });
+
+  const [customReminders, setCustomReminders] = useState([
+    { id: '1', label: 'Midday check-in', time: '12:00', days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'], enabled: true },
+  ]);
+
+  const [newReminder, setNewReminder] = useState({
+    label: '',
+    time: '09:00',
+    days: [] as string[],
+  });
+
+  const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+  const toggleNotification = (key: keyof typeof notifications) => {
+    setNotifications({ ...notifications, [key]: !notifications[key] });
+  };
+
+  const toggleCustomReminder = (id: string) => {
+    setCustomReminders(customReminders.map(r =>
+      r.id === id ? { ...r, enabled: !r.enabled } : r
+    ));
+  };
+
+  const toggleDay = (day: string) => {
+    if (newReminder.days.includes(day)) {
+      setNewReminder({ ...newReminder, days: newReminder.days.filter(d => d !== day) });
+    } else {
+      setNewReminder({ ...newReminder, days: [...newReminder.days, day] });
+    }
+  };
+
+  const saveReminder = () => {
+    if (newReminder.label && newReminder.days.length > 0) {
+      setCustomReminders([
+        ...customReminders,
+        {
+          id: Date.now().toString(),
+          ...newReminder,
+          enabled: true,
+        },
+      ]);
+      setNewReminder({ label: '', time: '09:00', days: [] });
+      setShowAddReminder(false);
+    }
+  };
+
+  const deleteReminder = (id: string) => {
+    setCustomReminders(customReminders.filter(r => r.id !== id));
+  };
+
+  return (
+    <div className={styles.screen}>
+      <header className={styles.screenHeaderWithBack}>
+        <button className={styles.backButtonSmall} onClick={onClose}>
+          {Icons.back}
+        </button>
+        <div>
+          <h2>Notifications</h2>
+          <p>Manage your reminders</p>
+        </div>
+      </header>
+
+      <div className={styles.notificationsContent}>
+        {/* Pre-defined Notifications Section */}
+        <div className={styles.notificationSection}>
+          <h3 className={styles.notificationSectionTitle}>Daily Reminders</h3>
+
+          <GlassCard className={styles.notificationItem}>
+            <div className={styles.notificationInfo}>
+              <div className={styles.notificationIcon}>{Icons.sun}</div>
+              <div className={styles.notificationText}>
+                <span className={styles.notificationLabel}>Morning Visioneering</span>
+                <span className={styles.notificationTime}>7:00 AM</span>
+              </div>
+            </div>
+            <div
+              className={`${styles.toggle} ${notifications.morningVisioneering ? styles.toggleActive : ''}`}
+              onClick={() => toggleNotification('morningVisioneering')}
+            >
+              <div className={styles.toggleKnob} />
+            </div>
+          </GlassCard>
+
+          <GlassCard className={styles.notificationItem}>
+            <div className={styles.notificationInfo}>
+              <div className={styles.notificationIcon}>{Icons.moon}</div>
+              <div className={styles.notificationText}>
+                <span className={styles.notificationLabel}>Evening Reflection</span>
+                <span className={styles.notificationTime}>9:00 PM</span>
+              </div>
+            </div>
+            <div
+              className={`${styles.toggle} ${notifications.eveningReflection ? styles.toggleActive : ''}`}
+              onClick={() => toggleNotification('eveningReflection')}
+            >
+              <div className={styles.toggleKnob} />
+            </div>
+          </GlassCard>
+
+          <GlassCard className={styles.notificationItem}>
+            <div className={styles.notificationInfo}>
+              <div className={styles.notificationIcon}>{Icons.heart}</div>
+              <div className={styles.notificationText}>
+                <span className={styles.notificationLabel}>Daily Gratitude</span>
+                <span className={styles.notificationTime}>12:00 PM</span>
+              </div>
+            </div>
+            <div
+              className={`${styles.toggle} ${notifications.dailyGratitude ? styles.toggleActive : ''}`}
+              onClick={() => toggleNotification('dailyGratitude')}
+            >
+              <div className={styles.toggleKnob} />
+            </div>
+          </GlassCard>
+
+          <GlassCard className={styles.notificationItem}>
+            <div className={styles.notificationInfo}>
+              <div className={styles.notificationIcon}>{Icons.chart}</div>
+              <div className={styles.notificationText}>
+                <span className={styles.notificationLabel}>Weekly Progress</span>
+                <span className={styles.notificationTime}>Sundays at 10:00 AM</span>
+              </div>
+            </div>
+            <div
+              className={`${styles.toggle} ${notifications.weeklyProgress ? styles.toggleActive : ''}`}
+              onClick={() => toggleNotification('weeklyProgress')}
+            >
+              <div className={styles.toggleKnob} />
+            </div>
+          </GlassCard>
+        </div>
+
+        {/* Custom Reminders Section */}
+        <div className={styles.notificationSection}>
+          <h3 className={styles.notificationSectionTitle}>Custom Reminders</h3>
+
+          {customReminders.map((reminder) => (
+            <GlassCard key={reminder.id} className={styles.customReminderCard}>
+              <div className={styles.customReminderMain}>
+                <div className={styles.customReminderInfo}>
+                  <div className={styles.notificationIcon}>{Icons.clock}</div>
+                  <div className={styles.notificationText}>
+                    <span className={styles.notificationLabel}>{reminder.label}</span>
+                    <span className={styles.notificationTime}>
+                      {reminder.time} - {reminder.days.join(', ')}
+                    </span>
+                  </div>
+                </div>
+                <div
+                  className={`${styles.toggle} ${reminder.enabled ? styles.toggleActive : ''}`}
+                  onClick={() => toggleCustomReminder(reminder.id)}
+                >
+                  <div className={styles.toggleKnob} />
+                </div>
+              </div>
+              <button
+                className={styles.deleteReminderBtn}
+                onClick={() => deleteReminder(reminder.id)}
+              >
+                Remove
+              </button>
+            </GlassCard>
+          ))}
+
+          <Button variant="secondary" fullWidth onClick={() => setShowAddReminder(true)}>
+            + Add Custom Reminder
+          </Button>
+        </div>
+      </div>
+
+      {/* Add Reminder Modal */}
+      {showAddReminder && (
+        <div className={styles.modalOverlay}>
+          <GlassCard className={styles.addReminderModal}>
+            <div className={styles.modalHeader}>
+              <h3>Add Custom Reminder</h3>
+              <button className={styles.closeButtonSmall} onClick={() => setShowAddReminder(false)}>
+                {Icons.close}
+              </button>
+            </div>
+
+            <div className={styles.modalContent}>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Reminder Name</label>
+                <input
+                  type="text"
+                  className={styles.formInput}
+                  placeholder="e.g., Mid-day check-in"
+                  value={newReminder.label}
+                  onChange={(e) => setNewReminder({ ...newReminder, label: e.target.value })}
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Time</label>
+                <input
+                  type="time"
+                  className={styles.formInput}
+                  value={newReminder.time}
+                  onChange={(e) => setNewReminder({ ...newReminder, time: e.target.value })}
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Repeat on</label>
+                <div className={styles.daySelector}>
+                  {weekDays.map((day) => (
+                    <button
+                      key={day}
+                      className={`${styles.dayButton} ${newReminder.days.includes(day) ? styles.dayButtonActive : ''}`}
+                      onClick={() => toggleDay(day)}
+                    >
+                      {day.charAt(0)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.modalActions}>
+              <Button variant="ghost" onClick={() => setShowAddReminder(false)}>
+                Cancel
+              </Button>
+              <Button onClick={saveReminder}>
+                Save Reminder
+              </Button>
+            </div>
+          </GlassCard>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // 12. Energy Mode Selector Screen
 const EnergyModeScreen: React.FC<{ onClose: () => void; onSelect: (mode: string) => void }> = ({ onClose, onSelect }) => {
   const moods = [
@@ -2711,12 +2987,16 @@ export default function Home() {
       'profile': 'profile',
       'journal': 'journal',
       'learn': 'learn',
+      'learn-grow': 'learn',
       'visualizations': 'visualizations',
       'emotional-reset': 'emotionalReset',
       'soundscapes': 'soundscapes',
       'audiobooks': 'audiobooks',
       'settings': 'settings',
       'reminders': 'reminders',
+      'notifications': 'notifications',
+      'settings/notifications': 'notifications',
+      'subscribe': 'paywall',
       'voice': 'voiceSelector',
     };
 
@@ -2846,6 +3126,8 @@ export default function Home() {
         return <PaywallScreen onClose={() => setCurrentScreen('dashboard')} onSubscribe={() => { updateUser({ isPremium: true }); setCurrentScreen('dashboard'); }} />;
       case 'reminders':
         return <RemindersScreen onClose={() => setCurrentScreen('settings')} />;
+      case 'notifications':
+        return <NotificationsScreen onClose={() => setCurrentScreen('settings')} />;
       case 'voiceSelector':
         return <VoiceSelectorScreen
           onClose={() => setCurrentScreen('settings')}
