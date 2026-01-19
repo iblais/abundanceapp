@@ -6,6 +6,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import styles from '../styles/Home.module.css';
+import paywallStyles from '../styles/Paywall.module.css';
 import { journalService, chatService, getAnonymousUserId, JournalEntry } from '../lib/supabase';
 import { aiMentorService } from '../lib/ai-mentor';
 import { revenueCatService, PLANS, PREMIUM_FEATURES, SubscriptionStatus } from '../lib/revenuecat';
@@ -690,9 +691,15 @@ const categoryGradients: Record<string, string> = {
 };
 
 // Meditations Library Screen - Enhanced with search and category grid
-const MeditationsScreen: React.FC<{ onPlay: () => void }> = ({ onPlay }) => {
+const MeditationsScreen: React.FC<{
+  onPlay: () => void;
+  isPremium?: boolean;
+  onUpgrade?: () => void;
+}> = ({ onPlay, isPremium = false, onUpgrade }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [selectedMeditation, setSelectedMeditation] = useState<string>('');
 
   const categories = [
     { id: 'focus', name: 'Focus', count: 4 },
@@ -703,20 +710,77 @@ const MeditationsScreen: React.FC<{ onPlay: () => void }> = ({ onPlay }) => {
     { id: 'walking', name: 'Walking', count: 3 },
   ];
 
+  // FREE meditations available to all users
+  const FREE_MEDITATIONS = ['Mindful Breathing', 'First Steps'];
+
   const allMeditations = [
-    { id: 1, title: 'Morning Visioneering', description: 'Start your day by connecting with your highest potential.', duration: 12, category: 'focus' },
-    { id: 2, title: 'Gratitude Expansion', description: 'Cultivate appreciation that attracts more abundance.', duration: 10, category: 'abundance' },
-    { id: 3, title: 'Confidence Activation', description: 'Awaken your inner certainty and calm assurance.', duration: 15, category: 'confidence' },
-    { id: 4, title: 'Calm Reset', description: 'Return to peaceful clarity when life feels overwhelming.', duration: 8, category: 'calm' },
-    { id: 5, title: 'Focus Flow', description: 'Clear mental clutter and enter deep, productive focus.', duration: 12, category: 'focus' },
-    { id: 6, title: 'Abundance Alignment', description: 'Tune your energy to the frequency of abundance.', duration: 15, category: 'abundance' },
-    { id: 7, title: 'Deep Sleep Journey', description: 'Drift into restful sleep with guided relaxation.', duration: 20, category: 'sleep' },
-    { id: 8, title: 'Walking Meditation', description: 'Find peace and presence in every step.', duration: 15, category: 'walking' },
-    { id: 9, title: 'Stress Release', description: 'Let go of tension and find your center.', duration: 10, category: 'calm' },
-    { id: 10, title: 'Wealthy Mindset', description: 'Reprogram your relationship with abundance.', duration: 18, category: 'abundance' },
-    { id: 11, title: 'Inner Strength', description: 'Connect with your core power and resilience.', duration: 12, category: 'confidence' },
-    { id: 12, title: 'Laser Focus', description: 'Sharpen your concentration and mental clarity.', duration: 8, category: 'focus' },
+    { id: 1, title: 'Morning Visioneering', description: 'Start your day by connecting with your highest potential.', duration: 12, category: 'focus', isFree: false },
+    { id: 2, title: 'Mindful Breathing', description: 'A simple breathing practice to center your mind.', duration: 5, category: 'focus', isFree: true },
+    { id: 3, title: 'Gratitude Expansion', description: 'Cultivate appreciation that attracts more abundance.', duration: 10, category: 'abundance', isFree: false },
+    { id: 4, title: 'Confidence Activation', description: 'Awaken your inner certainty and calm assurance.', duration: 15, category: 'confidence', isFree: false },
+    { id: 5, title: 'First Steps', description: 'A gentle introduction to meditation practice.', duration: 7, category: 'calm', isFree: true },
+    { id: 6, title: 'Calm Reset', description: 'Return to peaceful clarity when life feels overwhelming.', duration: 8, category: 'calm', isFree: false },
+    { id: 7, title: 'Focus Flow', description: 'Clear mental clutter and enter deep, productive focus.', duration: 12, category: 'focus', isFree: false },
+    { id: 8, title: 'Abundance Alignment', description: 'Tune your energy to the frequency of abundance.', duration: 15, category: 'abundance', isFree: false },
+    { id: 9, title: 'Deep Sleep Journey', description: 'Drift into restful sleep with guided relaxation.', duration: 20, category: 'sleep', isFree: false },
+    { id: 10, title: 'Walking Meditation', description: 'Find peace and presence in every step.', duration: 15, category: 'walking', isFree: false },
+    { id: 11, title: 'Stress Release', description: 'Let go of tension and find your center.', duration: 10, category: 'calm', isFree: false },
+    { id: 12, title: 'Wealthy Mindset', description: 'Reprogram your relationship with abundance.', duration: 18, category: 'abundance', isFree: false },
+    { id: 13, title: 'Inner Strength', description: 'Connect with your core power and resilience.', duration: 12, category: 'confidence', isFree: false },
+    { id: 14, title: 'Laser Focus', description: 'Sharpen your concentration and mental clarity.', duration: 8, category: 'focus', isFree: false },
   ];
+
+  const handleMeditationClick = (meditation: typeof allMeditations[0]) => {
+    if (meditation.isFree || isPremium) {
+      onPlay();
+    } else {
+      setSelectedMeditation(meditation.title);
+      setShowPaywall(true);
+    }
+  };
+
+  // Paywall modal for premium meditations
+  if (showPaywall && !isPremium) {
+    return (
+      <div className={paywallStyles.paywallOverlay}>
+        <div className={paywallStyles.paywallModal}>
+          <button className={paywallStyles.closeButton} onClick={() => setShowPaywall(false)}>
+            {Icons.close}
+          </button>
+          <div className={paywallStyles.paywallContent}>
+            <div className={paywallStyles.lockIconWrapper}>
+              {Icons.lock}
+            </div>
+            <h2 className={paywallStyles.paywallTitle}>Premium Meditation</h2>
+            <p className={paywallStyles.paywallFeatureName}>{selectedMeditation}</p>
+            <p className={paywallStyles.paywallDescription}>
+              Upgrade to Premium to unlock all 50+ guided meditations and transform your practice.
+            </p>
+            <div className={paywallStyles.paywallFeatures}>
+              <div className={paywallStyles.featureItem}>
+                <span className={paywallStyles.checkmark}>✓</span>
+                <span>Access all 50+ guided meditations</span>
+              </div>
+              <div className={paywallStyles.featureItem}>
+                <span className={paywallStyles.checkmark}>✓</span>
+                <span>New meditations added weekly</span>
+              </div>
+              <div className={paywallStyles.featureItem}>
+                <span className={paywallStyles.checkmark}>✓</span>
+                <span>Downloadable for offline use</span>
+              </div>
+            </div>
+            <button className={paywallStyles.upgradeButton} onClick={onUpgrade}>
+              Upgrade to Premium
+            </button>
+            <button className={paywallStyles.maybeLaterButton} onClick={() => setShowPaywall(false)}>
+              Maybe Later
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const filteredMeditations = allMeditations.filter(m => {
     const matchesSearch = m.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -741,12 +805,20 @@ const MeditationsScreen: React.FC<{ onPlay: () => void }> = ({ onPlay }) => {
 
         <div className={styles.meditationsList}>
           {filteredMeditations.map((meditation) => (
-            <GlassCard key={meditation.id} className={styles.meditationCard} onClick={onPlay}>
+            <GlassCard key={meditation.id} className={styles.meditationCard} onClick={() => handleMeditationClick(meditation)}>
               <div className={styles.meditationIcon} style={{ background: categoryGradients[meditation.category] }}>
                 {CategoryIcons[meditation.category] || Icons.meditation}
               </div>
               <div className={styles.meditationInfo}>
-                <h4>{meditation.title}</h4>
+                <div className={styles.meditationTitleRow}>
+                  <h4>{meditation.title}</h4>
+                  {!meditation.isFree && !isPremium && (
+                    <span className={styles.premiumTag}>{Icons.lock}</span>
+                  )}
+                  {meditation.isFree && (
+                    <span className={styles.freeTag}>FREE</span>
+                  )}
+                </div>
                 <p>{meditation.description}</p>
                 <div className={styles.meditationMeta}>
                   <span className={styles.durationTag}>{meditation.duration} min</span>
@@ -784,12 +856,20 @@ const MeditationsScreen: React.FC<{ onPlay: () => void }> = ({ onPlay }) => {
         <div className={styles.meditationsList}>
           {filteredMeditations.length > 0 ? (
             filteredMeditations.map((meditation) => (
-              <GlassCard key={meditation.id} className={styles.meditationCard} onClick={onPlay}>
+              <GlassCard key={meditation.id} className={styles.meditationCard} onClick={() => handleMeditationClick(meditation)}>
                 <div className={styles.meditationIcon} style={{ background: categoryGradients[meditation.category] }}>
                   {CategoryIcons[meditation.category] || Icons.meditation}
                 </div>
                 <div className={styles.meditationInfo}>
-                  <h4>{meditation.title}</h4>
+                  <div className={styles.meditationTitleRow}>
+                    <h4>{meditation.title}</h4>
+                    {!meditation.isFree && !isPremium && (
+                      <span className={styles.premiumTag}>{Icons.lock}</span>
+                    )}
+                    {meditation.isFree && (
+                      <span className={styles.freeTag}>FREE</span>
+                    )}
+                  </div>
                   <p>{meditation.description}</p>
                   <div className={styles.meditationMeta}>
                     <span className={styles.durationTag}>{meditation.duration} min</span>
@@ -3202,27 +3282,53 @@ const PaywallGate: React.FC<{
   isPremium: boolean;
   featureName: string;
   onUpgrade: () => void;
-}> = ({ children, isPremium, featureName, onUpgrade }) => {
+  onClose: () => void;
+}> = ({ children, isPremium, featureName, onUpgrade, onClose }) => {
   if (isPremium) {
     return <>{children}</>;
   }
 
   return (
-    <div className={styles.paywallGate}>
-      <GlassCard className={styles.paywallGateCard}>
-        <div className={styles.paywallGateIcon}>{Icons.lock}</div>
-        <h2>Premium Feature</h2>
-        <p>{featureName} is available for premium members.</p>
-        <p className={styles.paywallGateSubtext}>
-          Upgrade now to unlock this feature and accelerate your transformation journey.
-        </p>
-        <Button onClick={onUpgrade} fullWidth>
-          Upgrade to Premium
-        </Button>
-        <button className={styles.paywallGateLearnMore} onClick={onUpgrade}>
-          View all premium features →
+    <div className={paywallStyles.paywallOverlay}>
+      <div className={paywallStyles.paywallModal}>
+        <button className={paywallStyles.closeButton} onClick={onClose}>
+          {Icons.close}
         </button>
-      </GlassCard>
+        <div className={paywallStyles.paywallContent}>
+          <div className={paywallStyles.lockIconWrapper}>
+            {Icons.lock}
+          </div>
+          <h2 className={paywallStyles.paywallTitle}>Premium Feature</h2>
+          <p className={paywallStyles.paywallFeatureName}>{featureName}</p>
+          <p className={paywallStyles.paywallDescription}>
+            Upgrade to Premium to unlock this feature and accelerate your transformation journey.
+          </p>
+          <div className={paywallStyles.paywallFeatures}>
+            <div className={paywallStyles.featureItem}>
+              <span className={paywallStyles.checkmark}>✓</span>
+              <span>Access all 50+ guided meditations</span>
+            </div>
+            <div className={paywallStyles.featureItem}>
+              <span className={paywallStyles.checkmark}>✓</span>
+              <span>Unlimited Inner Mentor Chat</span>
+            </div>
+            <div className={paywallStyles.featureItem}>
+              <span className={paywallStyles.checkmark}>✓</span>
+              <span>Advanced analytics & insights</span>
+            </div>
+            <div className={paywallStyles.featureItem}>
+              <span className={paywallStyles.checkmark}>✓</span>
+              <span>Full audiobook library</span>
+            </div>
+          </div>
+          <button className={paywallStyles.upgradeButton} onClick={onUpgrade}>
+            Upgrade to Premium
+          </button>
+          <button className={paywallStyles.maybeLaterButton} onClick={onClose}>
+            Maybe Later
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
@@ -3393,15 +3499,39 @@ export default function Home() {
       case 'dashboard':
         return <DashboardScreen user={user} onNavigate={navigateToScreen} />;
       case 'meditations':
-        return <MeditationsScreen onPlay={() => setCurrentScreen('player')} />;
+        return (
+          <MeditationsScreen
+            onPlay={() => setCurrentScreen('player')}
+            isPremium={user.isPremium}
+            onUpgrade={() => setCurrentScreen('pricing')}
+          />
+        );
       case 'journal':
         return <JournalScreen />;
       case 'progress':
-        return <EnhancedProgressScreen user={user} />;
+        return (
+          <PaywallGate
+            isPremium={user.isPremium}
+            featureName="Advanced Analytics"
+            onUpgrade={() => setCurrentScreen('pricing')}
+            onClose={() => setCurrentScreen('dashboard')}
+          >
+            <EnhancedProgressScreen user={user} />
+          </PaywallGate>
+        );
       case 'board':
         return <BoardScreen />;
       case 'mentor':
-        return <MentorScreen onClose={() => setCurrentScreen('dashboard')} />;
+        return (
+          <PaywallGate
+            isPremium={user.isPremium}
+            featureName="Inner Mentor Chat"
+            onUpgrade={() => setCurrentScreen('pricing')}
+            onClose={() => setCurrentScreen('dashboard')}
+          >
+            <MentorScreen onClose={() => setCurrentScreen('dashboard')} />
+          </PaywallGate>
+        );
       case 'player':
         return <PlayerScreen onClose={() => setCurrentScreen('dashboard')} />;
       case 'profile':
@@ -3434,13 +3564,29 @@ export default function Home() {
           <LearnAndGrowScreen onClose={() => setCurrentScreen('dashboard')} onArticle={(article) => { setCurrentArticle(article); setCurrentScreen('article'); }} />
         );
       case 'visualizations':
-        return <VisualizationsScreen
-          onClose={() => setCurrentScreen('dashboard')}
-          onPlay={(viz) => { setCurrentVisualization(viz); setCurrentScreen('visualizationPlayer'); }}
-        />;
+        return (
+          <PaywallGate
+            isPremium={user.isPremium}
+            featureName="Visualization Tools"
+            onUpgrade={() => setCurrentScreen('pricing')}
+            onClose={() => setCurrentScreen('dashboard')}
+          >
+            <VisualizationsScreen
+              onClose={() => setCurrentScreen('dashboard')}
+              onPlay={(viz) => { setCurrentVisualization(viz); setCurrentScreen('visualizationPlayer'); }}
+            />
+          </PaywallGate>
+        );
       case 'visualizationPlayer':
         return currentVisualization ? (
-          <VisualizationPlayerScreen visualization={currentVisualization} onClose={() => setCurrentScreen('visualizations')} />
+          <PaywallGate
+            isPremium={user.isPremium}
+            featureName="Visualization Tools"
+            onUpgrade={() => setCurrentScreen('pricing')}
+            onClose={() => setCurrentScreen('dashboard')}
+          >
+            <VisualizationPlayerScreen visualization={currentVisualization} onClose={() => setCurrentScreen('visualizations')} />
+          </PaywallGate>
         ) : (
           <VisualizationsScreen onClose={() => setCurrentScreen('dashboard')} onPlay={(viz) => { setCurrentVisualization(viz); setCurrentScreen('visualizationPlayer'); }} />
         );
@@ -3449,7 +3595,16 @@ export default function Home() {
       case 'soundscapes':
         return <SoundscapesScreen onClose={() => setCurrentScreen('dashboard')} />;
       case 'audiobooks':
-        return <AudiobooksScreen onClose={() => setCurrentScreen('dashboard')} />;
+        return (
+          <PaywallGate
+            isPremium={user.isPremium}
+            featureName="Audiobook Library"
+            onUpgrade={() => setCurrentScreen('pricing')}
+            onClose={() => setCurrentScreen('dashboard')}
+          >
+            <AudiobooksScreen onClose={() => setCurrentScreen('dashboard')} />
+          </PaywallGate>
+        );
       case 'paywall':
         return <PaywallScreen onClose={() => setCurrentScreen('dashboard')} onSubscribe={() => { updateUser({ isPremium: true }); setCurrentScreen('dashboard'); }} />;
       case 'pricing':
