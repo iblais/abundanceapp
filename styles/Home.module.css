@@ -333,6 +333,261 @@
   line-height: 1.5;
 }
 
+/* ==== Landing Page ==== */
+.landingPage {
+  min-height: 100vh;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+.heroSection {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 24px 40px;
+  background: radial-gradient(
+    ellipse 80% 50% at 50% 30%,
+    rgba(100, 80, 160, 0.15) 0%,
+    transparent 60%
+  );
+}
+
+.heroContent {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.heroTitle {
+  font-size: 36px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 16px 0 8px;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+
+.heroTagline {
+  font-size: 18px;
+  color: #C6CBDA;
+  font-weight: 500;
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+.heroValue {
+  font-size: 15px;
+  color: #9BA3C3;
+  font-weight: 400;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  max-width: 340px;
+}
+
+.benefitsList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px;
+  text-align: left;
+  width: 100%;
+}
+
+.benefitsList li {
+  font-size: 14px;
+  color: #B8BDCF;
+  line-height: 1.5;
+  padding: 10px 0;
+  padding-left: 24px;
+  position: relative;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.benefitsList li:last-child {
+  border-bottom: none;
+}
+
+.benefitsList li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, #8B7BC2, #6B5BA7);
+  border-radius: 50%;
+}
+
+.heroCtas {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.secondaryLink {
+  background: none;
+  border: none;
+  color: #9BA3C3;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 16px;
+  transition: color 0.2s ease;
+}
+
+.secondaryLink:hover {
+  color: #FFFFFF;
+}
+
+.secondaryLink:focus {
+  outline: 2px solid rgba(139, 123, 194, 0.5);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* How It Works Section */
+.howItWorksSection {
+  padding: 60px 24px;
+  background: rgba(30, 25, 55, 0.5);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sectionTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: #FFFFFF;
+  text-align: center;
+  margin-bottom: 40px;
+  letter-spacing: -0.3px;
+}
+
+.stepsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.stepNumber {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(139, 123, 194, 0.3), rgba(107, 91, 167, 0.2));
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: 600;
+  color: #C6CBDA;
+  margin-bottom: 16px;
+  border: 1px solid rgba(139, 123, 194, 0.3);
+}
+
+.stepTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+}
+
+.stepDescription {
+  font-size: 14px;
+  color: #9BA3C3;
+  line-height: 1.5;
+}
+
+/* Trust Section */
+.trustSection {
+  padding: 60px 24px 80px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.trustContent {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.trustDescription {
+  font-size: 15px;
+  color: #B8BDCF;
+  line-height: 1.7;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.insideList {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 24px;
+  margin-bottom: 40px;
+}
+
+.insideTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #C6CBDA;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.insideList ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.insideList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.insideList li:last-child {
+  border-bottom: none;
+}
+
+.insideLabel {
+  font-size: 14px;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+.insideMeta {
+  font-size: 13px;
+  color: #9BA3C3;
+}
+
+.finalCta {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
 /* ==== Wave Background (Onboarding) ==== */
 .waveBackground {
   position: absolute;

@@ -386,7 +386,7 @@ const TabBar: React.FC<{ activeTab: string; onTabChange: (tab: Screen) => void }
   );
 };
 
-// Welcome Screen - with glass card container like reference
+// Welcome Screen - Landing Page with clear value communication
 const WelcomeScreen: React.FC<{ onBegin: () => void }> = ({ onBegin }) => {
   const [visible, setVisible] = useState(false);
 
@@ -394,18 +394,117 @@ const WelcomeScreen: React.FC<{ onBegin: () => void }> = ({ onBegin }) => {
     setVisible(true);
   }, []);
 
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <div className={`${styles.screen} ${styles.welcomeScreen} ${visible ? styles.fadeIn : ''}`}>
-      <div className={styles.welcomeCard}>
-        <div className={styles.welcomeCardInner}>
-          <div className={styles.welcomeContent}>
-            <Logo size={100} />
-            <h1 className={styles.welcomeTitle}>Abundance Recode</h1>
-            <p className={styles.welcomeTagline}>Shift your state. Reshape your reality.</p>
+    <div className={`${styles.landingPage} ${visible ? styles.fadeIn : ''}`}>
+      {/* Hero Section - Above the Fold */}
+      <section className={styles.heroSection}>
+        <div className={styles.heroContent}>
+          <Logo size={80} />
+          <h1 className={styles.heroTitle}>Abundance Recode</h1>
+          <p className={styles.heroTagline}>Shift your state. Reshape your reality.</p>
+          <p className={styles.heroValue}>
+            Daily guided practices to help you embody abundance, calm, and confidence.
+          </p>
+
+          <ul className={styles.benefitsList}>
+            <li>A 7-minute Morning Visioneering practice to start your day aligned</li>
+            <li>Guided meditations designed for embodiment, not just affirmations</li>
+            <li>Scene-based visualization that is easy to picture and feel</li>
+            <li>Calm, Focus, Confidence, Sleep, and Walking sessions</li>
+          </ul>
+
+          <div className={styles.heroCtas}>
+            <Button onClick={onBegin} fullWidth>Begin</Button>
+            <button
+              className={styles.secondaryLink}
+              onClick={() => scrollToSection('how-it-works')}
+              type="button"
+            >
+              How it works
+            </button>
           </div>
-          <Button onClick={onBegin} fullWidth>Begin</Button>
         </div>
-      </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section id="how-it-works" className={styles.howItWorksSection}>
+        <h2 className={styles.sectionTitle}>How It Works</h2>
+        <div className={styles.stepsContainer}>
+          <div className={styles.step}>
+            <div className={styles.stepNumber}>1</div>
+            <h3 className={styles.stepTitle}>Choose Your Focus</h3>
+            <p className={styles.stepDescription}>
+              Morning, Calm, Focus, Confidence, Sleep, or Walking
+            </p>
+          </div>
+          <div className={styles.step}>
+            <div className={styles.stepNumber}>2</div>
+            <h3 className={styles.stepTitle}>Listen and Embody</h3>
+            <p className={styles.stepDescription}>
+              Feel the experience as if it is already true
+            </p>
+          </div>
+          <div className={styles.step}>
+            <div className={styles.stepNumber}>3</div>
+            <h3 className={styles.stepTitle}>Carry the State</h3>
+            <p className={styles.stepDescription}>
+              Bring that aligned feeling into your day
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust/Clarity Section */}
+      <section className={styles.trustSection}>
+        <div className={styles.trustContent}>
+          <h2 className={styles.sectionTitle}>More Than Affirmations</h2>
+          <p className={styles.trustDescription}>
+            Identity-based visioneering combined with guided state shifting.
+            This is not passive listening. It is active transformation.
+          </p>
+
+          <div className={styles.insideList}>
+            <h3 className={styles.insideTitle}>What You Will Find Inside</h3>
+            <ul>
+              <li>
+                <span className={styles.insideLabel}>Morning Visioneering</span>
+                <span className={styles.insideMeta}>7 min</span>
+              </li>
+              <li>
+                <span className={styles.insideLabel}>Calm Sessions</span>
+                <span className={styles.insideMeta}>5-15 min</span>
+              </li>
+              <li>
+                <span className={styles.insideLabel}>Focus Sessions</span>
+                <span className={styles.insideMeta}>8-12 min</span>
+              </li>
+              <li>
+                <span className={styles.insideLabel}>Confidence Sessions</span>
+                <span className={styles.insideMeta}>10-15 min</span>
+              </li>
+              <li>
+                <span className={styles.insideLabel}>Sleep Sessions</span>
+                <span className={styles.insideMeta}>15-20 min</span>
+              </li>
+              <li>
+                <span className={styles.insideLabel}>Walking Meditations</span>
+                <span className={styles.insideMeta}>10-15 min</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className={styles.finalCta}>
+          <Button onClick={onBegin} fullWidth>Begin Your Practice</Button>
+        </div>
+      </section>
     </div>
   );
 };
