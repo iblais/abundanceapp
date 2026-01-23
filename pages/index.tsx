@@ -3,7 +3,7 @@
  * Premium visual design matching reference screens
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
 import styles from '../styles/Home.module.css';
 import paywallStyles from '../styles/Paywall.module.css';
@@ -12,7 +12,7 @@ import { aiMentorService } from '../lib/ai-mentor';
 import { revenueCatService, PLANS, PREMIUM_FEATURES, SubscriptionStatus } from '../lib/revenuecat';
 
 // Types
-type Screen = 'welcome' | 'onboarding' | 'rhythm' | 'dashboard' | 'meditations' | 'journal' | 'progress' | 'mentor' | 'settings' | 'profile' | 'player' | 'board' | 'gratitude' | 'quickshifts' | 'breathing' | 'learn' | 'article' | 'visualizations' | 'visualizationPlayer' | 'emotionalReset' | 'soundscapes' | 'audiobooks' | 'paywall' | 'pricing' | 'reminders' | 'notifications' | 'energyMode' | 'voiceSelector';
+type Screen = 'welcome' | 'arrival' | 'onboarding' | 'rhythm' | 'dashboard' | 'meditations' | 'journal' | 'progress' | 'mentor' | 'settings' | 'profile' | 'player' | 'board' | 'gratitude' | 'quickshifts' | 'breathing' | 'learn' | 'article' | 'visualizations' | 'visualizationPlayer' | 'emotionalReset' | 'soundscapes' | 'audiobooks' | 'paywall' | 'pricing' | 'reminders' | 'notifications' | 'energyMode' | 'voiceSelector';
 
 interface UserState {
   onboardingComplete: boolean;
@@ -504,6 +504,84 @@ const WelcomeScreen: React.FC<{ onBegin: () => void }> = ({ onBegin }) => {
           <Button onClick={onBegin} fullWidth>Begin Your Practice</Button>
         </div>
       </section>
+    </div>
+  );
+};
+
+// Arrival Screen - First launch immersive welcome experience
+const ArrivalScreen: React.FC<{ onEnter: () => void }> = ({ onEnter }) => {
+  const [visible, setVisible] = useState(false);
+  const [exiting, setExiting] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    // Fade in on mount
+    const timer = setTimeout(() => setVisible(true), 100);
+
+    // Initialize ambient audio (stubbed - add actual audio file later)
+    // Audio should be: no rhythm, no melody, spacious and expansive
+    // Uncomment when audio file is available:
+    // try {
+    //   audioRef.current = new Audio('/sounds/ambient-arrival.mp3');
+    //   audioRef.current.loop = true;
+    //   audioRef.current.volume = 0.15; // Very low volume
+    //   // Respect system mute/silent mode
+    //   audioRef.current.play().catch(() => {
+    //     // Audio autoplay blocked - that's fine
+    //   });
+    // } catch {
+    //   // Audio not available
+    // }
+
+    return () => {
+      clearTimeout(timer);
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  const handleEnter = () => {
+    setExiting(true);
+    // Mark arrival as seen
+    localStorage.setItem('arrivalSeen', 'true');
+    // Soft fade transition
+    setTimeout(() => {
+      onEnter();
+    }, 600);
+  };
+
+  return (
+    <div className={`${styles.arrivalScreen} ${visible ? styles.arrivalVisible : ''} ${exiting ? styles.arrivalExiting : ''}`}>
+      <div className={styles.arrivalGradient} />
+      <div className={styles.arrivalContent}>
+        <h1 className={styles.arrivalTitle}>Abundance Recode</h1>
+
+        <div className={styles.arrivalBody}>
+          <p className={styles.arrivalLine}>Step out of the ordinary.</p>
+
+          <p className={styles.arrivalPoem}>
+            This is a space for alignment,
+            <br />
+            embodiment,
+            <br />
+            and remembering what&apos;s possible.
+          </p>
+
+          <p className={styles.arrivalLine}>
+            When your inner state shifts,
+            <br />
+            reality responds.
+          </p>
+
+          <p className={styles.arrivalBreath}>Take a breath.</p>
+        </div>
+
+        <button className={styles.arrivalButton} onClick={handleEnter}>
+          ENTER
+        </button>
+      </div>
     </div>
   );
 };
@@ -3449,6 +3527,7 @@ export default function Home() {
   // Screen to URL path mapping
   const screenToPath: Record<Screen, string> = {
     'welcome': '/',
+    'arrival': '/',
     'onboarding': '/',
     'rhythm': '/',
     'dashboard': '/dashboard',
@@ -3582,10 +3661,22 @@ export default function Home() {
     setCurrentScreen('dashboard');
   };
 
+  // Check if arrival has been seen (for first-launch detection)
+  const handleBeginFromWelcome = () => {
+    const arrivalSeen = localStorage.getItem('arrivalSeen');
+    if (arrivalSeen === 'true') {
+      setCurrentScreen('onboarding');
+    } else {
+      setCurrentScreen('arrival');
+    }
+  };
+
   const renderScreen = () => {
     switch (currentScreen) {
       case 'welcome':
-        return <WelcomeScreen onBegin={() => setCurrentScreen('onboarding')} />;
+        return <WelcomeScreen onBegin={handleBeginFromWelcome} />;
+      case 'arrival':
+        return <ArrivalScreen onEnter={() => setCurrentScreen('onboarding')} />;
       case 'onboarding':
         return <OnboardingScreen onComplete={handleOnboardingComplete} />;
       case 'rhythm':
