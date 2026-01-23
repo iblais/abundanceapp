@@ -4,10 +4,10 @@
  */
 
 :root {
-  /* Background Colors */
-  --bg-primary: #050716;
-  --bg-secondary: #0A0E1F;
-  --bg-tertiary: #171C3F;
+  /* Background Colors - Cosmic Minimalism */
+  --bg-primary: #0B0E14;
+  --bg-secondary: #0D1019;
+  --bg-tertiary: #151A26;
 
   /* Glass Surfaces - More visible and vibrant */
   --glass-bg: rgba(255, 255, 255, 0.08);
@@ -19,15 +19,15 @@
   --glass-highlight: rgba(255, 255, 255, 0.25);
   --glass-inner-glow: rgba(255, 255, 255, 0.06);
 
-  /* Accent Colors */
-  --gold: #F4CF77;
-  --gold-light: #FAE4A8;
-  --gold-dark: #E9BB51;
-  --gold-soft: #D4B55D;
-  --gold-glow: rgba(244, 207, 119, 0.4);
-  --gold-glow-strong: rgba(244, 207, 119, 0.6);
+  /* Accent Colors - Starlight Gold */
+  --gold: #F5D547;
+  --gold-light: #F9E07A;
+  --gold-dark: #D4B53D;
+  --gold-soft: #E8CA5A;
+  --gold-glow: rgba(245, 213, 71, 0.4);
+  --gold-glow-strong: rgba(245, 213, 71, 0.6);
 
-  /* Secondary Accents */
+  /* Secondary Accents - Ethereal Purple & Nebula Blue */
   --violet: #9382FF;
   --violet-soft: #A99DD4;
   --teal: #5ECDDE;
@@ -49,10 +49,10 @@
   --shadow-glass: 0 24px 60px rgba(0, 0, 0, 0.55);
   --shadow-glass-light: 0 16px 40px rgba(0, 0, 0, 0.35);
   --shadow-glass-subtle: 0 8px 24px rgba(0, 0, 0, 0.25);
-  --shadow-button: 0 8px 32px rgba(244, 207, 119, 0.35);
-  --shadow-button-hover: 0 12px 40px rgba(244, 207, 119, 0.5);
-  --shadow-glow: 0 0 20px rgba(244, 207, 119, 0.4);
-  --shadow-glow-strong: 0 0 30px rgba(244, 207, 119, 0.6);
+  --shadow-button: 0 8px 32px rgba(245, 213, 71, 0.35);
+  --shadow-button-hover: 0 12px 40px rgba(245, 213, 71, 0.5);
+  --shadow-glow: 0 0 20px rgba(245, 213, 71, 0.4);
+  --shadow-glow-strong: 0 0 30px rgba(245, 213, 71, 0.6);
 
   /* Border Radius */
   --radius-sm: 12px;

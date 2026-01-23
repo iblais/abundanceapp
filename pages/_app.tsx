@@ -14,7 +14,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <title>Abundance Recode - Daily Guided Practices for Calm, Focus, and Confidence</title>
         <meta name="description" content="Daily guided practices to help you embody abundance, calm, and confidence. 7-minute Morning Visioneering, scene-based visualization, and identity-based transformation." />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-        <meta name="theme-color" content="#050716" />
+        <meta name="theme-color" content="#0B0E14" />
 
         {/* Open Graph */}
         <meta property="og:title" content="Abundance Recode - Shift Your State. Reshape Your Reality." />
