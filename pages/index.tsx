@@ -414,7 +414,7 @@ const WelcomeScreen: React.FC<{ onBegin: () => void }> = ({ onBegin }) => {
           </p>
 
           <ul className={styles.benefitsList}>
-            <li>A 7-minute Morning Visioneering practice to start your day aligned</li>
+            <li>Morning Visioneering (7 min) to start your day aligned</li>
             <li>Guided meditations designed for embodiment, not just affirmations</li>
             <li>Scene-based visualization that is easy to picture and feel</li>
             <li>Calm, Focus, Confidence, Sleep, and Walking sessions</li>
@@ -466,8 +466,7 @@ const WelcomeScreen: React.FC<{ onBegin: () => void }> = ({ onBegin }) => {
         <div className={styles.trustContent}>
           <h2 className={styles.sectionTitle}>More Than Affirmations</h2>
           <p className={styles.trustDescription}>
-            Identity-based visioneering combined with guided state shifting.
-            This is not passive listening. It is active transformation.
+            Guided embodiment designed to help you feel the state first, not repeat words.
           </p>
 
           <div className={styles.insideList}>
@@ -475,27 +474,27 @@ const WelcomeScreen: React.FC<{ onBegin: () => void }> = ({ onBegin }) => {
             <ul>
               <li>
                 <span className={styles.insideLabel}>Morning Visioneering</span>
-                <span className={styles.insideMeta}>7 min</span>
+                <span className={styles.insideMeta}>(7 min)</span>
               </li>
               <li>
                 <span className={styles.insideLabel}>Calm Sessions</span>
-                <span className={styles.insideMeta}>5-15 min</span>
+                <span className={styles.insideMeta}>(5–15 min)</span>
               </li>
               <li>
                 <span className={styles.insideLabel}>Focus Sessions</span>
-                <span className={styles.insideMeta}>8-12 min</span>
+                <span className={styles.insideMeta}>(8–12 min)</span>
               </li>
               <li>
                 <span className={styles.insideLabel}>Confidence Sessions</span>
-                <span className={styles.insideMeta}>10-15 min</span>
+                <span className={styles.insideMeta}>(10–15 min)</span>
               </li>
               <li>
                 <span className={styles.insideLabel}>Sleep Sessions</span>
-                <span className={styles.insideMeta}>15-20 min</span>
+                <span className={styles.insideMeta}>(15–20 min)</span>
               </li>
               <li>
                 <span className={styles.insideLabel}>Walking Meditations</span>
-                <span className={styles.insideMeta}>10-15 min</span>
+                <span className={styles.insideMeta}>(10–15 min)</span>
               </li>
             </ul>
           </div>
