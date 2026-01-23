@@ -3335,7 +3335,7 @@ export default function Home() {
   const [user, setUser] = useState<UserState>({
     onboardingComplete: false,
     displayName: 'Abundance Seeker',
-    isPremium: false,
+    isPremium: true,
     subscriptionPlan: null,
     subscriptionExpiresAt: null,
     voicePreference: 'neutral',
@@ -3453,7 +3453,7 @@ export default function Home() {
       const defaultUser: UserState = {
         onboardingComplete: true,
         displayName: 'Abundance Seeker',
-        isPremium: false,
+        isPremium: true,
         subscriptionPlan: null,
         subscriptionExpiresAt: null,
         voicePreference: 'neutral',
