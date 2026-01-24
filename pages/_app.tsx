@@ -1,6 +1,6 @@
 /**
  * Abundance Recode - Next.js App Entry
- * Premium Design System with Plus Jakarta Sans
+ * Alchemist Hybrid Design System (Cinzel + Manrope)
  */
 
 import type { AppProps } from 'next/app';
@@ -14,7 +14,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <title>Abundance Recode - Daily Guided Practices for Calm, Focus, and Confidence</title>
         <meta name="description" content="Daily guided practices to help you embody abundance, calm, and confidence. 7-minute Morning Visioneering, scene-based visualization, and identity-based transformation." />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-        <meta name="theme-color" content="#0B0E14" />
+        <meta name="theme-color" content="#02040A" />
 
         {/* Open Graph */}
         <meta property="og:title" content="Abundance Recode - Shift Your State. Reshape Your Reality." />
@@ -31,11 +31,11 @@ export default function App({ Component, pageProps }: AppProps) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </Head>
-      <main>
+      <main className="dark">
         <Component {...pageProps} />
       </main>
     </>

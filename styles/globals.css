@@ -1,58 +1,65 @@
 /**
- * Abundance Recode - Premium Design System
- * Global styles with design tokens
+ * Abundance Recode - Alchemist Hybrid Design System
+ * Cosmic Minimalism + Organic Flow
  */
 
 :root {
-  /* Background Colors - Cosmic Minimalism */
-  --bg-primary: #0B0E14;
-  --bg-secondary: #0D1019;
-  --bg-tertiary: #151A26;
+  /* Background Colors - The Void */
+  --bg-primary: #02040A;
+  --bg-secondary: #060A14;
+  --bg-tertiary: #0A1020;
 
-  /* Glass Surfaces - More visible and vibrant */
-  --glass-bg: rgba(255, 255, 255, 0.08);
-  --glass-bg-medium: rgba(255, 255, 255, 0.10);
-  --glass-bg-strong: rgba(255, 255, 255, 0.14);
-  --glass-bg-elevated: rgba(255, 255, 255, 0.18);
-  --glass-border: rgba(255, 255, 255, 0.20);
-  --glass-border-strong: rgba(255, 255, 255, 0.35);
-  --glass-highlight: rgba(255, 255, 255, 0.25);
-  --glass-inner-glow: rgba(255, 255, 255, 0.06);
+  /* Glass Surfaces */
+  --glass-bg: rgba(10, 20, 40, 0.6);
+  --glass-bg-medium: rgba(10, 20, 40, 0.7);
+  --glass-bg-strong: rgba(10, 20, 40, 0.8);
+  --glass-bg-elevated: rgba(15, 25, 50, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-border-strong: rgba(255, 255, 255, 0.2);
+  --glass-highlight: rgba(255, 255, 255, 0.15);
+  --glass-inner-glow: rgba(0, 240, 255, 0.05);
 
-  /* Accent Colors - Starlight Gold */
-  --gold: #F5D547;
-  --gold-light: #F9E07A;
-  --gold-dark: #D4B53D;
-  --gold-soft: #E8CA5A;
-  --gold-glow: rgba(245, 213, 71, 0.4);
-  --gold-glow-strong: rgba(245, 213, 71, 0.6);
+  /* Primary Accent - Bioluminescent Cyan (Living Energy) */
+  --cyan: #00F0FF;
+  --cyan-light: #66F7FF;
+  --cyan-dark: #00C4D4;
+  --cyan-soft: #33E8F5;
+  --cyan-glow: rgba(0, 240, 255, 0.4);
+  --cyan-glow-strong: rgba(0, 240, 255, 0.6);
+  --cyan-glow-subtle: rgba(0, 240, 255, 0.15);
 
-  /* Secondary Accents - Ethereal Purple & Nebula Blue */
+  /* Secondary Accent - Starlight Gold (Wealth) */
+  --gold: #FFD700;
+  --gold-light: #FFE44D;
+  --gold-dark: #D4B300;
+  --gold-soft: #FFDF33;
+  --gold-glow: rgba(255, 215, 0, 0.4);
+  --gold-glow-strong: rgba(255, 215, 0, 0.6);
+
+  /* Tertiary Accents */
   --violet: #9382FF;
   --violet-soft: #A99DD4;
   --teal: #5ECDDE;
-  --teal-soft: #7ED4E0;
   --coral: #FF8B8B;
-  --blue: #6B8EFF;
 
   /* Text Colors */
-  --text-primary: #FFFFFF;
-  --text-secondary: #C6CBDA;
-  --text-muted: #9BA3C3;
-  --text-disabled: rgba(255, 255, 255, 0.35);
+  --text-primary: #F0F4F8;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --text-disabled: rgba(148, 163, 184, 0.5);
 
   /* Dividers */
-  --divider: rgba(255, 255, 255, 0.18);
-  --divider-strong: rgba(255, 255, 255, 0.25);
+  --divider: rgba(255, 255, 255, 0.08);
+  --divider-strong: rgba(255, 255, 255, 0.15);
 
   /* Shadows */
-  --shadow-glass: 0 24px 60px rgba(0, 0, 0, 0.55);
-  --shadow-glass-light: 0 16px 40px rgba(0, 0, 0, 0.35);
-  --shadow-glass-subtle: 0 8px 24px rgba(0, 0, 0, 0.25);
-  --shadow-button: 0 8px 32px rgba(245, 213, 71, 0.35);
-  --shadow-button-hover: 0 12px 40px rgba(245, 213, 71, 0.5);
-  --shadow-glow: 0 0 20px rgba(245, 213, 71, 0.4);
-  --shadow-glow-strong: 0 0 30px rgba(245, 213, 71, 0.6);
+  --shadow-glass: 0 24px 60px rgba(0, 0, 0, 0.7);
+  --shadow-glass-light: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --shadow-glass-subtle: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-cyan: 0 0 20px rgba(0, 240, 255, 0.15);
+  --shadow-cyan-strong: 0 0 30px rgba(0, 240, 255, 0.3);
+  --shadow-gold: 0 0 20px rgba(255, 215, 0, 0.2);
+  --shadow-gold-strong: 0 0 30px rgba(255, 215, 0, 0.4);
 
   /* Border Radius */
   --radius-sm: 12px;
@@ -71,8 +78,9 @@
   --space-xxl: 24px;
   --space-xxxl: 32px;
 
-  /* Font */
-  --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Fonts */
+  --font-heading: 'Cinzel', serif;
+  --font-body: 'Manrope', sans-serif;
 
   /* Blur */
   --blur-sm: 12px;
@@ -91,8 +99,8 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  font-family: var(--font-family);
-  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+  font-family: var(--font-body);
+  background: var(--bg-primary);
   min-height: 100vh;
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
@@ -221,7 +229,7 @@ input, textarea {
   border-color: var(--glass-border-strong);
 }
 
-/* Primary button */
+/* Primary button - Cyan glow */
 .btn-primary {
   display: flex;
   align-items: center;
@@ -229,13 +237,14 @@ input, textarea {
   padding: 16px 32px;
   min-height: 52px;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-dark) 100%);
-  color: #0B0C1A;
+  background: linear-gradient(135deg, var(--cyan-light) 0%, var(--cyan) 50%, var(--cyan-dark) 100%);
+  color: var(--bg-primary);
+  font-family: var(--font-body);
   font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  font-weight: 700;
+  letter-spacing: 1px;
   text-transform: uppercase;
-  box-shadow: var(--shadow-button);
+  box-shadow: var(--shadow-cyan);
   position: relative;
   overflow: hidden;
 }
@@ -253,10 +262,37 @@ input, textarea {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-button-hover), var(--shadow-glow);
+  box-shadow: var(--shadow-cyan-strong);
 }
 
 .btn-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Gold button variant */
+.btn-gold {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 32px;
+  min-height: 52px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-dark) 100%);
+  color: var(--bg-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-gold);
+}
+
+.btn-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-gold-strong);
+}
+
+.btn-gold:active {
   transform: translateY(0) scale(0.98);
 }
 
@@ -304,30 +340,37 @@ input, textarea {
 
 /* Typography utilities */
 .text-h1 {
+  font-family: var(--font-heading);
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.1;
-  letter-spacing: -0.5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
   color: var(--text-primary);
 }
 
 .text-h2 {
+  font-family: var(--font-heading);
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.15;
-  letter-spacing: -0.3px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
   color: var(--text-primary);
 }
 
 .text-h3 {
+  font-family: var(--font-heading);
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.2;
-  letter-spacing: -0.2px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
   color: var(--text-primary);
 }
 
 .text-h4 {
+  font-family: var(--font-body);
   font-size: 20px;
   font-weight: 600;
   line-height: 1.25;
@@ -335,6 +378,7 @@ input, textarea {
 }
 
 .text-body {
+  font-family: var(--font-body);
   font-size: 16px;
   font-weight: 400;
   line-height: 1.6;
@@ -342,6 +386,7 @@ input, textarea {
 }
 
 .text-body-sm {
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: 400;
   line-height: 1.5;
@@ -349,15 +394,17 @@ input, textarea {
 }
 
 .text-caption {
+  font-family: var(--font-body);
   font-size: 12px;
   font-weight: 500;
   line-height: 1.4;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   color: var(--text-muted);
   text-transform: uppercase;
 }
 
 .text-label {
+  font-family: var(--font-body);
   font-size: 13px;
   font-weight: 500;
   line-height: 1.4;
@@ -366,6 +413,10 @@ input, textarea {
 
 .text-gold {
   color: var(--gold);
+}
+
+.text-cyan {
+  color: var(--cyan);
 }
 
 .text-muted {
@@ -377,6 +428,15 @@ input, textarea {
 }
 
 /* Glow effects */
+.glow-cyan {
+  filter: drop-shadow(0 0 12px var(--cyan-glow));
+}
+
+.glow-cyan-strong {
+  filter: drop-shadow(0 0 20px var(--cyan-glow-strong));
+  box-shadow: var(--shadow-cyan);
+}
+
 .glow-gold {
   filter: drop-shadow(0 0 12px var(--gold-glow));
 }
@@ -387,7 +447,7 @@ input, textarea {
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, var(--gold) 0%, var(--violet) 100%);
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--gold) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

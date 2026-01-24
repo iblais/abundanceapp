@@ -10,7 +10,7 @@
   justify-content: center;
   align-items: center;
   padding: 20px;
-  background: linear-gradient(180deg, #0B0E14 0%, #0D1019 50%, #151A26 100%);
+  background: linear-gradient(180deg, #02040A 0%, #060A14 50%, #0A1020 100%);
 }
 
 .phoneFrame {
@@ -18,7 +18,7 @@
   max-width: 390px;
   min-height: 844px;
   max-height: 844px;
-  background: linear-gradient(180deg, #0B0E14 0%, #0D1019 40%, #151A26 100%);
+  background: linear-gradient(180deg, #02040A 0%, #060A14 40%, #0A1020 100%);
   border-radius: 44px;
   overflow: hidden;
   position: relative;
@@ -617,11 +617,11 @@
   inset: 0;
   background: linear-gradient(
     180deg,
-    #0B0E14 0%,
-    #0D1019 25%,
-    #101420 50%,
-    #0D1019 75%,
-    #0B0E14 100%
+    #02040A 0%,
+    #060A14 25%,
+    #0A1020 50%,
+    #060A14 75%,
+    #02040A 100%
   );
   z-index: -2;
 }
@@ -927,7 +927,7 @@
 .dayButtonActive {
   background: linear-gradient(135deg, #F4CF77, #E9BB51);
   border-color: transparent;
-  color: #0B0E14;
+  color: #02040A;
   box-shadow: 0 4px 16px rgba(244, 207, 119, 0.35);
 }
 
@@ -1851,7 +1851,7 @@
 
 .messageUser .messageBubble {
   background: linear-gradient(135deg, #F4CF77, #E9BB51);
-  color: #0B0E14;
+  color: #02040A;
   border-bottom-right-radius: 8px;
 }
 
@@ -1895,7 +1895,7 @@
 
 .sendButtonActive {
   background: linear-gradient(135deg, #F4CF77, #E9BB51);
-  color: #0B0E14;
+  color: #02040A;
   box-shadow: 0 4px 16px rgba(244, 207, 119, 0.35);
 }
 
@@ -2041,7 +2041,7 @@
 .durationPillActive {
   background: linear-gradient(135deg, #F4CF77, #E9BB51);
   border-color: transparent;
-  color: #0B0E14;
+  color: #02040A;
   box-shadow: 0 4px 16px rgba(244, 207, 119, 0.35);
 }
 
@@ -4369,7 +4369,7 @@
   overflow-y: auto;
   scrollbar-width: none;
   position: relative;
-  background: linear-gradient(180deg, #0B0E14 0%, #0D1019 50%, #151A26 100%);
+  background: linear-gradient(180deg, #02040A 0%, #060A14 50%, #0A1020 100%);
 }
 
 .pricingScreen::-webkit-scrollbar {
@@ -4573,7 +4573,7 @@
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
-  background: linear-gradient(180deg, #0B0E14 0%, #0D1019 50%, #151A26 100%);
+  background: linear-gradient(180deg, #02040A 0%, #060A14 50%, #0A1020 100%);
 }
 
 .paywallGateCard {
