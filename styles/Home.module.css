@@ -427,19 +427,19 @@
     transparent 70%
   );
   border-radius: 50%;
-  animation: heroBreathing 8s ease-in-out infinite;
+  animation: heroBreathing 6s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
 }
 
 @keyframes heroBreathing {
   0%, 100% {
-    opacity: 0.6;
+    opacity: 0.5;
     transform: translateX(-50%) scale(1);
   }
   50% {
     opacity: 1;
-    transform: translateX(-50%) scale(1.15);
+    transform: translateX(-50%) scale(1.2);
   }
 }
 
@@ -1124,16 +1124,238 @@
 
 /* ==== Dashboard Screen ==== */
 .dashboardScreen {
-  padding: 40px 20px;
+  padding: 24px 20px;
   padding-bottom: 100px;
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Breathing ambient background glow */
+.dashboardGlow {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(
+    circle,
+    rgba(0, 240, 255, 0.08) 0%,
+    rgba(0, 240, 255, 0.03) 40%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  animation: dashboardBreathe 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes dashboardBreathe {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.2);
+  }
+}
+
+/* Dashboard Header with Streak */
+.dashboardHeader {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.streakBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 999px;
+}
+
+.streakIcon {
+  font-size: 16px;
+}
+
+.streakCount {
+  font-size: 18px;
+  font-weight: 700;
+  color: #FFD700;
+}
+
+.streakLabel {
+  font-size: 13px;
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+/* Featured Morning Visioneering Card */
+.featuredCard {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 240, 255, 0.15) 0%,
+    rgba(0, 240, 255, 0.05) 100%
+  );
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: 24px;
+  padding: 24px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.featuredCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 240, 255, 0.4);
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
+}
+
+.featuredGlow {
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(
+    circle,
+    rgba(0, 240, 255, 0.2) 0%,
+    transparent 70%
+  );
+  animation: featuredGlowPulse 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes featuredGlowPulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+.featuredContent {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.featuredIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.2) 0%, rgba(0, 240, 255, 0.1) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.featuredIcon svg {
+  width: 28px;
+  height: 28px;
+  color: #00F0FF;
+  filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.5));
+}
+
+.featuredText {
+  flex: 1;
+}
+
+.featuredTitle {
+  font-family: 'Cinzel', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #00F0FF;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.featuredSubtitle {
+  font-size: 14px;
+  color: #94A3B8;
+}
+
+.featuredPlayButton {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #66F7FF 0%, #00F0FF 50%, #00C4D4 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #02040A;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+  flex-shrink: 0;
+}
+
+.featuredPlayButton svg {
+  margin-left: 2px;
+}
+
+/* Shift Your State Button */
+.shiftStateButton {
+  width: 100%;
+  padding: 18px 32px;
+  margin-bottom: 24px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #FFE44D 0%, #FFD700 50%, #D4B300 100%);
+  color: #02040A;
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+  animation: shiftButtonPulse 3s ease-in-out infinite;
+}
+
+@keyframes shiftButtonPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(255, 215, 0, 0.45);
+  }
+}
+
+.shiftStateButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+}
+
+.shiftStateButton:active {
+  transform: scale(0.98);
 }
 
 .scoreSection {
   display: flex;
   justify-content: center;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 1;
 }
 
 /* ==== Progress Ring (Alignment Gauge) - Enhanced ==== */
@@ -1172,6 +1394,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  position: relative;
+  z-index: 1;
 }
 
 .actionCard {

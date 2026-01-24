@@ -761,40 +761,72 @@ const DashboardScreen: React.FC<{
   user: UserState;
   onNavigate: (screen: Screen) => void;
 }> = ({ user, onNavigate }) => {
-  const router = useRouter();
-
   const quickActions = [
-    { title: 'Morning Visioneering', subtitle: 'Guided meditation for 10 mins.', icon: Icons.sparkle, screen: 'player' as Screen, route: null },
-    { title: 'Quick Shifts', subtitle: 'Instant reset exercises.', icon: Icons.heart, screen: 'quickshifts' as Screen, route: null },
-    { title: 'Gratitude Journal', subtitle: 'Capture what you are grateful for.', icon: Icons.journal, screen: 'gratitude' as Screen, route: null },
-    { title: 'Inner Mentor', subtitle: 'Chat with your higher self.', icon: Icons.chat, screen: 'mentor' as Screen, route: null },
-    { title: 'Reality Shift Board', subtitle: 'Visualize your new identity.', icon: Icons.grid, screen: 'board' as Screen, route: null },
-    { title: 'Learn & Grow', subtitle: 'Articles for transformation.', icon: Icons.book, screen: 'learn' as Screen, route: '/learn-grow' },
-    { title: 'Visualization Tools', subtitle: 'See your future self.', icon: Icons.eye, screen: 'visualizations' as Screen, route: null },
-    { title: 'Emotional Reset', subtitle: 'Process and release emotions.', icon: Icons.heart, screen: 'emotionalReset' as Screen, route: null },
-    { title: 'Soundscapes', subtitle: 'Ambient sounds for focus.', icon: Icons.music, screen: 'soundscapes' as Screen, route: null },
-    { title: 'Audiobooks', subtitle: 'Recommended reading.', icon: Icons.headphones, screen: 'audiobooks' as Screen, route: null },
+    { title: 'Quick Shifts', subtitle: 'Instant reset exercises.', icon: Icons.heart, screen: 'quickshifts' as Screen },
+    { title: 'Gratitude Journal', subtitle: 'Capture what you are grateful for.', icon: Icons.journal, screen: 'gratitude' as Screen },
+    { title: 'Inner Mentor', subtitle: 'Chat with your higher self.', icon: Icons.chat, screen: 'mentor' as Screen },
+    { title: 'Reality Shift Board', subtitle: 'Visualize your new identity.', icon: Icons.grid, screen: 'board' as Screen },
+    { title: 'Learn & Grow', subtitle: 'Articles for transformation.', icon: Icons.book, screen: 'learn' as Screen },
+    { title: 'Meditations', subtitle: 'Guided sessions for every mood.', icon: Icons.headphones, screen: 'meditations' as Screen },
   ];
-
-  const handleCardClick = (action: typeof quickActions[0]) => {
-    onNavigate(action.screen);
-  };
 
   return (
     <div className={styles.dashboardScreen}>
+      {/* Breathing ambient background glow */}
+      <div className={styles.dashboardGlow} />
+
+      {/* Header with Streak */}
+      <div className={styles.dashboardHeader}>
+        <div className={styles.streakBadge}>
+          <span className={styles.streakIcon}>🔥</span>
+          <span className={styles.streakCount}>{user.streak}</span>
+          <span className={styles.streakLabel}>day streak</span>
+        </div>
+      </div>
+
+      {/* Featured: Morning Visioneering Card */}
+      <div
+        className={styles.featuredCard}
+        onClick={() => onNavigate('player')}
+      >
+        <div className={styles.featuredGlow} />
+        <div className={styles.featuredContent}>
+          <div className={styles.featuredIcon}>{Icons.sparkle}</div>
+          <div className={styles.featuredText}>
+            <h2 className={styles.featuredTitle}>Morning Visioneering</h2>
+            <p className={styles.featuredSubtitle}>7 min guided practice</p>
+          </div>
+          <div className={styles.featuredPlayButton}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      {/* Shift Your State Button */}
+      <button
+        className={styles.shiftStateButton}
+        onClick={() => onNavigate('quickshifts')}
+      >
+        Shift Your State
+      </button>
+
+      {/* Alignment Score */}
       <div className={styles.scoreSection}>
-        <ProgressRing progress={user.alignmentScore} size={220} strokeWidth={14}>
+        <ProgressRing progress={user.alignmentScore} size={180} strokeWidth={12}>
           <span className={styles.scoreValue}>{user.alignmentScore}</span>
-          <span className={styles.scoreLabel}>Alignment Score</span>
+          <span className={styles.scoreLabel}>Alignment</span>
         </ProgressRing>
       </div>
 
+      {/* Quick Actions Grid */}
       <div className={styles.actionsSection}>
         {quickActions.map((action, index) => (
           <GlassCard
             key={index}
             className={styles.actionCard}
-            onClick={() => handleCardClick(action)}
+            onClick={() => onNavigate(action.screen)}
           >
             <div className={styles.actionIcon}>{action.icon}</div>
             <div className={styles.actionText}>
@@ -3509,9 +3541,10 @@ const PaywallGate: React.FC<{
 
 // Main App Component
 export default function Home() {
-  const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
+  // Default directly to dashboard - feels like a tool, not a website
+  const [currentScreen, setCurrentScreen] = useState<Screen>('dashboard');
   const [user, setUser] = useState<UserState>({
-    onboardingComplete: false,
+    onboardingComplete: true,
     displayName: 'Abundance Seeker',
     isPremium: true,
     subscriptionPlan: null,
@@ -3624,11 +3657,12 @@ export default function Home() {
         setCurrentScreen(screenFromPath);
       } else if (initialScreen && pathToScreen[initialScreen]) {
         setCurrentScreen(pathToScreen[initialScreen]);
-      } else if (parsed.onboardingComplete) {
+      } else {
+        // Always default to dashboard - feels like a tool
         setCurrentScreen('dashboard');
       }
-    } else if (screenFromPath) {
-      // New user but accessing a direct route - create default user
+    } else {
+      // New user - create default user and go directly to dashboard
       const defaultUser: UserState = {
         onboardingComplete: true,
         displayName: 'Abundance Seeker',
@@ -3643,7 +3677,8 @@ export default function Home() {
       };
       setUser(defaultUser);
       localStorage.setItem('abundanceUser', JSON.stringify(defaultUser));
-      setCurrentScreen(screenFromPath);
+      // Go to specific path if provided, otherwise dashboard
+      setCurrentScreen(screenFromPath || 'dashboard');
     }
   }, []);
 

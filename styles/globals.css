@@ -531,7 +531,7 @@ input, textarea {
 
 /* Utility classes for breathing effects */
 .animate-breathe {
-  animation: breathe 8s ease-in-out infinite;
+  animation: breathe 6s ease-in-out infinite;
 }
 
 .animate-breathe-slow {
