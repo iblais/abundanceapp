@@ -452,3 +452,105 @@ input, textarea {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* ==== Ambient Breathing Animations ==== */
+
+/* Slow breathing pulse - for backgrounds and containers */
+@keyframes breathe {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+/* Slower, subtler breathing for ambient elements */
+@keyframes breatheSlow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1) translateY(0);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.03) translateY(-2px);
+  }
+}
+
+/* Gradient shift animation - creates living color movement */
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Subtle glow pulse */
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(0, 240, 255, 0.2);
+  }
+}
+
+/* Gold glow pulse */
+@keyframes glowPulseGold {
+  0%, 100% {
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+  }
+}
+
+/* Ambient orb floating */
+@keyframes floatOrb {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translate(10px, -15px) scale(1.1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-5px, -25px) scale(1.05);
+    opacity: 0.4;
+  }
+  75% {
+    transform: translate(-15px, -10px) scale(0.95);
+    opacity: 0.35;
+  }
+}
+
+/* Utility classes for breathing effects */
+.animate-breathe {
+  animation: breathe 6s ease-in-out infinite;
+}
+
+.animate-breathe-slow {
+  animation: breatheSlow 12s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradientShift 15s ease infinite;
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+.animate-glow-pulse-gold {
+  animation: glowPulseGold 4s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: floatOrb 20s ease-in-out infinite;
+}
