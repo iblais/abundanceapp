@@ -1,6 +1,6 @@
 /**
  * Abundance Recode - Cosmic Minimalism Design System
- * Deep Navy & Starlight Gold
+ * Deep Navy & Metallic Gold
  */
 
 :root {
@@ -17,24 +17,24 @@
   --glass-border: rgba(248, 250, 252, 0.1);
   --glass-border-strong: rgba(248, 250, 252, 0.2);
   --glass-highlight: rgba(248, 250, 252, 0.1);
-  --glass-inner-glow: rgba(245, 213, 71, 0.05);
+  --glass-inner-glow: rgba(212, 175, 55, 0.05);
 
-  /* Primary Accent - Starlight Gold */
-  --primary: #F5D547;
-  --primary-light: #F9E47A;
-  --primary-dark: #D4B82E;
-  --primary-soft: #F7DC6F;
-  --primary-glow: rgba(245, 213, 71, 0.4);
-  --primary-glow-strong: rgba(245, 213, 71, 0.6);
-  --primary-glow-subtle: rgba(245, 213, 71, 0.15);
+  /* Primary Accent - Metallic Gold */
+  --primary: #D4AF37;
+  --primary-light: #E8C84A;
+  --primary-dark: #B8962E;
+  --primary-soft: #DCBA4A;
+  --primary-glow: rgba(212, 175, 55, 0.4);
+  --primary-glow-strong: rgba(212, 175, 55, 0.6);
+  --primary-glow-subtle: rgba(212, 175, 55, 0.15);
 
   /* Legacy gold aliases */
-  --gold: #F5D547;
-  --gold-light: #F9E47A;
-  --gold-dark: #D4B82E;
-  --gold-soft: #F7DC6F;
-  --gold-glow: rgba(245, 213, 71, 0.4);
-  --gold-glow-strong: rgba(245, 213, 71, 0.6);
+  --gold: #D4AF37;
+  --gold-light: #E8C84A;
+  --gold-dark: #B8962E;
+  --gold-soft: #DCBA4A;
+  --gold-glow: rgba(212, 175, 55, 0.4);
+  --gold-glow-strong: rgba(212, 175, 55, 0.6);
 
   /* Text Colors - Starlight White */
   --text-primary: #F8FAFC;
@@ -50,10 +50,10 @@
   --shadow-glass: 0 24px 60px rgba(0, 0, 0, 0.7);
   --shadow-glass-light: 0 16px 40px rgba(0, 0, 0, 0.5);
   --shadow-glass-subtle: 0 8px 24px rgba(0, 0, 0, 0.4);
-  --shadow-primary: 0 0 20px rgba(245, 213, 71, 0.2);
-  --shadow-primary-strong: 0 0 30px rgba(245, 213, 71, 0.4);
-  --shadow-gold: 0 0 20px rgba(245, 213, 71, 0.2);
-  --shadow-gold-strong: 0 0 30px rgba(245, 213, 71, 0.4);
+  --shadow-primary: 0 0 20px rgba(212, 175, 55, 0.25);
+  --shadow-primary-strong: 0 0 30px rgba(212, 175, 55, 0.45);
+  --shadow-gold: 0 0 20px rgba(212, 175, 55, 0.25);
+  --shadow-gold-strong: 0 0 30px rgba(212, 175, 55, 0.45);
 
   /* Border Radius */
   --radius-sm: 12px;
