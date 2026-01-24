@@ -1,65 +1,59 @@
 /**
- * Abundance Recode - Alchemist Hybrid Design System
- * Cosmic Minimalism + Organic Flow
+ * Abundance Recode - Cosmic Minimalism Design System
+ * Deep Navy & Starlight Gold
  */
 
 :root {
-  /* Background Colors - The Void */
-  --bg-primary: #02040A;
-  --bg-secondary: #060A14;
-  --bg-tertiary: #0A1020;
+  /* Background Colors - Deep Cosmic Navy */
+  --bg-primary: #0F172A;
+  --bg-secondary: #1E293B;
+  --bg-tertiary: #334155;
 
-  /* Glass Surfaces */
-  --glass-bg: rgba(10, 20, 40, 0.6);
-  --glass-bg-medium: rgba(10, 20, 40, 0.7);
-  --glass-bg-strong: rgba(10, 20, 40, 0.8);
-  --glass-bg-elevated: rgba(15, 25, 50, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-border-strong: rgba(255, 255, 255, 0.2);
-  --glass-highlight: rgba(255, 255, 255, 0.15);
-  --glass-inner-glow: rgba(0, 240, 255, 0.05);
+  /* Glass Surfaces - Navy tinted */
+  --glass-bg: rgba(15, 23, 42, 0.7);
+  --glass-bg-medium: rgba(15, 23, 42, 0.8);
+  --glass-bg-strong: rgba(15, 23, 42, 0.9);
+  --glass-bg-elevated: rgba(30, 41, 59, 0.85);
+  --glass-border: rgba(248, 250, 252, 0.1);
+  --glass-border-strong: rgba(248, 250, 252, 0.2);
+  --glass-highlight: rgba(248, 250, 252, 0.1);
+  --glass-inner-glow: rgba(245, 213, 71, 0.05);
 
-  /* Primary Accent - Bioluminescent Cyan (Living Energy) */
-  --cyan: #00F0FF;
-  --cyan-light: #66F7FF;
-  --cyan-dark: #00C4D4;
-  --cyan-soft: #33E8F5;
-  --cyan-glow: rgba(0, 240, 255, 0.4);
-  --cyan-glow-strong: rgba(0, 240, 255, 0.6);
-  --cyan-glow-subtle: rgba(0, 240, 255, 0.15);
+  /* Primary Accent - Starlight Gold */
+  --primary: #F5D547;
+  --primary-light: #F9E47A;
+  --primary-dark: #D4B82E;
+  --primary-soft: #F7DC6F;
+  --primary-glow: rgba(245, 213, 71, 0.4);
+  --primary-glow-strong: rgba(245, 213, 71, 0.6);
+  --primary-glow-subtle: rgba(245, 213, 71, 0.15);
 
-  /* Secondary Accent - Starlight Gold (Wealth) */
-  --gold: #FFD700;
-  --gold-light: #FFE44D;
-  --gold-dark: #D4B300;
-  --gold-soft: #FFDF33;
-  --gold-glow: rgba(255, 215, 0, 0.4);
-  --gold-glow-strong: rgba(255, 215, 0, 0.6);
+  /* Legacy gold aliases */
+  --gold: #F5D547;
+  --gold-light: #F9E47A;
+  --gold-dark: #D4B82E;
+  --gold-soft: #F7DC6F;
+  --gold-glow: rgba(245, 213, 71, 0.4);
+  --gold-glow-strong: rgba(245, 213, 71, 0.6);
 
-  /* Tertiary Accents */
-  --violet: #9382FF;
-  --violet-soft: #A99DD4;
-  --teal: #5ECDDE;
-  --coral: #FF8B8B;
-
-  /* Text Colors */
-  --text-primary: #F0F4F8;
+  /* Text Colors - Starlight White */
+  --text-primary: #F8FAFC;
   --text-secondary: #94A3B8;
   --text-muted: #64748B;
   --text-disabled: rgba(148, 163, 184, 0.5);
 
-  /* Dividers */
-  --divider: rgba(255, 255, 255, 0.08);
-  --divider-strong: rgba(255, 255, 255, 0.15);
+  /* Dividers - Slate Blue */
+  --divider: rgba(248, 250, 252, 0.08);
+  --divider-strong: rgba(248, 250, 252, 0.15);
 
-  /* Shadows */
+  /* Shadows - Gold focused */
   --shadow-glass: 0 24px 60px rgba(0, 0, 0, 0.7);
   --shadow-glass-light: 0 16px 40px rgba(0, 0, 0, 0.5);
   --shadow-glass-subtle: 0 8px 24px rgba(0, 0, 0, 0.4);
-  --shadow-cyan: 0 0 20px rgba(0, 240, 255, 0.15);
-  --shadow-cyan-strong: 0 0 30px rgba(0, 240, 255, 0.3);
-  --shadow-gold: 0 0 20px rgba(255, 215, 0, 0.2);
-  --shadow-gold-strong: 0 0 30px rgba(255, 215, 0, 0.4);
+  --shadow-primary: 0 0 20px rgba(245, 213, 71, 0.2);
+  --shadow-primary-strong: 0 0 30px rgba(245, 213, 71, 0.4);
+  --shadow-gold: 0 0 20px rgba(245, 213, 71, 0.2);
+  --shadow-gold-strong: 0 0 30px rgba(245, 213, 71, 0.4);
 
   /* Border Radius */
   --radius-sm: 12px;
@@ -229,7 +223,7 @@ input, textarea {
   border-color: var(--glass-border-strong);
 }
 
-/* Primary button - Cyan glow */
+/* Primary button - Gold glow */
 .btn-primary {
   display: flex;
   align-items: center;
@@ -237,14 +231,14 @@ input, textarea {
   padding: 16px 32px;
   min-height: 52px;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--cyan-light) 0%, var(--cyan) 50%, var(--cyan-dark) 100%);
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 50%, var(--primary-dark) 100%);
   color: var(--bg-primary);
   font-family: var(--font-body);
   font-size: 15px;
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
-  box-shadow: var(--shadow-cyan);
+  box-shadow: var(--shadow-primary);
   position: relative;
   overflow: hidden;
 }
@@ -262,7 +256,7 @@ input, textarea {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-cyan-strong);
+  box-shadow: var(--shadow-primary-strong);
 }
 
 .btn-primary:active {
@@ -415,8 +409,8 @@ input, textarea {
   color: var(--gold);
 }
 
-.text-cyan {
-  color: var(--cyan);
+.text-primary {
+  color: var(--primary);
 }
 
 .text-muted {
@@ -427,14 +421,14 @@ input, textarea {
   color: var(--text-secondary);
 }
 
-/* Glow effects */
-.glow-cyan {
-  filter: drop-shadow(0 0 12px var(--cyan-glow));
+/* Glow effects - unified gold */
+.glow-primary {
+  filter: drop-shadow(0 0 12px var(--primary-glow));
 }
 
-.glow-cyan-strong {
-  filter: drop-shadow(0 0 20px var(--cyan-glow-strong));
-  box-shadow: var(--shadow-cyan);
+.glow-primary-strong {
+  filter: drop-shadow(0 0 20px var(--primary-glow-strong));
+  box-shadow: var(--shadow-primary);
 }
 
 .glow-gold {
@@ -445,9 +439,9 @@ input, textarea {
   filter: drop-shadow(0 0 20px var(--gold-glow-strong));
 }
 
-/* Gradient text */
+/* Gradient text - gold shimmer */
 .gradient-text {
-  background: linear-gradient(135deg, var(--cyan) 0%, var(--gold) 100%);
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 50%, var(--primary-dark) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
