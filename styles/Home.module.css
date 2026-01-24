@@ -3403,6 +3403,34 @@
   box-shadow:
     0 0 40px rgba(147, 130, 255, 0.3),
     0 0 80px rgba(244, 207, 119, 0.1);
+  transform: scale(1);
+  will-change: transform;
+}
+
+/* Coherent Breathing Animation - 12 second cycle (6s inhale + 6s exhale) */
+@keyframes coherentBreathe {
+  0% {
+    transform: scale(1);
+    box-shadow:
+      0 0 40px rgba(147, 130, 255, 0.3),
+      0 0 80px rgba(244, 207, 119, 0.1);
+  }
+  50% {
+    transform: scale(1.5);
+    box-shadow:
+      0 0 60px rgba(147, 130, 255, 0.5),
+      0 0 100px rgba(244, 207, 119, 0.2);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 40px rgba(147, 130, 255, 0.3),
+      0 0 80px rgba(244, 207, 119, 0.1);
+  }
+}
+
+.breathingCircleActive {
+  animation: coherentBreathe 12s ease-in-out infinite;
 }
 
 .breathingPhase {
