@@ -185,6 +185,34 @@
     rgba(244, 207, 119, 0.35) 50%,
     transparent 100%
   );
+  animation: cardGoldShimmer 3s ease-in-out infinite;
+}
+
+@keyframes cardGoldShimmer {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Breathing glow card variant */
+.glassCardBreathing {
+  animation: cardBreathing 6s ease-in-out infinite;
+}
+
+@keyframes cardBreathing {
+  0%, 100% {
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      0 0 15px rgba(0, 240, 255, 0.05);
+  }
+  50% {
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      0 0 25px rgba(0, 240, 255, 0.12);
+  }
 }
 
 /* ==== Buttons - Enhanced ==== */
@@ -216,6 +244,22 @@
   font-family: 'Manrope', sans-serif;
   font-weight: 700;
   letter-spacing: 1px;
+  animation: buttonCyanPulse 3s ease-in-out infinite;
+}
+
+@keyframes buttonCyanPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(0, 240, 255, 0.3),
+      0 8px 32px rgba(0, 240, 255, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(0, 240, 255, 0.45),
+      0 8px 32px rgba(0, 240, 255, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
 }
 
 .buttonPrimary::before {
@@ -363,6 +407,40 @@
     rgba(100, 80, 160, 0.15) 0%,
     transparent 60%
   );
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ambient breathing orb behind hero content */
+.heroSection::before {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(
+    circle,
+    rgba(0, 240, 255, 0.08) 0%,
+    rgba(0, 240, 255, 0.03) 40%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  animation: heroBreathing 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes heroBreathing {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.15);
+  }
 }
 
 .heroContent {
@@ -372,6 +450,8 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .heroTitle {
@@ -384,6 +464,18 @@
   line-height: 1.1;
   text-transform: uppercase;
   text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+  animation: goldGlowPulse 4s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes goldGlowPulse {
+  0%, 100% {
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 40px rgba(255, 215, 0, 0.5), 0 0 60px rgba(255, 215, 0, 0.2);
+  }
 }
 
 .heroTagline {
@@ -625,6 +717,66 @@
   overflow: hidden;
 }
 
+/* Floating ambient orbs */
+.arrivalOrb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(60px);
+}
+
+.arrivalOrb1 {
+  width: 200px;
+  height: 200px;
+  top: 15%;
+  left: 10%;
+  background: rgba(0, 240, 255, 0.06);
+  animation: floatOrb1 20s ease-in-out infinite;
+}
+
+.arrivalOrb2 {
+  width: 150px;
+  height: 150px;
+  bottom: 20%;
+  right: 15%;
+  background: rgba(255, 215, 0, 0.04);
+  animation: floatOrb2 25s ease-in-out infinite;
+}
+
+@keyframes floatOrb1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  25% {
+    transform: translate(15px, -20px) scale(1.1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-10px, -35px) scale(1.05);
+    opacity: 0.5;
+  }
+  75% {
+    transform: translate(-20px, -15px) scale(0.95);
+    opacity: 0.45;
+  }
+}
+
+@keyframes floatOrb2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.35;
+  }
+  33% {
+    transform: translate(-20px, 15px) scale(1.15);
+    opacity: 0.55;
+  }
+  66% {
+    transform: translate(10px, -20px) scale(0.9);
+    opacity: 0.4;
+  }
+}
+
 .arrivalVisible {
   opacity: 1;
 }
@@ -637,6 +789,7 @@
 .arrivalGradient {
   position: absolute;
   inset: 0;
+  animation: arrivalBreathe 10s ease-in-out infinite;
   background: linear-gradient(
     180deg,
     #02040A 0%,
@@ -680,6 +833,17 @@
   100% {
     opacity: 1;
     transform: scale(1.05);
+  }
+}
+
+@keyframes arrivalBreathe {
+  0%, 100% {
+    opacity: 0.85;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.1);
   }
 }
 

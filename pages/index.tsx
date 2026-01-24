@@ -555,6 +555,8 @@ const ArrivalScreen: React.FC<{ onEnter: () => void }> = ({ onEnter }) => {
   return (
     <div className={`${styles.arrivalScreen} ${visible ? styles.arrivalVisible : ''} ${exiting ? styles.arrivalExiting : ''}`}>
       <div className={styles.arrivalGradient} />
+      <div className={`${styles.arrivalOrb} ${styles.arrivalOrb1}`} />
+      <div className={`${styles.arrivalOrb} ${styles.arrivalOrb2}`} />
       <div className={styles.arrivalContent}>
         <h1 className={styles.arrivalTitle}>Abundance Recode</h1>
 
