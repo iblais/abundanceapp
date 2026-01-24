@@ -3289,6 +3289,372 @@
   line-height: 1.6;
 }
 
+/* ==== Gratitude Anchor (Enhanced) ==== */
+.gratitudeScreen {
+  position: relative;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px;
+  padding-bottom: 100px;
+  overflow: hidden;
+}
+
+.gratitudeGlow {
+  position: absolute;
+  top: -150px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(
+    circle,
+    rgba(212, 175, 55, 0.08) 0%,
+    rgba(212, 175, 55, 0.03) 40%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  animation: gratitudeGlowPulse 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes gratitudeGlowPulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.15);
+  }
+}
+
+.gratitudeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.gratitudeHeaderText {
+  text-align: center;
+  flex: 1;
+}
+
+.gratitudeTitle {
+  font-family: 'Cinzel', serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: #D4AF37;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.gratitudeSubtitle {
+  font-size: 14px;
+  color: #94A3B8;
+}
+
+.historyButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(248, 250, 252, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94A3B8;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.historyButton:hover {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: rgba(212, 175, 55, 0.3);
+  color: #D4AF37;
+}
+
+.gratitudeBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.anchorInputContainer {
+  position: relative;
+  flex: 1;
+  min-height: 200px;
+  max-height: 300px;
+  transition: all 0.5s ease;
+}
+
+.anchorInputContainer.anchoring {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.anchorTextarea {
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 24px;
+  color: #F8FAFC;
+  font-size: 18px;
+  line-height: 1.8;
+  outline: none;
+  resize: none;
+  font-family: 'Manrope', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.anchorTextarea::placeholder {
+  color: #64748B;
+  font-style: italic;
+}
+
+.anchorTextarea:focus {
+  border-color: rgba(212, 175, 55, 0.5);
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.1);
+}
+
+.anchorButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 20px 32px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #E8C84A 0%, #D4AF37 50%, #B8962E 100%);
+  color: #0F172A;
+  font-family: 'Manrope', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.anchorButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 45px rgba(212, 175, 55, 0.45);
+}
+
+.anchorButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.anchorButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.anchorIcon {
+  font-size: 20px;
+}
+
+.anchoringText {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Particle Effect */
+.particleContainer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #D4AF37;
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.8);
+  animation: particleFloat 1.5s ease-out forwards;
+}
+
+@keyframes particleFloat {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0) translateY(-200px);
+  }
+}
+
+/* Success Overlay */
+.successOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: successFadeIn 0.5s ease-out;
+}
+
+@keyframes successFadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.successContent {
+  text-align: center;
+  animation: successPop 0.5s ease-out 0.2s both;
+}
+
+@keyframes successPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.successIcon {
+  font-size: 64px;
+  color: #D4AF37;
+  margin-bottom: 24px;
+  animation: successIconGlow 1s ease-in-out infinite alternate;
+}
+
+@keyframes successIconGlow {
+  0% {
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+  }
+  100% {
+    text-shadow: 0 0 40px rgba(212, 175, 55, 0.8);
+  }
+}
+
+.successTitle {
+  font-family: 'Cinzel', serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: #D4AF37;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.successSubtitle {
+  font-size: 16px;
+  color: #94A3B8;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Prompt Suggestions */
+.promptSuggestions {
+  text-align: center;
+  margin-top: 8px;
+}
+
+.promptLabel {
+  font-size: 13px;
+  color: #64748B;
+  margin-bottom: 12px;
+}
+
+.promptChips {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.promptChip {
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(248, 250, 252, 0.1);
+  color: #94A3B8;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.promptChip:hover {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: rgba(212, 175, 55, 0.3);
+  color: #D4AF37;
+}
+
+/* History List */
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 100px;
+  position: relative;
+  z-index: 1;
+}
+
+.emptyHistory {
+  text-align: center;
+  padding: 48px 24px;
+  color: #64748B;
+}
+
+.emptyHistoryHint {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #94A3B8;
+}
+
+.historyCard {
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(248, 250, 252, 0.1);
+  border-radius: 16px;
+}
+
+.historyDate {
+  font-size: 12px;
+  color: #D4AF37;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.historyContent {
+  font-size: 15px;
+  color: #F8FAFC;
+  line-height: 1.7;
+}
+
 /* ==== Quick Shift Tools ==== */
 .quickShiftsList {
   display: flex;

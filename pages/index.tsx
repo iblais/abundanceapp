@@ -1815,128 +1815,140 @@ const BoardScreen: React.FC = () => {
 // Gratitude Journal Screen - with Firestore integration
 const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [entry, setEntry] = useState('');
-  const [showPastEntries, setShowPastEntries] = useState(false);
-  const [entries, setEntries] = useState<Array<{ id: string; date: string; prompt: string; content: string }>>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [entries, setEntries] = useState<Array<{ id: string; date: string; content: string; timestamp: number }>>([]);
+  const [isAnchoring, setIsAnchoring] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const today = new Date();
-  const dateString = today.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-
-  const prompts = [
-    'What are three things you are grateful for today?',
-    'What moment brought you joy recently?',
-    'Who in your life are you thankful for and why?',
-    'What simple pleasure did you enjoy today?',
-    'What challenge are you grateful for overcoming?',
-  ];
-
-  const todayPrompt = prompts[today.getDate() % prompts.length];
-
-  // Load entries from Firestore on mount
+  // Load entries from localStorage on mount
   useEffect(() => {
-    const loadEntries = async () => {
+    const saved = localStorage.getItem('gratitudeEntries');
+    if (saved) {
       try {
-        const uid = await getAnonymousUserId();
-        setUserId(uid);
-
-        const { entries: firestoreEntries, error } = await journalService.getEntries(uid);
-        if (!error && firestoreEntries.length > 0) {
-          setEntries(firestoreEntries.map(e => ({
-            id: e.id,
-            date: e.date,
-            prompt: e.prompt,
-            content: e.content,
-          })));
-        } else {
-          // Fallback to sample entries if no Firestore entries
-          setEntries([
-            { id: '1', date: '2026-01-17', prompt: 'What made you smile today?', content: 'The sunshine through my window this morning was beautiful. I felt grateful for a peaceful start to the day.' },
-            { id: '2', date: '2026-01-16', prompt: 'What are three things you appreciate?', content: 'My health, my family, and the opportunity to grow every day.' },
-          ]);
-        }
-      } catch (error) {
-        console.error('Error loading entries:', error);
-      } finally {
-        setIsLoading(false);
+        setEntries(JSON.parse(saved));
+      } catch (e) {
+        console.error('Error loading entries:', e);
       }
-    };
-
-    loadEntries();
+    }
   }, []);
 
-  const handleSave = async () => {
-    if (!entry.trim() || !userId) return;
+  // Check if user has logged today
+  const hasLoggedToday = () => {
+    const today = new Date().toDateString();
+    return entries.some(e => new Date(e.timestamp).toDateString() === today);
+  };
 
-    setIsSaving(true);
-    try {
-      const newEntry = {
-        date: today.toISOString().split('T')[0],
-        prompt: todayPrompt,
-        content: entry.trim(),
-        type: 'gratitude' as const,
-      };
+  // Increment streak on first daily entry
+  const incrementStreak = () => {
+    const savedUser = localStorage.getItem('abundanceUser');
+    if (savedUser) {
+      const user = JSON.parse(savedUser);
+      const lastStreakDate = localStorage.getItem('lastStreakDate');
+      const today = new Date().toDateString();
 
-      // Save to Firestore
-      const { id, error } = await journalService.saveEntry(userId, newEntry);
-
-      if (!error) {
-        setEntries([{ ...newEntry, id }, ...entries]);
-        setEntry('');
-        // Show success feedback
-        const successMsg = document.createElement('div');
-        successMsg.className = styles.successToast || '';
-        successMsg.textContent = 'Entry saved!';
-        document.body.appendChild(successMsg);
-        setTimeout(() => successMsg.remove(), 2000);
-      } else {
-        // Fallback to local storage if Firestore fails
-        const localId = Date.now().toString();
-        setEntries([{ ...newEntry, id: localId }, ...entries]);
-        setEntry('');
-        console.log('Saved locally (Firestore unavailable)');
+      if (lastStreakDate !== today) {
+        user.streak = (user.streak || 0) + 1;
+        localStorage.setItem('abundanceUser', JSON.stringify(user));
+        localStorage.setItem('lastStreakDate', today);
       }
-    } catch (error) {
-      console.error('Error saving entry:', error);
-    } finally {
-      setIsSaving(false);
     }
   };
 
-  if (showPastEntries) {
+  // Trigger haptic feedback
+  const triggerHaptic = () => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate([50, 30, 50]);
+    }
+  };
+
+  // Generate particles for the effect
+  const generateParticles = () => {
+    const newParticles = Array.from({ length: 20 }, (_, i) => ({
+      id: Date.now() + i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      delay: Math.random() * 0.5,
+    }));
+    setParticles(newParticles);
+  };
+
+  // Handle the "Anchor It" action
+  const handleAnchor = async () => {
+    if (!entry.trim()) return;
+
+    setIsAnchoring(true);
+    generateParticles();
+    triggerHaptic();
+
+    // Save entry
+    const newEntry = {
+      id: Date.now().toString(),
+      date: new Date().toISOString(),
+      content: entry.trim(),
+      timestamp: Date.now(),
+    };
+
+    const updatedEntries = [newEntry, ...entries];
+    setEntries(updatedEntries);
+    localStorage.setItem('gratitudeEntries', JSON.stringify(updatedEntries));
+
+    // Increment streak if first entry today
+    if (!hasLoggedToday()) {
+      incrementStreak();
+    }
+
+    // Wait for particle animation
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    setEntry('');
+    setIsAnchoring(false);
+    setParticles([]);
+    setShowSuccess(true);
+
+    // Hide success message after 2.5 seconds
+    setTimeout(() => setShowSuccess(false), 2500);
+  };
+
+  // Format date for display
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
+  // History Drawer
+  if (showHistory) {
     return (
-      <div className={styles.screen}>
-        <header className={styles.screenHeaderWithBack}>
-          <button className={styles.backButtonSmall} onClick={() => setShowPastEntries(false)}>
+      <div className={styles.gratitudeScreen}>
+        <div className={styles.gratitudeGlow} />
+
+        <header className={styles.gratitudeHeader}>
+          <button className={styles.backButtonSmall} onClick={() => setShowHistory(false)}>
             {Icons.back}
           </button>
-          <div>
-            <h2>Past Entries</h2>
-            <p>{entries.length} entries</p>
+          <div className={styles.gratitudeHeaderText}>
+            <h1 className={styles.gratitudeTitle}>Anchor History</h1>
+            <p className={styles.gratitudeSubtitle}>{entries.length} gratitudes anchored</p>
           </div>
+          <div style={{ width: 40 }} />
         </header>
 
-        <div className={styles.pastEntriesList}>
-          {isLoading ? (
-            <div className={styles.loadingState}>Loading entries...</div>
-          ) : entries.length === 0 ? (
-            <div className={styles.emptyState}>
-              <p>No entries yet. Start writing!</p>
+        <div className={styles.historyList}>
+          {entries.length === 0 ? (
+            <div className={styles.emptyHistory}>
+              <p>No anchors yet.</p>
+              <p className={styles.emptyHistoryHint}>Start by anchoring your first gratitude.</p>
             </div>
           ) : (
             entries.map((e) => (
-              <GlassCard key={e.id} className={styles.pastEntryCard}>
-                <span className={styles.pastEntryDate}>
-                  {new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                </span>
-                <p className={styles.pastEntryPrompt}>{e.prompt}</p>
-                <p className={styles.pastEntryText}>{e.content}</p>
-              </GlassCard>
+              <div key={e.id} className={styles.historyCard}>
+                <span className={styles.historyDate}>{formatDate(e.date)}</span>
+                <p className={styles.historyContent}>{e.content}</p>
+              </div>
             ))
           )}
         </div>
@@ -1945,39 +1957,103 @@ const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) 
   }
 
   return (
-    <div className={styles.screen}>
-      <header className={styles.screenHeaderWithBack}>
+    <div className={styles.gratitudeScreen}>
+      {/* Ambient breathing glow */}
+      <div className={styles.gratitudeGlow} />
+
+      {/* Floating particles during anchor */}
+      {isAnchoring && (
+        <div className={styles.particleContainer}>
+          {particles.map((p) => (
+            <div
+              key={p.id}
+              className={styles.particle}
+              style={{
+                left: `${p.x}%`,
+                top: `${p.y}%`,
+                animationDelay: `${p.delay}s`,
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Success message overlay */}
+      {showSuccess && (
+        <div className={styles.successOverlay}>
+          <div className={styles.successContent}>
+            <div className={styles.successIcon}>✦</div>
+            <h2 className={styles.successTitle}>Frequency Shifted</h2>
+            <p className={styles.successSubtitle}>Anchor Logged</p>
+          </div>
+        </div>
+      )}
+
+      <header className={styles.gratitudeHeader}>
         <button className={styles.backButtonSmall} onClick={onClose}>
           {Icons.back}
         </button>
-        <div>
-          <h2>Gratitude Journal</h2>
-          <p>{dateString}</p>
+        <div className={styles.gratitudeHeaderText}>
+          <h1 className={styles.gratitudeTitle}>Gratitude Anchor</h1>
+          <p className={styles.gratitudeSubtitle}>Shift your frequency</p>
         </div>
+        <button className={styles.historyButton} onClick={() => setShowHistory(true)}>
+          {Icons.clock}
+        </button>
       </header>
 
-      <div className={styles.gratitudeContent}>
-        <GlassCard variant="elevated" className={styles.promptCard}>
-          <p className={styles.promptLabel}>Today&apos;s Prompt</p>
-          <p className={styles.promptText}>{todayPrompt}</p>
-        </GlassCard>
-
-        <div className={styles.journalEditor}>
+      <div className={styles.gratitudeBody}>
+        {/* Main input area */}
+        <div className={`${styles.anchorInputContainer} ${isAnchoring ? styles.anchoring : ''}`}>
           <textarea
-            placeholder="Write your gratitude entry here..."
+            ref={textareaRef}
+            className={styles.anchorTextarea}
+            placeholder="I am truly grateful for…"
             value={entry}
             onChange={(e) => setEntry(e.target.value)}
-            className={styles.journalTextarea}
+            disabled={isAnchoring}
           />
         </div>
 
-        <div className={styles.journalActions}>
-          <Button onClick={handleSave} fullWidth disabled={!entry.trim() || isSaving}>
-            {isSaving ? 'Saving...' : 'Save Entry'}
-          </Button>
-          <button className={styles.textButton} onClick={() => setShowPastEntries(true)}>
-            View Past Entries
-          </button>
+        {/* Anchor button */}
+        <button
+          className={styles.anchorButton}
+          onClick={handleAnchor}
+          disabled={!entry.trim() || isAnchoring}
+        >
+          {isAnchoring ? (
+            <span className={styles.anchoringText}>Anchoring...</span>
+          ) : (
+            <>
+              <span className={styles.anchorIcon}>⚓</span>
+              <span>Anchor It</span>
+            </>
+          )}
+        </button>
+
+        {/* Quick prompts */}
+        <div className={styles.promptSuggestions}>
+          <p className={styles.promptLabel}>Need inspiration?</p>
+          <div className={styles.promptChips}>
+            <button
+              className={styles.promptChip}
+              onClick={() => setEntry('I am truly grateful for the gift of ')}
+            >
+              A gift
+            </button>
+            <button
+              className={styles.promptChip}
+              onClick={() => setEntry('I am truly grateful for the person who ')}
+            >
+              A person
+            </button>
+            <button
+              className={styles.promptChip}
+              onClick={() => setEntry('I am truly grateful for the moment when ')}
+            >
+              A moment
+            </button>
+          </div>
         </div>
       </div>
     </div>
