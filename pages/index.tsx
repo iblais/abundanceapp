@@ -34,7 +34,7 @@ const Logo: React.FC<{ size?: number }> = ({ size = 100 }) => (
       <defs>
         <linearGradient id="swirlGradient" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#FFFFFF" stopOpacity="1" />
-          <stop offset="100%" stopColor="#C4B8E8" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.9" />
         </linearGradient>
         <filter id="logoGlow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="4" result="blur" />
@@ -79,9 +79,9 @@ const ProgressRing: React.FC<{ progress: number; size?: number; strokeWidth?: nu
       <svg width={size} height={size}>
         <defs>
           <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#F4CF77" />
-            <stop offset="50%" stopColor="#FFFFFF" />
-            <stop offset="100%" stopColor="#9382FF" />
+            <stop offset="0%" stopColor="#D4AF37" />
+            <stop offset="50%" stopColor="#E8C84A" />
+            <stop offset="100%" stopColor="rgba(212, 175, 55, 0.3)" />
           </linearGradient>
           <filter id="ringGlow">
             <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
@@ -594,13 +594,13 @@ const WaveBackground: React.FC = () => (
     <svg viewBox="0 0 400 400" className={styles.waveSvg}>
       <defs>
         <linearGradient id="waveGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#4A3F8C" stopOpacity="0.6" />
-          <stop offset="50%" stopColor="#6B5BA7" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#8B7BC2" stopOpacity="0.2" />
+          <stop offset="0%" stopColor="#1E293B" stopOpacity="0.6" />
+          <stop offset="50%" stopColor="#334155" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.15" />
         </linearGradient>
         <linearGradient id="waveGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#3D3470" stopOpacity="0.5" />
-          <stop offset="100%" stopColor="#5C4D99" stopOpacity="0.3" />
+          <stop offset="0%" stopColor="#1E293B" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.1" />
         </linearGradient>
       </defs>
       <ellipse cx="200" cy="350" rx="250" ry="150" fill="url(#waveGrad1)" className={styles.waveShape1} />
@@ -1193,8 +1193,8 @@ const CircularGauge: React.FC<{
 
   const gradientId = `gauge-${color}`;
   const gradientColors = color === 'coherence'
-    ? ['#E8E0FF', '#C5B8F0']
-    : ['#F4CF77', '#E9BB51'];
+    ? ['#E8C84A', '#D4AF37']
+    : ['#D4AF37', '#B8962E'];
 
   return (
     <GlassCard className={styles.gaugeCard}>
@@ -1278,12 +1278,12 @@ const ProgressScreen: React.FC<{ user: UserState }> = ({ user }) => {
             <svg className={styles.lineChartSvg} viewBox="0 0 280 80" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#9BA3C3" />
-                  <stop offset="100%" stopColor="#E8E0FF" />
+                  <stop offset="0%" stopColor="#94A3B8" />
+                  <stop offset="100%" stopColor="#D4AF37" />
                 </linearGradient>
                 <linearGradient id="fillGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(200, 190, 240, 0.3)" />
-                  <stop offset="100%" stopColor="rgba(200, 190, 240, 0)" />
+                  <stop offset="0%" stopColor="rgba(212, 175, 55, 0.25)" />
+                  <stop offset="100%" stopColor="rgba(212, 175, 55, 0)" />
                 </linearGradient>
               </defs>
               <path
@@ -1315,8 +1315,8 @@ const ProgressScreen: React.FC<{ user: UserState }> = ({ user }) => {
                 <svg width="100%" height="100%" viewBox="0 0 100 40" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="smallLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#9BA3C3" />
-                      <stop offset="100%" stopColor="#C5B8F0" />
+                      <stop offset="0%" stopColor="#94A3B8" />
+                      <stop offset="100%" stopColor="#D4AF37" />
                     </linearGradient>
                   </defs>
                   <path
@@ -1326,7 +1326,7 @@ const ProgressScreen: React.FC<{ user: UserState }> = ({ user }) => {
                     strokeWidth="2"
                     strokeLinecap="round"
                   />
-                  <circle cx="100" cy="10" r="3" fill="#C5B8F0" />
+                  <circle cx="100" cy="10" r="3" fill="#D4AF37" />
                 </svg>
               </div>
               <span className={styles.smallChartXLabel}>Last Week</span>
@@ -1547,13 +1547,13 @@ const PlayerScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" className={styles.auroraWave}>
           <defs>
             <linearGradient id="aurora1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#4A3F8C" stopOpacity="0.8" />
-              <stop offset="50%" stopColor="#6B5BA7" stopOpacity="0.5" />
-              <stop offset="100%" stopColor="#8B7BC2" stopOpacity="0.3" />
+              <stop offset="0%" stopColor="#1E293B" stopOpacity="0.8" />
+              <stop offset="50%" stopColor="#334155" stopOpacity="0.5" />
+              <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.2" />
             </linearGradient>
             <linearGradient id="aurora2" x1="100%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#3D3470" stopOpacity="0.7" />
-              <stop offset="100%" stopColor="#5C4D99" stopOpacity="0.4" />
+              <stop offset="0%" stopColor="#1E293B" stopOpacity="0.7" />
+              <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.15" />
             </linearGradient>
           </defs>
           <path d="M0,100 Q100,50 200,100 T400,100 L400,200 L0,200 Z" fill="url(#aurora1)" className={styles.auroraPath1} />
