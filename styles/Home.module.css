@@ -101,24 +101,27 @@
   animation: glow 3s ease-in-out infinite;
 }
 
-/* ==== Glass Card - Refined Frosted Effect ==== */
+/* ==== Glass Card - Alchemist Hybrid Style ==== */
 .glassCard {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.12) 0%,
-    rgba(255, 255, 255, 0.06) 100%
-  );
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
+  background: rgba(10, 20, 40, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 20px;
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glassCard:hover {
+  border-color: rgba(0, 240, 255, 0.2);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(0, 240, 255, 0.1);
 }
 
 .glassCard::before {
@@ -131,7 +134,7 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.2) 50%,
+    rgba(0, 240, 255, 0.2) 50%,
     transparent 100%
   );
 }
@@ -203,12 +206,16 @@
 }
 
 .buttonPrimary {
-  background: linear-gradient(135deg, #FAE4A8 0%, #F4CF77 40%, #E9BB51 100%);
-  color: #0B0C1A;
+  background: linear-gradient(135deg, #66F7FF 0%, #00F0FF 50%, #00C4D4 100%);
+  color: #02040A;
   box-shadow:
-    0 8px 32px rgba(244, 207, 119, 0.4),
+    0 0 20px rgba(0, 240, 255, 0.3),
+    0 8px 32px rgba(0, 240, 255, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
   text-transform: uppercase;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
 
 .buttonPrimary::before {
@@ -229,8 +236,8 @@
 .buttonPrimary:hover {
   transform: translateY(-3px) scale(1.02);
   box-shadow:
-    0 12px 44px rgba(244, 207, 119, 0.5),
-    0 0 24px rgba(244, 207, 119, 0.3),
+    0 0 30px rgba(0, 240, 255, 0.4),
+    0 12px 44px rgba(0, 240, 255, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
@@ -246,15 +253,17 @@
 }
 
 .buttonSecondary {
-  background: rgba(255, 255, 255, 0.08);
-  color: #FFFFFF;
-  border: 1px solid rgba(255, 255, 255, 0.20);
-  backdrop-filter: blur(12px);
+  background: rgba(10, 20, 40, 0.6);
+  color: #F0F4F8;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  font-family: 'Manrope', sans-serif;
 }
 
 .buttonSecondary:hover {
-  background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 255, 0.30);
+  background: rgba(10, 20, 40, 0.8);
+  border-color: rgba(0, 240, 255, 0.3);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
 }
 
 .buttonGhost {
@@ -366,25 +375,30 @@
 }
 
 .heroTitle {
-  font-size: 36px;
-  font-weight: 700;
-  color: #FFFFFF;
+  font-family: 'Cinzel', serif;
+  font-size: 32px;
+  font-weight: 600;
+  color: #FFD700;
   margin: 16px 0 8px;
-  letter-spacing: -0.5px;
+  letter-spacing: 3px;
   line-height: 1.1;
+  text-transform: uppercase;
+  text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
 }
 
 .heroTagline {
+  font-family: 'Manrope', sans-serif;
   font-size: 18px;
-  color: #C6CBDA;
+  color: #F0F4F8;
   font-weight: 500;
   line-height: 1.4;
   margin-bottom: 12px;
 }
 
 .heroValue {
+  font-family: 'Manrope', sans-serif;
   font-size: 15px;
-  color: #9BA3C3;
+  color: #94A3B8;
   font-weight: 400;
   line-height: 1.6;
   margin-bottom: 24px;
@@ -400,13 +414,14 @@
 }
 
 .benefitsList li {
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
-  color: #B8BDCF;
+  color: #94A3B8;
   line-height: 1.5;
   padding: 10px 0;
   padding-left: 24px;
   position: relative;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .benefitsList li:last-child {
@@ -421,8 +436,9 @@
   transform: translateY(-50%);
   width: 8px;
   height: 8px;
-  background: linear-gradient(135deg, #8B7BC2, #6B5BA7);
+  background: linear-gradient(135deg, #00F0FF, #00C4D4);
   border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
 }
 
 .heroCtas {
@@ -462,12 +478,14 @@
 }
 
 .sectionTitle {
-  font-size: 24px;
-  font-weight: 600;
-  color: #FFFFFF;
+  font-family: 'Cinzel', serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: #F0F4F8;
   text-align: center;
   margin-bottom: 40px;
-  letter-spacing: -0.3px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
 
 .stepsContainer {
@@ -484,9 +502,10 @@
   align-items: center;
   text-align: center;
   padding: 24px 20px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(10, 20, 40, 0.6);
+  backdrop-filter: blur(20px);
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .stepNumber {
@@ -495,25 +514,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, rgba(139, 123, 194, 0.3), rgba(107, 91, 167, 0.2));
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(0, 196, 212, 0.1));
+  border: 1px solid rgba(0, 240, 255, 0.3);
   border-radius: 50%;
   font-size: 18px;
   font-weight: 600;
-  color: #C6CBDA;
+  color: #00F0FF;
   margin-bottom: 16px;
-  border: 1px solid rgba(139, 123, 194, 0.3);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
 }
 
 .stepTitle {
+  font-family: 'Manrope', sans-serif;
   font-size: 16px;
   font-weight: 600;
-  color: #FFFFFF;
+  color: #F0F4F8;
   margin-bottom: 8px;
 }
 
 .stepDescription {
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
-  color: #9BA3C3;
+  color: #94A3B8;
   line-height: 1.5;
 }
 
