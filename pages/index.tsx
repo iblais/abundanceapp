@@ -2064,29 +2064,16 @@ const BreathingExerciseScreen: React.FC<{ onClose: () => void }> = ({ onClose })
   const [isActive, setIsActive] = useState(false);
   const [phase, setPhase] = useState<'inhale' | 'exhale'>('inhale');
   const [timeLeft, setTimeLeft] = useState(180); // 3 minutes in seconds
-  const [circleScale, setCircleScale] = useState(1);
 
   useEffect(() => {
-    let breathingInterval: NodeJS.Timeout;
     let countdownInterval: NodeJS.Timeout;
+    let phaseInterval: NodeJS.Timeout;
 
     if (isActive && timeLeft > 0) {
-      // Breathing animation: 6 seconds inhale, 6 seconds exhale
-      let breathTime = 0;
-      breathingInterval = setInterval(() => {
-        breathTime += 100;
-        const cycleTime = breathTime % 12000; // 12 second cycle
-
-        if (cycleTime < 6000) {
-          // Inhale phase
-          setPhase('inhale');
-          setCircleScale(1 + (cycleTime / 6000) * 0.5); // Scale from 1 to 1.5
-        } else {
-          // Exhale phase
-          setPhase('exhale');
-          setCircleScale(1.5 - ((cycleTime - 6000) / 6000) * 0.5); // Scale from 1.5 to 1
-        }
-      }, 100);
+      // Phase text updates: toggle every 6 seconds to match CSS animation
+      phaseInterval = setInterval(() => {
+        setPhase((p) => (p === 'inhale' ? 'exhale' : 'inhale'));
+      }, 6000);
 
       countdownInterval = setInterval(() => {
         setTimeLeft((t) => {
@@ -2100,10 +2087,21 @@ const BreathingExerciseScreen: React.FC<{ onClose: () => void }> = ({ onClose })
     }
 
     return () => {
-      clearInterval(breathingInterval);
       clearInterval(countdownInterval);
+      clearInterval(phaseInterval);
     };
   }, [isActive, timeLeft]);
+
+  // Reset phase when starting
+  const handleStartPause = () => {
+    if (!isActive) {
+      setPhase('inhale'); // Always start with inhale
+    }
+    if (timeLeft === 0) {
+      setTimeLeft(180);
+    }
+    setIsActive(!isActive);
+  };
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -2121,11 +2119,7 @@ const BreathingExerciseScreen: React.FC<{ onClose: () => void }> = ({ onClose })
 
         <div className={styles.breathingCircleContainer}>
           <div
-            className={styles.breathingCircle}
-            style={{
-              transform: `scale(${circleScale})`,
-              transition: 'transform 0.1s linear'
-            }}
+            className={`${styles.breathingCircle} ${isActive ? styles.breathingCircleActive : ''}`}
           />
           <div className={styles.breathingPhase}>
             {isActive ? (phase === 'inhale' ? 'Breathe In' : 'Breathe Out') : 'Ready'}
@@ -2135,12 +2129,7 @@ const BreathingExerciseScreen: React.FC<{ onClose: () => void }> = ({ onClose })
         <div className={styles.breathingTimer}>{formatTime(timeLeft)}</div>
 
         <Button
-          onClick={() => {
-            if (timeLeft === 0) {
-              setTimeLeft(180);
-            }
-            setIsActive(!isActive);
-          }}
+          onClick={handleStartPause}
           fullWidth
         >
           {isActive ? 'Pause' : (timeLeft === 0 ? 'Restart' : 'Start')}
