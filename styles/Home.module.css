@@ -3478,100 +3478,205 @@
   50% { opacity: 0.5; }
 }
 
-/* Particle Effect */
+/* Explosive Particle Effect */
 .particleContainer {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 100;
+  z-index: 150;
   overflow: hidden;
 }
 
 .particle {
   position: absolute;
-  width: 8px;
-  height: 8px;
-  background: #D4AF37;
   border-radius: 50%;
-  box-shadow: 0 0 12px rgba(212, 175, 55, 0.8);
-  animation: particleFloat 1.5s ease-out forwards;
+  animation: particleExplode 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  will-change: transform, opacity;
 }
 
-@keyframes particleFloat {
+@keyframes particleExplode {
   0% {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  20% {
+    opacity: 1;
+    transform:
+      translate(
+        calc(var(--velocity-x) * 0.6),
+        calc(var(--velocity-y) * 0.8)
+      )
+      rotate(calc(var(--rotation) * 0.5))
+      scale(1.2);
+  }
+  60% {
+    opacity: 0.8;
+    transform:
+      translate(
+        calc(var(--velocity-x) * 1.2),
+        calc(var(--velocity-y) * 0.3)
+      )
+      rotate(var(--rotation))
+      scale(0.8);
   }
   100% {
     opacity: 0;
-    transform: scale(0) translateY(-200px);
+    transform:
+      translate(
+        calc(var(--velocity-x) * 1.5),
+        calc(var(--velocity-y) * -0.5 + 30vh)
+      )
+      rotate(calc(var(--rotation) * 2))
+      scale(0.2);
   }
 }
 
-/* Success Overlay */
+/* Button Pulse on Impact */
+.anchorButtonPulse {
+  animation: buttonImpact 0.6s ease-out;
+}
+
+@keyframes buttonImpact {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+  }
+  30% {
+    transform: scale(1.08);
+    box-shadow:
+      0 0 60px rgba(212, 175, 55, 0.6),
+      0 0 100px rgba(212, 175, 55, 0.3);
+  }
+  60% {
+    transform: scale(0.95);
+    box-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+  }
+}
+
+/* Success Overlay - Enhanced */
 .successOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.95);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(15, 23, 42, 0.9) 0%,
+    rgba(15, 23, 42, 0.98) 100%
+  );
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 200;
-  animation: successFadeIn 0.5s ease-out;
+  animation: successOverlayIn 0.6s ease-out;
 }
 
-@keyframes successFadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+@keyframes successOverlayIn {
+  0% {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+  }
 }
 
 .successContent {
   text-align: center;
-  animation: successPop 0.5s ease-out 0.2s both;
+  animation: successBurst 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-@keyframes successPop {
+@keyframes successBurst {
   0% {
     opacity: 0;
-    transform: scale(0.8);
+    transform: scale(0.3) translateY(50px);
+  }
+  50% {
+    transform: scale(1.1) translateY(-10px);
   }
   100% {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateY(0);
   }
 }
 
 .successIcon {
-  font-size: 64px;
+  font-size: 80px;
   color: #D4AF37;
-  margin-bottom: 24px;
-  animation: successIconGlow 1s ease-in-out infinite alternate;
+  margin-bottom: 32px;
+  animation:
+    successIconPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both,
+    successIconGlow 1.5s ease-in-out 0.7s infinite alternate;
+  filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.6));
+}
+
+@keyframes successIconPop {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-180deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
 }
 
 @keyframes successIconGlow {
   0% {
-    text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
+    transform: scale(1);
   }
   100% {
-    text-shadow: 0 0 40px rgba(212, 175, 55, 0.8);
+    filter: drop-shadow(0 0 50px rgba(212, 175, 55, 0.9));
+    transform: scale(1.05);
   }
 }
 
 .successTitle {
   font-family: 'Cinzel', serif;
-  font-size: 28px;
+  font-size: 36px;
   font-weight: 600;
   color: #D4AF37;
-  letter-spacing: 3px;
+  letter-spacing: 5px;
   text-transform: uppercase;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  text-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+  animation: successTextIn 0.6s ease-out 0.3s both;
+}
+
+@keyframes successTextIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+    letter-spacing: 20px;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    letter-spacing: 5px;
+  }
 }
 
 .successSubtitle {
-  font-size: 16px;
+  font-size: 18px;
   color: #94A3B8;
-  letter-spacing: 2px;
+  letter-spacing: 4px;
   text-transform: uppercase;
+  animation: successSubIn 0.5s ease-out 0.5s both;
+}
+
+@keyframes successSubIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Prompt Suggestions */

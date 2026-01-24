@@ -1819,7 +1819,18 @@ const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) 
   const [entries, setEntries] = useState<Array<{ id: string; date: string; content: string; timestamp: number }>>([]);
   const [isAnchoring, setIsAnchoring] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
+  const [buttonPulse, setButtonPulse] = useState(false);
+  const [particles, setParticles] = useState<Array<{
+    id: number;
+    x: number;
+    y: number;
+    size: number;
+    color: string;
+    velocityX: number;
+    velocityY: number;
+    rotation: number;
+    delay: number;
+  }>>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Load entries from localStorage on mount
@@ -1856,27 +1867,41 @@ const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) 
     }
   };
 
-  // Trigger haptic feedback
+  // Trigger haptic feedback - stronger burst
   const triggerHaptic = () => {
     if ('vibrate' in navigator) {
-      navigator.vibrate([50, 30, 50]);
+      navigator.vibrate([100, 50, 100, 50, 150]);
     }
   };
 
-  // Generate particles for the effect
+  // Generate explosive particle burst - 60 particles with physics
   const generateParticles = () => {
-    const newParticles = Array.from({ length: 20 }, (_, i) => ({
-      id: Date.now() + i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      delay: Math.random() * 0.5,
-    }));
+    const colors = ['#D4AF37', '#E8C84A', '#FFFFFF', '#F8FAFC', '#D4AF37', '#D4AF37'];
+    const newParticles = Array.from({ length: 60 }, (_, i) => {
+      const angle = (Math.random() * Math.PI * 2); // Random angle in radians
+      const velocity = 8 + Math.random() * 12; // Random velocity
+      return {
+        id: Date.now() + i,
+        x: 50 + (Math.random() - 0.5) * 20, // Start near center
+        y: 70 + (Math.random() - 0.5) * 10, // Start near button
+        size: 4 + Math.random() * 10, // Varying sizes
+        color: colors[Math.floor(Math.random() * colors.length)],
+        velocityX: Math.cos(angle) * velocity * (Math.random() > 0.5 ? 1 : -1),
+        velocityY: -Math.abs(Math.sin(angle) * velocity) - 5, // Always shoot upward
+        rotation: Math.random() * 360,
+        delay: Math.random() * 0.3,
+      };
+    });
     setParticles(newParticles);
   };
 
   // Handle the "Anchor It" action
   const handleAnchor = async () => {
     if (!entry.trim()) return;
+
+    // Trigger button pulse
+    setButtonPulse(true);
+    setTimeout(() => setButtonPulse(false), 600);
 
     setIsAnchoring(true);
     generateParticles();
@@ -1900,15 +1925,15 @@ const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) 
     }
 
     // Wait for particle animation
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     setEntry('');
     setIsAnchoring(false);
     setParticles([]);
     setShowSuccess(true);
 
-    // Hide success message after 2.5 seconds
-    setTimeout(() => setShowSuccess(false), 2500);
+    // Hide success message after 3 seconds
+    setTimeout(() => setShowSuccess(false), 3000);
   };
 
   // Format date for display
@@ -1961,7 +1986,7 @@ const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) 
       {/* Ambient breathing glow */}
       <div className={styles.gratitudeGlow} />
 
-      {/* Floating particles during anchor */}
+      {/* Explosive particle burst during anchor */}
       {isAnchoring && (
         <div className={styles.particleContainer}>
           {particles.map((p) => (
@@ -1971,8 +1996,15 @@ const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) 
               style={{
                 left: `${p.x}%`,
                 top: `${p.y}%`,
+                width: `${p.size}px`,
+                height: `${p.size}px`,
+                backgroundColor: p.color,
+                boxShadow: `0 0 ${p.size * 2}px ${p.color}`,
+                '--velocity-x': `${p.velocityX}vw`,
+                '--velocity-y': `${p.velocityY}vh`,
+                '--rotation': `${p.rotation}deg`,
                 animationDelay: `${p.delay}s`,
-              }}
+              } as React.CSSProperties}
             />
           ))}
         </div>
@@ -2015,9 +2047,9 @@ const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) 
           />
         </div>
 
-        {/* Anchor button */}
+        {/* Anchor button with pulse effect */}
         <button
-          className={styles.anchorButton}
+          className={`${styles.anchorButton} ${buttonPulse ? styles.anchorButtonPulse : ''}`}
           onClick={handleAnchor}
           disabled={!entry.trim() || isAnchoring}
         >
@@ -2026,7 +2058,7 @@ const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) 
           ) : (
             <>
               <span className={styles.anchorIcon}>⚓</span>
-              <span>Anchor It</span>
+              <span>ANCHOR IT</span>
             </>
           )}
         </button>
