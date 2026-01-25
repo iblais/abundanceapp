@@ -2803,6 +2803,530 @@
 }
 
 /* ==== Reality Shift Board ==== */
+/* ==== Reality Shift Board / Vision Board ==== */
+.visionBoardScreen {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #080B12;
+}
+
+/* Grid Background - Studio/Blueprint vibe */
+.visionBoardGrid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(212, 175, 55, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 175, 55, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.visionBoardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  position: relative;
+  z-index: 10;
+  background: linear-gradient(180deg, rgba(8, 11, 18, 0.95) 0%, transparent 100%);
+}
+
+.visionBoardTitle {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: #D4AF37;
+  margin-bottom: 4px;
+}
+
+.visionBoardSubtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.visionBoardActions {
+  display: flex;
+  gap: 12px;
+}
+
+.shiftModeButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.1));
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 24px;
+  color: #D4AF37;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.shiftModeButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.2));
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+.shiftModeButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Canvas Area */
+.visionBoardCanvas {
+  flex: 1;
+  position: relative;
+  margin: 0 20px 100px;
+  border: 1px dashed rgba(212, 175, 55, 0.2);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+  z-index: 5;
+}
+
+.canvasEmpty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.3);
+  text-align: center;
+  padding: 40px;
+}
+
+.canvasEmptyIcon {
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.canvasEmptyIcon svg {
+  color: rgba(212, 175, 55, 0.4);
+}
+
+.canvasEmpty p {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Board Canvas Items */
+.boardCanvasItem {
+  position: absolute;
+  cursor: grab;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+  z-index: 10;
+}
+
+.boardCanvasItem:active {
+  cursor: grabbing;
+}
+
+.boardCanvasItem:hover {
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.3);
+}
+
+.boardCanvasItemSelected {
+  box-shadow: 0 0 0 2px #D4AF37, 0 8px 32px rgba(0, 0, 0, 0.3);
+  z-index: 20;
+}
+
+.boardItemImage {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+}
+
+.boardItemAffirmation {
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 12px;
+  color: #F0E6D3;
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* Item Controls */
+.itemControls {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.itemControls button {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 6px;
+  color: #C6CBDA;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.itemControls button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+}
+
+.itemControls .deleteButton:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: #EF4444;
+}
+
+/* Vision Board FAB */
+.visionBoardFab {
+  position: fixed;
+  bottom: 100px;
+  right: 24px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #D4AF37, #B8962E);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(212, 175, 55, 0.4);
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.visionBoardFab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 40px rgba(212, 175, 55, 0.5);
+}
+
+.visionBoardFab svg {
+  width: 28px;
+  height: 28px;
+  color: #0B0C1A;
+}
+
+/* Asset Drawer */
+.assetDrawerOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+}
+
+.assetDrawer {
+  width: 100%;
+  max-height: 70vh;
+  background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 20px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.assetDrawerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.assetDrawerHeader h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.assetDrawerHeader button {
+  background: none;
+  border: none;
+  color: #9BA3C3;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.assetTabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.assetTab {
+  flex: 1;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #9BA3C3;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.assetTabActive {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: rgba(212, 175, 55, 0.3);
+  color: #D4AF37;
+}
+
+.assetGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  max-height: 40vh;
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+
+.assetImageItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: grab;
+  transition: transform 0.2s ease;
+}
+
+.assetImageItem:hover {
+  transform: scale(1.02);
+}
+
+.assetImageItem:active {
+  cursor: grabbing;
+}
+
+.assetImageThumb {
+  aspect-ratio: 4/3;
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.assetImageItem span {
+  font-size: 12px;
+  color: #9BA3C3;
+  text-align: center;
+}
+
+.assetAffirmationItem {
+  padding: 16px;
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: 12px;
+  cursor: grab;
+  transition: all 0.2s ease;
+}
+
+.assetAffirmationItem:hover {
+  background: rgba(212, 175, 55, 0.12);
+  border-color: rgba(212, 175, 55, 0.25);
+}
+
+.assetAffirmationItem:active {
+  cursor: grabbing;
+}
+
+.assetAffirmationItem span {
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: #F0E6D3;
+  line-height: 1.4;
+}
+
+.assetDrawerHint {
+  text-align: center;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ==== Shift Mode (Presentation View) ==== */
+.shiftModeScreen {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.shiftModeBackground {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 50% at 50% 50%, rgba(30, 27, 75, 0.6) 0%, #070B14 100%);
+  z-index: 0;
+}
+
+.shiftModeParticles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.shiftParticle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.5);
+  animation: shiftFloat linear infinite;
+}
+
+@keyframes shiftFloat {
+  0% {
+    transform: translateY(100vh) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) scale(1);
+    opacity: 0;
+  }
+}
+
+.shiftModeClose {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  color: #FFFFFF;
+  transition: all 0.2s ease;
+}
+
+.shiftModeClose:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.shiftModeContent {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 500px;
+  padding: 40px;
+  animation: shiftFadeIn 1s ease;
+}
+
+@keyframes shiftFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.shiftModeImage {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background-size: cover;
+  background-position: center;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 80px rgba(212, 175, 55, 0.15);
+}
+
+.shiftModeAffirmation {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 32px;
+  font-weight: 400;
+  color: #D4AF37;
+  text-align: center;
+  line-height: 1.4;
+  text-shadow: 0 0 40px rgba(212, 175, 55, 0.3);
+}
+
+.shiftModeProgress {
+  position: absolute;
+  bottom: 80px;
+  display: flex;
+  gap: 10px;
+  z-index: 10;
+}
+
+.shiftProgressDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.shiftProgressDotActive {
+  background: #D4AF37;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+  transform: scale(1.2);
+}
+
+.shiftModeInstruction {
+  position: absolute;
+  bottom: 40px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+  z-index: 10;
+}
+
+/* Legacy board styles kept for backwards compatibility */
 .boardScreen {
   padding: 20px;
   padding-bottom: 100px;

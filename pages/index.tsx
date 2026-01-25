@@ -1740,153 +1740,370 @@ const ProfileScreen: React.FC<{ user: UserState; onClose: () => void; onSettings
 // Reality Shift Board - Bento grid vision board with add functionality
 interface BoardItem {
   id: number;
-  type: 'text' | 'image' | 'quote';
+  type: 'text' | 'image' | 'affirmation';
   content?: string;
-  author?: string;
-  large?: boolean;
-  style?: React.CSSProperties;
+  imageUrl?: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotation?: number;
 }
 
+// Asset Library Items
+const ASSET_IMAGES = [
+  { id: 'img1', url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400', label: 'Mountain Peak' },
+  { id: 'img2', url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400', label: 'Tropical Beach' },
+  { id: 'img3', url: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400', label: 'Dream Home' },
+  { id: 'img4', url: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400', label: 'Luxury Car' },
+  { id: 'img5', url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400', label: 'Healthy Living' },
+  { id: 'img6', url: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400', label: 'World Travel' },
+  { id: 'img7', url: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400', label: 'Success' },
+  { id: 'img8', url: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=400', label: 'Modern Office' },
+];
+
+const ASSET_AFFIRMATIONS = [
+  'I am abundant',
+  'I attract success effortlessly',
+  'I am worthy of all good things',
+  'Money flows to me easily',
+  'I create my own reality',
+  'I am living my dream life',
+  'Everything works in my favor',
+  'I am powerful beyond measure',
+  'I deserve happiness and love',
+  'My potential is limitless',
+];
+
 const BoardScreen: React.FC = () => {
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [addType, setAddType] = useState<'text' | 'image' | 'quote' | null>(null);
-  const [newContent, setNewContent] = useState('');
-  const [newAuthor, setNewAuthor] = useState('');
-  const [boardItems, setBoardItems] = useState<BoardItem[]>([
-    { id: 1, type: 'text', content: 'I am abundant', large: true },
-    { id: 2, type: 'image', style: { backgroundImage: 'linear-gradient(135deg, #F9A825 0%, #FF7043 50%, #7B1FA2 100%)' } },
-    { id: 3, type: 'quote', content: 'Create the life you dream of.', author: 'Unknown' },
-    { id: 4, type: 'text', content: 'My future is bright' },
-    { id: 5, type: 'image', large: true, style: { backgroundImage: 'linear-gradient(135deg, #80DEEA 0%, #CE93D8 50%, #FFAB91 100%)' } },
-  ]);
+  const [boardItems, setBoardItems] = useState<BoardItem[]>([]);
+  const [showAssetDrawer, setShowAssetDrawer] = useState(false);
+  const [assetTab, setAssetTab] = useState<'images' | 'affirmations'>('images');
+  const [shiftMode, setShiftMode] = useState(false);
+  const [shiftIndex, setShiftIndex] = useState(0);
+  const [draggedItem, setDraggedItem] = useState<BoardItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<number | null>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
 
-  const handleAddItem = () => {
-    if (!addType) return;
+  // Load board from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('realityShiftBoard');
+    if (saved) {
+      try {
+        setBoardItems(JSON.parse(saved));
+      } catch (e) {
+        console.error('Error loading board:', e);
+      }
+    }
+  }, []);
 
-    const newItem: BoardItem = {
-      id: Date.now(),
-      type: addType,
-      content: newContent || undefined,
-      author: newAuthor || undefined,
-      large: boardItems.length % 3 === 0,
-    };
+  // Save board to localStorage
+  useEffect(() => {
+    if (boardItems.length > 0) {
+      localStorage.setItem('realityShiftBoard', JSON.stringify(boardItems));
+    }
+  }, [boardItems]);
 
-    if (addType === 'image') {
-      const gradients = [
-        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-        'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-      ];
-      newItem.style = { backgroundImage: gradients[Math.floor(Math.random() * gradients.length)] };
+  // Shift Mode cycling
+  useEffect(() => {
+    if (shiftMode && boardItems.length > 0) {
+      const interval = setInterval(() => {
+        setShiftIndex((prev) => (prev + 1) % boardItems.length);
+      }, 4000);
+      return () => clearInterval(interval);
+    }
+  }, [shiftMode, boardItems.length]);
+
+  // Handle dropping an asset onto the canvas
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+    const assetType = e.dataTransfer.getData('assetType');
+    const assetContent = e.dataTransfer.getData('assetContent');
+    const assetUrl = e.dataTransfer.getData('assetUrl');
+
+    if (assetType === 'image') {
+      const newItem: BoardItem = {
+        id: Date.now(),
+        type: 'image',
+        imageUrl: assetUrl,
+        x: Math.max(0, Math.min(x - 10, 80)),
+        y: Math.max(0, Math.min(y - 10, 80)),
+        width: 20,
+        height: 20,
+      };
+      setBoardItems([...boardItems, newItem]);
+    } else if (assetType === 'affirmation') {
+      const newItem: BoardItem = {
+        id: Date.now(),
+        type: 'affirmation',
+        content: assetContent,
+        x: Math.max(0, Math.min(x - 12, 76)),
+        y: Math.max(0, Math.min(y - 5, 90)),
+        width: 24,
+        height: 10,
+      };
+      setBoardItems([...boardItems, newItem]);
     }
 
-    setBoardItems([...boardItems, newItem]);
-    setShowAddModal(false);
-    setAddType(null);
-    setNewContent('');
-    setNewAuthor('');
+    setShowAssetDrawer(false);
   };
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  // Handle moving items on canvas
+  const handleItemDragStart = (e: React.DragEvent, item: BoardItem) => {
+    setDraggedItem(item);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleItemDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (!draggedItem || !canvasRef.current) return;
+
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+    setBoardItems(boardItems.map(item =>
+      item.id === draggedItem.id
+        ? { ...item, x: Math.max(0, Math.min(x - item.width / 2, 100 - item.width)), y: Math.max(0, Math.min(y - item.height / 2, 100 - item.height)) }
+        : item
+    ));
+    setDraggedItem(null);
+  };
+
+  const handleDeleteItem = (id: number) => {
+    setBoardItems(boardItems.filter(item => item.id !== id));
+    setSelectedItem(null);
+  };
+
+  const handleResizeItem = (id: number, delta: number) => {
+    setBoardItems(boardItems.map(item =>
+      item.id === id
+        ? { ...item, width: Math.max(10, Math.min(item.width + delta, 50)), height: Math.max(10, Math.min(item.height + delta, 50)) }
+        : item
+    ));
+  };
+
+  // Shift Mode View
+  if (shiftMode) {
+    const currentItem = boardItems[shiftIndex];
+    return (
+      <div className={styles.shiftModeScreen}>
+        <div className={styles.shiftModeBackground} />
+        <div className={styles.shiftModeParticles}>
+          {Array.from({ length: 20 }).map((_, i) => (
+            <div
+              key={i}
+              className={styles.shiftParticle}
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`,
+                animationDuration: `${10 + Math.random() * 10}s`,
+              }}
+            />
+          ))}
+        </div>
+
+        <button className={styles.shiftModeClose} onClick={() => setShiftMode(false)}>
+          {Icons.close}
+        </button>
+
+        <div className={styles.shiftModeContent}>
+          {currentItem?.type === 'image' && currentItem.imageUrl && (
+            <div
+              className={styles.shiftModeImage}
+              style={{ backgroundImage: `url(${currentItem.imageUrl})` }}
+            />
+          )}
+          {currentItem?.type === 'affirmation' && (
+            <h1 className={styles.shiftModeAffirmation}>{currentItem.content}</h1>
+          )}
+        </div>
+
+        <div className={styles.shiftModeProgress}>
+          {boardItems.map((_, i) => (
+            <div
+              key={i}
+              className={`${styles.shiftProgressDot} ${i === shiftIndex ? styles.shiftProgressDotActive : ''}`}
+            />
+          ))}
+        </div>
+
+        <p className={styles.shiftModeInstruction}>Breathe deeply and visualize...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className={styles.boardScreen}>
-      <div className={styles.boardHeader}>
-        <h1 className={styles.boardTitle}>Reality Shift Board</h1>
-        <p className={styles.boardSubtitle}>Step into your new identity</p>
+    <div className={styles.visionBoardScreen}>
+      {/* Grid Background */}
+      <div className={styles.visionBoardGrid} />
+
+      {/* Header */}
+      <div className={styles.visionBoardHeader}>
+        <div>
+          <h1 className={styles.visionBoardTitle}>Reality Shift Board</h1>
+          <p className={styles.visionBoardSubtitle}>Design your new reality</p>
+        </div>
+        <div className={styles.visionBoardActions}>
+          <button
+            className={styles.shiftModeButton}
+            onClick={() => { setShiftMode(true); setShiftIndex(0); }}
+            disabled={boardItems.length === 0}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+            Shift Mode
+          </button>
+        </div>
       </div>
 
-      <div className={styles.bentoGrid}>
+      {/* Canvas */}
+      <div
+        ref={canvasRef}
+        className={styles.visionBoardCanvas}
+        onDrop={draggedItem ? handleItemDrop : handleDrop}
+        onDragOver={handleDragOver}
+        onClick={() => setSelectedItem(null)}
+      >
+        {boardItems.length === 0 && (
+          <div className={styles.canvasEmpty}>
+            <div className={styles.canvasEmptyIcon}>
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <path d="M3 9h18M9 21V9" />
+              </svg>
+            </div>
+            <p>Tap the + button to add images and affirmations</p>
+          </div>
+        )}
+
         {boardItems.map((item) => (
           <div
             key={item.id}
-            className={`${styles.bentoCard} ${item.large ? styles.bentoCardLarge : ''} ${item.type === 'image' ? styles.bentoCardImage : styles.bentoCardText}`}
-            style={item.style}
+            className={`${styles.boardCanvasItem} ${selectedItem === item.id ? styles.boardCanvasItemSelected : ''}`}
+            style={{
+              left: `${item.x}%`,
+              top: `${item.y}%`,
+              width: `${item.width}%`,
+              height: item.type === 'affirmation' ? 'auto' : `${item.height}%`,
+            }}
+            draggable
+            onDragStart={(e) => handleItemDragStart(e, item)}
+            onClick={(e) => { e.stopPropagation(); setSelectedItem(item.id); }}
           >
-            {item.type === 'text' && <span className={styles.bentoText}>{item.content}</span>}
-            {item.type === 'quote' && (
-              <div className={styles.bentoQuoteWrapper}>
-                <span className={styles.bentoQuote}>&quot;{item.content}&quot;</span>
-                {item.author && <span className={styles.bentoAuthor}>— {item.author}</span>}
+            {item.type === 'image' && item.imageUrl && (
+              <div
+                className={styles.boardItemImage}
+                style={{ backgroundImage: `url(${item.imageUrl})` }}
+              />
+            )}
+            {item.type === 'affirmation' && (
+              <div className={styles.boardItemAffirmation}>
+                {item.content}
+              </div>
+            )}
+
+            {/* Item Controls */}
+            {selectedItem === item.id && (
+              <div className={styles.itemControls}>
+                <button onClick={() => handleResizeItem(item.id, -2)} title="Smaller">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 12h14" />
+                  </svg>
+                </button>
+                <button onClick={() => handleResizeItem(item.id, 2)} title="Larger">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                </button>
+                <button onClick={() => handleDeleteItem(item.id)} className={styles.deleteButton} title="Delete">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" />
+                  </svg>
+                </button>
               </div>
             )}
           </div>
         ))}
       </div>
 
-      <button className={styles.fab} onClick={() => setShowAddModal(true)}>
+      {/* FAB to open asset drawer */}
+      <button className={styles.visionBoardFab} onClick={() => setShowAssetDrawer(true)}>
         {Icons.plus}
       </button>
 
-      {/* Add Card Modal */}
-      {showAddModal && (
-        <div className={styles.modalOverlay} onClick={() => { setShowAddModal(false); setAddType(null); }}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h3>{addType ? `Add ${addType.charAt(0).toUpperCase() + addType.slice(1)} Card` : 'Choose Card Type'}</h3>
-              <button className={styles.modalClose} onClick={() => { setShowAddModal(false); setAddType(null); }}>
-                {Icons.close}
+      {/* Asset Library Drawer */}
+      {showAssetDrawer && (
+        <div className={styles.assetDrawerOverlay} onClick={() => setShowAssetDrawer(false)}>
+          <div className={styles.assetDrawer} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.assetDrawerHeader}>
+              <h3>Asset Library</h3>
+              <button onClick={() => setShowAssetDrawer(false)}>{Icons.close}</button>
+            </div>
+
+            <div className={styles.assetTabs}>
+              <button
+                className={`${styles.assetTab} ${assetTab === 'images' ? styles.assetTabActive : ''}`}
+                onClick={() => setAssetTab('images')}
+              >
+                Images
+              </button>
+              <button
+                className={`${styles.assetTab} ${assetTab === 'affirmations' ? styles.assetTabActive : ''}`}
+                onClick={() => setAssetTab('affirmations')}
+              >
+                Affirmations
               </button>
             </div>
 
-            {!addType ? (
-              <div className={styles.cardTypeOptions}>
-                <button className={styles.cardTypeOption} onClick={() => setAddType('text')}>
-                  <div className={styles.cardTypeIcon}>{Icons.journal}</div>
-                  <span>Text</span>
-                  <p>Simple affirmation or intention</p>
-                </button>
-                <button className={styles.cardTypeOption} onClick={() => setAddType('image')}>
-                  <div className={styles.cardTypeIcon}>{Icons.grid}</div>
-                  <span>Image</span>
-                  <p>Vision board image</p>
-                </button>
-                <button className={styles.cardTypeOption} onClick={() => setAddType('quote')}>
-                  <div className={styles.cardTypeIcon}>{Icons.sparkle}</div>
-                  <span>Quote</span>
-                  <p>Inspiring quote with attribution</p>
-                </button>
-              </div>
-            ) : (
-              <div className={styles.cardForm}>
-                {addType === 'text' && (
-                  <input
-                    type="text"
-                    placeholder="Enter your affirmation..."
-                    value={newContent}
-                    onChange={(e) => setNewContent(e.target.value)}
-                    className={styles.modalInput}
+            <div className={styles.assetGrid}>
+              {assetTab === 'images' && ASSET_IMAGES.map((img) => (
+                <div
+                  key={img.id}
+                  className={styles.assetImageItem}
+                  draggable
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData('assetType', 'image');
+                    e.dataTransfer.setData('assetUrl', img.url);
+                  }}
+                >
+                  <div
+                    className={styles.assetImageThumb}
+                    style={{ backgroundImage: `url(${img.url})` }}
                   />
-                )}
-                {addType === 'quote' && (
-                  <>
-                    <input
-                      type="text"
-                      placeholder="Enter the quote..."
-                      value={newContent}
-                      onChange={(e) => setNewContent(e.target.value)}
-                      className={styles.modalInput}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Author (optional)"
-                      value={newAuthor}
-                      onChange={(e) => setNewAuthor(e.target.value)}
-                      className={styles.modalInput}
-                    />
-                  </>
-                )}
-                {addType === 'image' && (
-                  <p className={styles.imagePlaceholder}>
-                    A beautiful gradient image will be added to your board.
-                  </p>
-                )}
-                <div className={styles.modalActions}>
-                  <Button onClick={() => setAddType(null)} variant="ghost">Back</Button>
-                  <Button onClick={handleAddItem} disabled={addType !== 'image' && !newContent}>Add Card</Button>
+                  <span>{img.label}</span>
                 </div>
-              </div>
-            )}
+              ))}
+
+              {assetTab === 'affirmations' && ASSET_AFFIRMATIONS.map((text, i) => (
+                <div
+                  key={i}
+                  className={styles.assetAffirmationItem}
+                  draggable
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData('assetType', 'affirmation');
+                    e.dataTransfer.setData('assetContent', text);
+                  }}
+                >
+                  <span>&ldquo;{text}&rdquo;</span>
+                </div>
+              ))}
+            </div>
+
+            <p className={styles.assetDrawerHint}>Drag items onto the canvas</p>
           </div>
         </div>
       )}
