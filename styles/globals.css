@@ -489,13 +489,13 @@ input, textarea {
   }
 }
 
-/* Subtle glow pulse */
+/* Subtle glow pulse - Gold (True Void Mode - NO CYAN) */
 @keyframes glowPulse {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
   }
   50% {
-    box-shadow: 0 0 40px rgba(0, 240, 255, 0.2);
+    box-shadow: 0 0 40px rgba(212, 175, 55, 0.2);
   }
 }
 
@@ -557,12 +557,12 @@ input, textarea {
 
 /* ==== Void Mode - Atmospheric Depth ==== */
 
-/* Nebula effect - subtle colored glow for depth */
+/* Nebula effect - subtle gold glow for depth (True Void Mode) */
 .bg-void-glow {
   background: radial-gradient(
     ellipse 100% 80% at 50% 0%,
-    rgba(29, 78, 216, 0.15) 0%,
-    rgba(147, 51, 234, 0.08) 30%,
+    rgba(212, 175, 55, 0.08) 0%,
+    rgba(212, 175, 55, 0.03) 30%,
     rgba(0, 0, 0, 0) 70%
   );
 }
@@ -577,16 +577,16 @@ input, textarea {
   );
 }
 
-/* Bottom ambient glow */
+/* Bottom ambient glow - gold only (True Void Mode) */
 .bg-void-glow-bottom {
   background: radial-gradient(
     ellipse 100% 60% at 50% 100%,
-    rgba(29, 78, 216, 0.1) 0%,
+    rgba(212, 175, 55, 0.06) 0%,
     rgba(0, 0, 0, 0) 60%
   );
 }
 
-/* Combined void atmosphere */
+/* Combined void atmosphere - Gold only (True Void Mode - NO BLUE) */
 .bg-void-atmosphere {
   position: relative;
 }
@@ -601,17 +601,17 @@ input, textarea {
   background:
     radial-gradient(
       ellipse 100% 50% at 50% 0%,
-      rgba(29, 78, 216, 0.12) 0%,
+      rgba(212, 175, 55, 0.06) 0%,
       transparent 50%
     ),
     radial-gradient(
       ellipse 80% 40% at 20% 80%,
-      rgba(147, 51, 234, 0.06) 0%,
+      rgba(212, 175, 55, 0.03) 0%,
       transparent 50%
     ),
     radial-gradient(
       ellipse 60% 30% at 80% 70%,
-      rgba(212, 175, 55, 0.05) 0%,
+      rgba(212, 175, 55, 0.04) 0%,
       transparent 40%
     );
   pointer-events: none;
