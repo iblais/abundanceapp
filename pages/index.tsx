@@ -894,12 +894,12 @@ const WaveBackground: React.FC = () => (
     <svg viewBox="0 0 400 400" className={styles.waveSvg}>
       <defs>
         <linearGradient id="waveGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#1E293B" stopOpacity="0.6" />
+          <stop offset="0%" stopColor="#000000" stopOpacity="0.6" />
           <stop offset="50%" stopColor="#334155" stopOpacity="0.4" />
           <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.15" />
         </linearGradient>
         <linearGradient id="waveGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#1E293B" stopOpacity="0.5" />
+          <stop offset="0%" stopColor="#000000" stopOpacity="0.5" />
           <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.1" />
         </linearGradient>
       </defs>
@@ -2005,12 +2005,12 @@ const PlayerScreen: React.FC<MeditationPlayerProps> = ({ session, onClose, onCom
         <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" className={styles.auroraWave}>
           <defs>
             <linearGradient id="aurora1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#1E293B" stopOpacity="0.8" />
+              <stop offset="0%" stopColor="#000000" stopOpacity="0.8" />
               <stop offset="50%" stopColor="#334155" stopOpacity="0.5" />
               <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.2" />
             </linearGradient>
             <linearGradient id="aurora2" x1="100%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#1E293B" stopOpacity="0.7" />
+              <stop offset="0%" stopColor="#000000" stopOpacity="0.7" />
               <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.15" />
             </linearGradient>
           </defs>
@@ -3696,7 +3696,7 @@ const articlesLibrary: Article[] = [
     description: 'Understanding neuroplasticity and how this app transforms your mind',
     category: 'neuroscience',
     readTime: 8,
-    heroGradient: 'linear-gradient(135deg, #1a1a4e 0%, #2d1b4e 50%, #0F172A 100%)',
+    heroGradient: 'linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #000000 100%)',
     author: 'Abundance Recode',
     content: `Your brain is not fixed. This single truth is the foundation of everything we do at Abundance Recode, and it changes everything about what's possible for you.
 
@@ -3750,7 +3750,7 @@ Your recode begins now.`
     description: 'How your focus literally shifts reality',
     category: 'mindset',
     readTime: 7,
-    heroGradient: 'linear-gradient(135deg, #0c1445 0%, #1e3a5f 50%, #0F172A 100%)',
+    heroGradient: 'linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #000000 100%)',
     author: 'Abundance Recode',
     content: `In the strange world of quantum physics, scientists discovered something that sounds impossible: the act of observation changes what is being observed. This isn't philosophy—it's physics. And it has profound implications for how you create your reality.
 
@@ -3808,7 +3808,7 @@ This is the power you have. Use it wisely.`
     description: 'Releasing resistance to allow abundance to flow',
     category: 'abundance',
     readTime: 6,
-    heroGradient: 'linear-gradient(135deg, #1a3a2f 0%, #0d2818 50%, #0F172A 100%)',
+    heroGradient: 'linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #000000 100%)',
     author: 'Abundance Recode',
     content: `There is a paradox at the heart of manifestation: the tighter you grip, the more slips through your fingers. The more you chase, the more eludes you. The secret to receiving is learning to let go.
 
@@ -3866,7 +3866,7 @@ The river of abundance is always flowing. Your only job is to stop damming it up
     description: 'Why the first 20 minutes of your day matter most',
     category: 'energy',
     readTime: 5,
-    heroGradient: 'linear-gradient(135deg, #3d2914 0%, #5c3d1e 50%, #0F172A 100%)',
+    heroGradient: 'linear-gradient(135deg, #000000 0%, #1a1409 50%, #000000 100%)',
     author: 'Abundance Recode',
     content: `The first 20 minutes of your day are not created equal. They are, in fact, the most neurologically significant minutes you'll experience until you sleep again. What you do with them shapes everything that follows.
 
@@ -4054,7 +4054,7 @@ const audioSessionsLibrary: AudioSession[] = [
     duration: 1200, // 20 min
     category: 'meditation',
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3',
-    thumbnailGradient: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
+    thumbnailGradient: 'linear-gradient(135deg, #000000 0%, #000000 100%)',
     instructor: 'Sarah Chen',
     isFree: false
   },
@@ -4584,7 +4584,7 @@ const ArticleReaderScreen: React.FC<{ article: Article; onClose: () => void; onM
 
       <div className={styles.articleReaderScrollable} ref={contentRef}>
         {/* Hero Section */}
-        <div className={styles.articleHero} style={{ background: article.heroGradient || 'linear-gradient(135deg, #1a1a4e 0%, #0F172A 100%)' }}>
+        <div className={styles.articleHero} style={{ background: article.heroGradient || 'linear-gradient(135deg, #000000 0%, #0a0a0a 100%)' }}>
           <div className={styles.articleHeroOverlay} />
           <div className={styles.articleHeroContent}>
             <span className={styles.articleCategory}>

@@ -29,9 +29,9 @@
   padding: 20px;
   background:
     radial-gradient(ellipse 80% 50% at 20% 40%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(45, 212, 191, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse 100% 80% at 50% 100%, rgba(30, 41, 59, 0.8) 0%, transparent 50%),
-    linear-gradient(180deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 100% 80% at 50% 100%, rgba(0, 0, 0, 0.8) 0%, transparent 50%),
+    linear-gradient(180deg, #000000 0%, #000000 50%, #000000 100%);
   animation: atmosphereShift 20s ease-in-out infinite;
 }
 
@@ -57,8 +57,8 @@
   max-height: 844px;
   background:
     radial-gradient(ellipse 120% 60% at 50% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
-    radial-gradient(ellipse 80% 40% at 100% 50%, rgba(45, 212, 191, 0.03) 0%, transparent 40%),
-    linear-gradient(180deg, #0F172A 0%, #1E293B 40%, #0F172A 100%);
+    radial-gradient(ellipse 80% 40% at 100% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 40%),
+    linear-gradient(180deg, #000000 0%, #000000 40%, #000000 100%);
   border-radius: 44px;
   overflow: hidden;
   position: relative;
@@ -80,7 +80,7 @@
   height: 200%;
   background:
     radial-gradient(circle at 30% 30%, rgba(212, 175, 55, 0.08) 0%, transparent 30%),
-    radial-gradient(circle at 70% 70%, rgba(45, 212, 191, 0.05) 0%, transparent 30%);
+    radial-gradient(circle at 70% 70%, rgba(212, 175, 55, 0.05) 0%, transparent 30%);
   animation: nebulaFloat 15s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
@@ -223,8 +223,8 @@
   justify-content: center;
   background:
     radial-gradient(ellipse 80% 60% at 50% 40%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse 100% 80% at 50% 100%, rgba(15, 23, 42, 0.9) 0%, transparent 60%),
-    linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
+    radial-gradient(ellipse 100% 80% at 50% 100%, rgba(0, 0, 0, 0.9) 0%, transparent 60%),
+    linear-gradient(180deg, #000000 0%, #000000 100%);
 }
 
 .splashScreen::before {
@@ -361,7 +361,7 @@
   background:
     radial-gradient(ellipse 60% 60% at 30% 30%, rgba(100, 100, 120, 0.8) 0%, transparent 50%),
     radial-gradient(ellipse 40% 40% at 70% 70%, rgba(60, 60, 80, 0.6) 0%, transparent 40%),
-    linear-gradient(135deg, #4A5568 0%, #2D3748 50%, #1A202C 100%);
+    linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 50%, #000000 100%);
   box-shadow:
     0 10px 40px rgba(0, 0, 0, 0.4),
     inset 0 -5px 20px rgba(0, 0, 0, 0.3),
@@ -583,7 +583,7 @@
 
 /* ==== Glass Card - Alchemist Hybrid Style ==== */
 .glassCard {
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 20px;
@@ -715,7 +715,7 @@
 
 .buttonPrimary {
   background: linear-gradient(135deg, #E8C84A 0%, #D4AF37 50%, #B8962E 100%);
-  color: #0F172A;
+  color: #000000;
   box-shadow:
     0 0 20px rgba(212, 175, 55, 0.3),
     0 8px 32px rgba(212, 175, 55, 0.2),
@@ -777,7 +777,7 @@
 }
 
 .buttonSecondary {
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(0, 0, 0, 0.6);
   color: #F0F4F8;
   border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
@@ -785,7 +785,7 @@
 }
 
 .buttonSecondary:hover {
-  background: rgba(15, 23, 42, 0.8);
+  background: rgba(0, 0, 0, 0.8);
   border-color: rgba(212, 175, 55, 0.3);
   box-shadow: 0 0 15px rgba(212, 175, 55, 0.1);
 }
@@ -822,7 +822,7 @@
   max-width: 340px;
   background: linear-gradient(
     180deg,
-    rgba(30, 41, 59, 0.5) 0%,
+    rgba(0, 0, 0, 0.5) 0%,
     rgba(35, 30, 70, 0.4) 100%
   );
   backdrop-filter: blur(24px);
@@ -1074,7 +1074,7 @@
   align-items: center;
   text-align: center;
   padding: 24px 20px;
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(20px);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -1272,11 +1272,11 @@
   animation: arrivalBreathe 10s ease-in-out infinite;
   background: linear-gradient(
     180deg,
-    #0F172A 0%,
-    #1E293B 25%,
-    #334155 50%,
-    #1E293B 75%,
-    #0F172A 100%
+    #000000 0%,
+    #000000 25%,
+    #0a0a0a 50%,
+    #000000 75%,
+    #000000 100%
   );
   z-index: -2;
 }
@@ -1299,7 +1299,7 @@
   inset: 0;
   background: radial-gradient(
     ellipse 100% 60% at 30% 80%,
-    rgba(30, 41, 59, 0.1) 0%,
+    rgba(0, 0, 0, 0.1) 0%,
     transparent 40%
   );
   animation: arrivalGlow 15s ease-in-out infinite alternate-reverse;
@@ -1593,7 +1593,7 @@
 .dayButtonActive {
   background: linear-gradient(135deg, #D4AF37, #E9BB51);
   border-color: transparent;
-  color: #0F172A;
+  color: #000000;
   box-shadow: 0 4px 16px rgba(212, 175, 55, 0.35);
 }
 
@@ -1781,7 +1781,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0F172A;
+  color: #000000;
   box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
   flex-shrink: 0;
 }
@@ -1797,7 +1797,7 @@
   margin-bottom: 24px;
   border-radius: 999px;
   background: linear-gradient(135deg, #FFE44D 0%, #D4AF37 50%, #D4B300 100%);
-  color: #0F172A;
+  color: #000000;
   font-family: 'Manrope', sans-serif;
   font-size: 16px;
   font-weight: 700;
@@ -2645,10 +2645,10 @@
   overflow: hidden;
   /* Deep mystical "Midnight Library" / "Cosmic Void" gradient */
   background:
-    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(30, 27, 75, 0.8) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(30, 41, 59, 0.5) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(0, 0, 0, 0.8) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 50%),
     radial-gradient(ellipse 50% 30% at 20% 80%, rgba(55, 48, 107, 0.3) 0%, transparent 50%),
-    linear-gradient(180deg, #070B14 0%, #0A0F1F 50%, #0D1225 100%);
+    linear-gradient(180deg, #000000 0%, #0A0F1F 50%, #000000 100%);
 }
 
 /* Floating dust motes for sacred space atmosphere */
@@ -2803,7 +2803,7 @@
 .messageMentor .messageBubble {
   font-family: 'Georgia', 'Times New Roman', serif;
   font-style: italic;
-  background: rgba(30, 27, 75, 0.4);
+  background: rgba(0, 0, 0, 0.4);
   color: #F0E6D3;
   border: 1px solid rgba(212, 175, 55, 0.25);
   border-bottom-left-radius: 6px;
@@ -2845,7 +2845,7 @@
   align-items: center;
   gap: 12px;
   padding: 6px 8px 6px 20px;
-  background: rgba(30, 27, 75, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(212, 175, 55, 0.2);
   border-radius: 28px;
   backdrop-filter: blur(20px);
@@ -2892,7 +2892,7 @@
 .sendButtonActive {
   background: linear-gradient(135deg, #D4AF37, #B8962E);
   border-color: #D4AF37;
-  color: #0F172A;
+  color: #000000;
   box-shadow:
     0 4px 20px rgba(212, 175, 55, 0.4),
     0 0 40px rgba(212, 175, 55, 0.2);
@@ -3047,7 +3047,7 @@
 .durationPillActive {
   background: linear-gradient(135deg, #D4AF37, #E9BB51);
   border-color: transparent;
-  color: #0F172A;
+  color: #000000;
   box-shadow: 0 4px 16px rgba(212, 175, 55, 0.35);
 }
 
@@ -3501,7 +3501,7 @@
   background: linear-gradient(135deg, #D4AF37, #B8962E);
   border: none;
   border-radius: 8px;
-  color: #0F172A;
+  color: #000000;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -3811,7 +3811,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #080B12;
+  background: #000000;
 }
 
 /* Grid Background - Studio/Blueprint vibe */
@@ -3979,7 +3979,7 @@
   display: flex;
   gap: 6px;
   padding: 6px;
-  background: rgba(15, 23, 42, 0.95);
+  background: rgba(0, 0, 0, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
@@ -4036,7 +4036,7 @@
 .visionBoardFab svg {
   width: 28px;
   height: 28px;
-  color: #0B0C1A;
+  color: #000000;
 }
 
 /* Asset Drawer */
@@ -4052,7 +4052,7 @@
 .assetDrawer {
   width: 100%;
   max-height: 70vh;
-  background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+  background: linear-gradient(180deg, #000000 0%, #000000 100%);
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
   padding: 20px;
@@ -4376,7 +4376,7 @@
   background: linear-gradient(135deg, #D4AF37, #B8962E);
   border: none;
   border-radius: 12px;
-  color: #0F172A;
+  color: #000000;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -4401,8 +4401,8 @@
 .aiSpinner {
   width: 20px;
   height: 20px;
-  border: 2px solid rgba(15, 23, 42, 0.3);
-  border-top-color: #0F172A;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  border-top-color: #000000;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -4470,7 +4470,7 @@
 .shiftModeBackground {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 80% 50% at 50% 50%, rgba(30, 27, 75, 0.6) 0%, #070B14 100%);
+  background: radial-gradient(ellipse 80% 50% at 50% 50%, rgba(0, 0, 0, 0.6) 0%, #000000 100%);
   z-index: 0;
 }
 
@@ -4716,7 +4716,7 @@
 .fab svg {
   width: 24px;
   height: 24px;
-  color: #0B0C1A;
+  color: #000000;
 }
 
 /* ==== Tab Bar (Bottom Navigation) - Enhanced ==== */
@@ -4965,7 +4965,7 @@
 }
 
 .modal {
-  background: linear-gradient(180deg, #1A1E36 0%, #12152A 100%);
+  background: linear-gradient(180deg, #000000 0%, #000000 100%);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 24px;
   width: 100%;
@@ -5279,7 +5279,7 @@
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(248, 250, 252, 0.1);
   display: flex;
   align-items: center;
@@ -5322,7 +5322,7 @@
   height: 100%;
   min-height: 200px;
   padding: 24px;
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(212, 175, 55, 0.2);
   border-radius: 24px;
   color: #F8FAFC;
@@ -5353,7 +5353,7 @@
   padding: 20px 32px;
   border-radius: 999px;
   background: linear-gradient(135deg, #E8C84A 0%, #D4AF37 50%, #B8962E 100%);
-  color: #0F172A;
+  color: #000000;
   font-family: 'Manrope', sans-serif;
   font-size: 18px;
   font-weight: 700;
@@ -5513,8 +5513,8 @@
   inset: 0;
   background: radial-gradient(
     ellipse at center,
-    rgba(15, 23, 42, 0.9) 0%,
-    rgba(15, 23, 42, 0.98) 100%
+    rgba(0, 0, 0, 0.9) 0%,
+    rgba(0, 0, 0, 0.98) 100%
   );
   display: flex;
   align-items: center;
@@ -5651,7 +5651,7 @@
 .promptChip {
   padding: 8px 16px;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(248, 250, 252, 0.1);
   color: #94A3B8;
   font-size: 13px;
@@ -5689,7 +5689,7 @@
 
 .historyCard {
   padding: 20px;
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(248, 250, 252, 0.1);
   border-radius: 16px;
 }
@@ -6010,7 +6010,7 @@
 .featuredOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, transparent 100%);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, transparent 100%);
 }
 
 .featuredContent {
@@ -6109,7 +6109,7 @@
 .articleCardOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to right, rgba(15, 23, 42, 0.8) 0%, transparent 100%);
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
 }
 
 .articleCardContent {
@@ -6210,7 +6210,7 @@
 .articleReaderScreen {
   position: fixed;
   inset: 0;
-  background: #0F172A;
+  background: #000000;
   z-index: 100;
   display: flex;
   flex-direction: column;
@@ -6239,7 +6239,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: rgba(15, 23, 42, 0.8);
+  background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
@@ -6252,7 +6252,7 @@
 }
 
 .articleBackButton:hover {
-  background: rgba(15, 23, 42, 0.95);
+  background: rgba(0, 0, 0, 0.95);
   transform: scale(1.05);
 }
 
@@ -6278,7 +6278,7 @@
 .articleHeroOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, #0F172A 0%, rgba(15, 23, 42, 0.5) 50%, transparent 100%);
+  background: linear-gradient(to top, #000000 0%, rgba(0, 0, 0, 0.5) 50%, transparent 100%);
 }
 
 .articleHeroContent {
@@ -6444,7 +6444,7 @@
   border-radius: 16px;
   font-size: 16px;
   font-weight: 600;
-  color: #0F172A;
+  color: #000000;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -6462,7 +6462,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: rgba(15, 23, 42, 0.2);
+  background: rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -6475,7 +6475,7 @@
 
 .markAsReadPoints {
   padding: 4px 10px;
-  background: rgba(15, 23, 42, 0.2);
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   font-size: 12px;
   font-weight: 700;
@@ -6485,7 +6485,7 @@
 .articleCelebration {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.9);
+  background: rgba(0, 0, 0, 0.9);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
@@ -6638,7 +6638,7 @@
 .visualizationPlayer {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, #0A0E1F 0%, #1a1f3d 50%, #2a2f5d 100%);
+  background: linear-gradient(180deg, #000000 0%, #0a0a0a 50%, #111111 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -6983,7 +6983,7 @@
 .paywallScreen {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, #0A0E1F 0%, #1a1040 100%);
+  background: linear-gradient(180deg, #000000 0%, #000000 100%);
   padding: 24px 20px;
   overflow-y: auto;
 }
@@ -7297,7 +7297,7 @@
   height: 10px;
   border-radius: 50%;
   background: #8B5CF6;
-  border: 2px solid #1a1f3d;
+  border: 2px solid #0a0a0a;
 }
 
 .chartLabel {
@@ -7785,7 +7785,7 @@
   overflow-y: auto;
   scrollbar-width: none;
   position: relative;
-  background: linear-gradient(180deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+  background: linear-gradient(180deg, #000000 0%, #000000 50%, #0a0a0a 100%);
 }
 
 .pricingScreen::-webkit-scrollbar {
@@ -7989,7 +7989,7 @@
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
-  background: linear-gradient(180deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+  background: linear-gradient(180deg, #000000 0%, #000000 50%, #0a0a0a 100%);
 }
 
 .paywallGateCard {
