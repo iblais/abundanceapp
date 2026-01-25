@@ -1781,8 +1781,9 @@ const BoardScreen: React.FC = () => {
   const [assetTab, setAssetTab] = useState<'images' | 'affirmations'>('images');
   const [shiftMode, setShiftMode] = useState(false);
   const [shiftIndex, setShiftIndex] = useState(0);
-  const [draggedItem, setDraggedItem] = useState<BoardItem | null>(null);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
+  const [draggingItemId, setDraggingItemId] = useState<number | null>(null);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const canvasRef = useRef<HTMLDivElement>(null);
 
   // Load board from localStorage
@@ -1814,7 +1815,79 @@ const BoardScreen: React.FC = () => {
     }
   }, [shiftMode, boardItems.length]);
 
-  // Handle dropping an asset onto the canvas
+  // Add item directly (tap-to-add for mobile support)
+  const addItemToBoard = (type: 'image' | 'affirmation', content: string, imageUrl?: string) => {
+    // Place item at a random position in the center area
+    const x = 10 + Math.random() * 60;
+    const y = 10 + Math.random() * 50;
+
+    const newItem: BoardItem = {
+      id: Date.now(),
+      type,
+      content: type === 'affirmation' ? content : undefined,
+      imageUrl: type === 'image' ? imageUrl : undefined,
+      x,
+      y,
+      width: type === 'image' ? 25 : 28,
+      height: type === 'image' ? 25 : 12,
+    };
+
+    setBoardItems(prev => [...prev, newItem]);
+    setShowAssetDrawer(false);
+
+    // Haptic feedback
+    if (navigator.vibrate) navigator.vibrate(30);
+  };
+
+  // Handle touch/mouse drag for moving items
+  const handleItemPointerDown = (e: React.PointerEvent, item: BoardItem) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDraggingItemId(item.id);
+    setSelectedItem(item.id);
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const pointerX = ((e.clientX - rect.left) / rect.width) * 100;
+    const pointerY = ((e.clientY - rect.top) / rect.height) * 100;
+
+    setDragOffset({
+      x: pointerX - item.x,
+      y: pointerY - item.y,
+    });
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (draggingItemId === null) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const pointerX = ((e.clientX - rect.left) / rect.width) * 100;
+    const pointerY = ((e.clientY - rect.top) / rect.height) * 100;
+
+    const newX = pointerX - dragOffset.x;
+    const newY = pointerY - dragOffset.y;
+
+    setBoardItems(prev => prev.map(item =>
+      item.id === draggingItemId
+        ? {
+            ...item,
+            x: Math.max(0, Math.min(newX, 100 - item.width)),
+            y: Math.max(0, Math.min(newY, 100 - item.height)),
+          }
+        : item
+    ));
+  };
+
+  const handlePointerUp = () => {
+    setDraggingItemId(null);
+  };
+
+  // Legacy drag-and-drop for desktop (from asset drawer)
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     const canvas = canvasRef.current;
@@ -1828,28 +1901,28 @@ const BoardScreen: React.FC = () => {
     const assetContent = e.dataTransfer.getData('assetContent');
     const assetUrl = e.dataTransfer.getData('assetUrl');
 
-    if (assetType === 'image') {
+    if (assetType === 'image' && assetUrl) {
       const newItem: BoardItem = {
         id: Date.now(),
         type: 'image',
         imageUrl: assetUrl,
-        x: Math.max(0, Math.min(x - 10, 80)),
-        y: Math.max(0, Math.min(y - 10, 80)),
-        width: 20,
-        height: 20,
+        x: Math.max(0, Math.min(x - 12, 75)),
+        y: Math.max(0, Math.min(y - 12, 75)),
+        width: 25,
+        height: 25,
       };
-      setBoardItems([...boardItems, newItem]);
-    } else if (assetType === 'affirmation') {
+      setBoardItems(prev => [...prev, newItem]);
+    } else if (assetType === 'affirmation' && assetContent) {
       const newItem: BoardItem = {
         id: Date.now(),
         type: 'affirmation',
         content: assetContent,
-        x: Math.max(0, Math.min(x - 12, 76)),
-        y: Math.max(0, Math.min(y - 5, 90)),
-        width: 24,
-        height: 10,
+        x: Math.max(0, Math.min(x - 14, 72)),
+        y: Math.max(0, Math.min(y - 6, 88)),
+        width: 28,
+        height: 12,
       };
-      setBoardItems([...boardItems, newItem]);
+      setBoardItems(prev => [...prev, newItem]);
     }
 
     setShowAssetDrawer(false);
@@ -1857,39 +1930,24 @@ const BoardScreen: React.FC = () => {
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-  };
-
-  // Handle moving items on canvas
-  const handleItemDragStart = (e: React.DragEvent, item: BoardItem) => {
-    setDraggedItem(item);
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleItemDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    if (!draggedItem || !canvasRef.current) return;
-
-    const rect = canvasRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-    setBoardItems(boardItems.map(item =>
-      item.id === draggedItem.id
-        ? { ...item, x: Math.max(0, Math.min(x - item.width / 2, 100 - item.width)), y: Math.max(0, Math.min(y - item.height / 2, 100 - item.height)) }
-        : item
-    ));
-    setDraggedItem(null);
+    e.dataTransfer.dropEffect = 'copy';
   };
 
   const handleDeleteItem = (id: number) => {
-    setBoardItems(boardItems.filter(item => item.id !== id));
+    setBoardItems(prev => prev.filter(item => item.id !== id));
     setSelectedItem(null);
+    // Haptic feedback
+    if (navigator.vibrate) navigator.vibrate(50);
   };
 
   const handleResizeItem = (id: number, delta: number) => {
-    setBoardItems(boardItems.map(item =>
+    setBoardItems(prev => prev.map(item =>
       item.id === id
-        ? { ...item, width: Math.max(10, Math.min(item.width + delta, 50)), height: Math.max(10, Math.min(item.height + delta, 50)) }
+        ? {
+            ...item,
+            width: Math.max(15, Math.min(item.width + delta, 50)),
+            height: Math.max(15, Math.min(item.height + delta, 50)),
+          }
         : item
     ));
   };
@@ -1974,9 +2032,13 @@ const BoardScreen: React.FC = () => {
       <div
         ref={canvasRef}
         className={styles.visionBoardCanvas}
-        onDrop={draggedItem ? handleItemDrop : handleDrop}
+        onDrop={handleDrop}
         onDragOver={handleDragOver}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerUp}
         onClick={() => setSelectedItem(null)}
+        style={{ touchAction: 'none' }}
       >
         {boardItems.length === 0 && (
           <div className={styles.canvasEmpty}>
@@ -1993,15 +2055,14 @@ const BoardScreen: React.FC = () => {
         {boardItems.map((item) => (
           <div
             key={item.id}
-            className={`${styles.boardCanvasItem} ${selectedItem === item.id ? styles.boardCanvasItemSelected : ''}`}
+            className={`${styles.boardCanvasItem} ${selectedItem === item.id ? styles.boardCanvasItemSelected : ''} ${draggingItemId === item.id ? styles.boardCanvasItemDragging : ''}`}
             style={{
               left: `${item.x}%`,
               top: `${item.y}%`,
               width: `${item.width}%`,
               height: item.type === 'affirmation' ? 'auto' : `${item.height}%`,
             }}
-            draggable
-            onDragStart={(e) => handleItemDragStart(e, item)}
+            onPointerDown={(e) => handleItemPointerDown(e, item)}
             onClick={(e) => { e.stopPropagation(); setSelectedItem(item.id); }}
           >
             {item.type === 'image' && item.imageUrl && (
@@ -2075,6 +2136,7 @@ const BoardScreen: React.FC = () => {
                   key={img.id}
                   className={styles.assetImageItem}
                   draggable
+                  onClick={() => addItemToBoard('image', img.label, img.url)}
                   onDragStart={(e) => {
                     e.dataTransfer.setData('assetType', 'image');
                     e.dataTransfer.setData('assetUrl', img.url);
@@ -2093,6 +2155,7 @@ const BoardScreen: React.FC = () => {
                   key={i}
                   className={styles.assetAffirmationItem}
                   draggable
+                  onClick={() => addItemToBoard('affirmation', text)}
                   onDragStart={(e) => {
                     e.dataTransfer.setData('assetType', 'affirmation');
                     e.dataTransfer.setData('assetContent', text);
@@ -2103,7 +2166,7 @@ const BoardScreen: React.FC = () => {
               ))}
             </div>
 
-            <p className={styles.assetDrawerHint}>Drag items onto the canvas</p>
+            <p className={styles.assetDrawerHint}>Tap to add or drag onto canvas</p>
           </div>
         </div>
       )}
