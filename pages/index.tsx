@@ -1826,10 +1826,12 @@ const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) 
     y: number;
     size: number;
     color: string;
+    shape: 'circle' | 'star';
     velocityX: number;
     velocityY: number;
     rotation: number;
     delay: number;
+    duration: number;
   }>>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -1874,38 +1876,46 @@ const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) 
     }
   };
 
-  // Generate explosive particle burst - 60 particles with physics
+  // Generate UPLIFTING particle burst - particles float UP toward the sky
   const generateParticles = () => {
-    const colors = ['#D4AF37', '#E8C84A', '#FFFFFF', '#F8FAFC', '#D4AF37', '#D4AF37'];
-    const newParticles = Array.from({ length: 60 }, (_, i) => {
-      const angle = (Math.random() * Math.PI * 2); // Random angle in radians
-      const velocity = 8 + Math.random() * 12; // Random velocity
+    const colors = ['#D4AF37', '#D4AF37', '#D4AF37', '#FFFFFF', '#FFFFFF', '#00E5FF', '#E8C84A'];
+    const shapes = ['circle', 'circle', 'circle', 'star', 'star'] as const;
+    const newParticles = Array.from({ length: 55 }, (_, i) => {
+      // Wide horizontal spread, strong upward velocity
+      const spreadX = (Math.random() - 0.5) * 60; // Wide horizontal spread
+      const upwardVelocity = -(15 + Math.random() * 25); // Strong negative Y = UP
       return {
         id: Date.now() + i,
-        x: 50 + (Math.random() - 0.5) * 20, // Start near center
-        y: 70 + (Math.random() - 0.5) * 10, // Start near button
-        size: 4 + Math.random() * 10, // Varying sizes
+        x: 50 + spreadX * 0.3, // Start spread around center
+        y: 75 + Math.random() * 5, // Start near button area
+        size: 3 + Math.random() * 9, // Varying sizes 3-12px
         color: colors[Math.floor(Math.random() * colors.length)],
-        velocityX: Math.cos(angle) * velocity * (Math.random() > 0.5 ? 1 : -1),
-        velocityY: -Math.abs(Math.sin(angle) * velocity) - 5, // Always shoot upward
+        shape: shapes[Math.floor(Math.random() * shapes.length)],
+        velocityX: spreadX * 0.8, // Horizontal drift
+        velocityY: upwardVelocity, // Always UP (negative)
         rotation: Math.random() * 360,
-        delay: Math.random() * 0.3,
+        delay: Math.random() * 0.2,
+        duration: 2 + Math.random() * 1, // 2-3 second lifetime
       };
     });
     setParticles(newParticles);
   };
 
-  // Handle the "Anchor It" action
+  // Handle the "Anchor It" action with recoil effect
   const handleAnchor = async () => {
     if (!entry.trim()) return;
 
-    // Trigger button pulse
+    // Trigger button recoil (scale down, then release particles)
     setButtonPulse(true);
-    setTimeout(() => setButtonPulse(false), 600);
+
+    // Small delay for recoil feel, then explode
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     setIsAnchoring(true);
     generateParticles();
     triggerHaptic();
+
+    setTimeout(() => setButtonPulse(false), 500);
 
     // Save entry
     const newEntry = {
@@ -1990,22 +2000,46 @@ const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) 
       {isAnchoring && (
         <div className={styles.particleContainer}>
           {particles.map((p) => (
-            <div
-              key={p.id}
-              className={styles.particle}
-              style={{
-                left: `${p.x}%`,
-                top: `${p.y}%`,
-                width: `${p.size}px`,
-                height: `${p.size}px`,
-                backgroundColor: p.color,
-                boxShadow: `0 0 ${p.size * 2}px ${p.color}`,
-                '--velocity-x': `${p.velocityX}vw`,
-                '--velocity-y': `${p.velocityY}vh`,
-                '--rotation': `${p.rotation}deg`,
-                animationDelay: `${p.delay}s`,
-              } as React.CSSProperties}
-            />
+            p.shape === 'star' ? (
+              <svg
+                key={p.id}
+                className={styles.particleStar}
+                width={p.size * 1.5}
+                height={p.size * 1.5}
+                viewBox="0 0 24 24"
+                style={{
+                  left: `${p.x}%`,
+                  top: `${p.y}%`,
+                  fill: p.color,
+                  filter: `drop-shadow(0 0 ${p.size}px ${p.color})`,
+                  '--velocity-x': `${p.velocityX}vw`,
+                  '--velocity-y': `${p.velocityY}vh`,
+                  '--rotation': `${p.rotation}deg`,
+                  '--duration': `${p.duration}s`,
+                  animationDelay: `${p.delay}s`,
+                } as React.CSSProperties}
+              >
+                <path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z" />
+              </svg>
+            ) : (
+              <div
+                key={p.id}
+                className={styles.particle}
+                style={{
+                  left: `${p.x}%`,
+                  top: `${p.y}%`,
+                  width: `${p.size}px`,
+                  height: `${p.size}px`,
+                  backgroundColor: p.color,
+                  boxShadow: `0 0 ${p.size * 2}px ${p.color}`,
+                  '--velocity-x': `${p.velocityX}vw`,
+                  '--velocity-y': `${p.velocityY}vh`,
+                  '--rotation': `${p.rotation}deg`,
+                  '--duration': `${p.duration}s`,
+                  animationDelay: `${p.delay}s`,
+                } as React.CSSProperties}
+              />
+            )
           ))}
         </div>
       )}
