@@ -221,6 +221,11 @@ const Icons = {
       <path d="M6 18L18 6M6 6l12 12" />
     </svg>
   ),
+  check: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  ),
   back: (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M15 19l-7-7 7-7" />
@@ -3106,38 +3111,297 @@ const SettingsScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 // PART 1: CONTENT LIBRARIES
 // ============================================
 
+// Article Data - High-quality transformative content
+interface Article {
+  id: string;
+  title: string;
+  description: string;
+  content: string;
+  category: string;
+  readTime: number;
+  heroGradient: string;
+  author: string;
+}
+
+const articlesLibrary: Article[] = [
+  {
+    id: 'science-of-recoding',
+    title: 'The Science of Recoding',
+    description: 'Understanding neuroplasticity and how this app transforms your mind',
+    category: 'neuroscience',
+    readTime: 8,
+    heroGradient: 'linear-gradient(135deg, #1a1a4e 0%, #2d1b4e 50%, #0F172A 100%)',
+    author: 'Abundance Recode',
+    content: `Your brain is not fixed. This single truth is the foundation of everything we do at Abundance Recode, and it changes everything about what's possible for you.
+
+For most of the 20th century, neuroscientists believed the adult brain was essentially hardwired—that after a certain age, you were stuck with what you had. This belief was wrong. Profoundly wrong.
+
+THE DISCOVERY THAT CHANGED EVERYTHING
+
+In the 1990s, researchers made a discovery that revolutionized our understanding of the brain: neuroplasticity. Your brain is constantly rewiring itself based on your thoughts, experiences, and actions. Every single thing you do—every thought you think, every emotion you feel, every action you take—physically changes the structure of your brain.
+
+This isn't metaphor. This is biology.
+
+When neurons fire together repeatedly, they form stronger connections. As neuroscientist Donald Hebb famously said, "Neurons that fire together, wire together." This means that your habitual thoughts literally become hardwired into your brain architecture.
+
+WHY THIS MATTERS FOR ABUNDANCE
+
+Here's where it gets exciting. If negative thought patterns—scarcity, self-doubt, fear—have been wired into your brain through repetition, then positive patterns—abundance, confidence, possibility—can be wired in the exact same way.
+
+This is not wishful thinking. This is the science.
+
+When you practice gratitude consistently, you strengthen the neural pathways associated with noticing good things. When you visualize success, you activate the same brain regions that would fire if you were actually experiencing that success. When you affirm your worth, you gradually overwrite the old programming that told you otherwise.
+
+HOW ABUNDANCE RECODE WORKS WITH YOUR BRAIN
+
+Every feature in this app is designed with neuroplasticity in mind:
+
+The Gratitude Journal creates new neural pathways for appreciation. Each entry strengthens your brain's ability to notice abundance.
+
+The Affirmation Engine uses repetition and emotional engagement to rewire limiting beliefs. We're not just reading words—we're installing new mental software.
+
+The Reality Shift Board leverages the brain's inability to distinguish between vivid imagination and actual experience. When you visualize your goals with emotion, your brain literally prepares you for that reality.
+
+The Inner Mentor provides the corrective voice that rewires your internal dialogue. Over time, that compassionate voice becomes your default.
+
+THE 66-DAY PRINCIPLE
+
+Research suggests it takes an average of 66 days to form a new habit—to create neural pathways strong enough that a behavior becomes automatic. This is why consistency matters more than intensity.
+
+You don't need to overhaul your life in a day. You need to show up, every day, and let the compound effect of small practices reshape your brain.
+
+YOUR BRAIN IS WAITING
+
+Right now, as you read these words, your brain is changing. The question isn't whether you'll be different tomorrow—the question is whether you'll direct that change intentionally.
+
+That's what Abundance Recode is for. Not to give you the answers, but to help you literally build a new brain—one thought, one practice, one day at a time.
+
+Your recode begins now.`
+  },
+  {
+    id: 'quantum-observation',
+    title: 'Quantum Observation',
+    description: 'How your focus literally shifts reality',
+    category: 'mindset',
+    readTime: 7,
+    heroGradient: 'linear-gradient(135deg, #0c1445 0%, #1e3a5f 50%, #0F172A 100%)',
+    author: 'Abundance Recode',
+    content: `In the strange world of quantum physics, scientists discovered something that sounds impossible: the act of observation changes what is being observed. This isn't philosophy—it's physics. And it has profound implications for how you create your reality.
+
+THE DOUBLE-SLIT EXPERIMENT
+
+In one of the most famous experiments in physics, scientists fired particles through two slits toward a screen. When unobserved, the particles behaved like waves, creating an interference pattern. But when scientists observed which slit the particle went through, it suddenly behaved like a particle, creating a different pattern.
+
+The act of observation collapsed infinite possibilities into a single reality.
+
+Read that again. Let it sink in.
+
+WHAT THIS MEANS FOR YOU
+
+While quantum effects operate at the subatomic level, the principle offers a powerful metaphor—and perhaps more than metaphor—for how consciousness interacts with reality.
+
+What you focus on, you bring into being. What you observe, you collapse from possibility into actuality. What you expect, you tend to experience.
+
+This isn't magic. It's how your brain works.
+
+THE RETICULAR ACTIVATING SYSTEM
+
+Your brain processes approximately 11 million bits of information per second. Your conscious mind can handle about 50. That means your brain is constantly filtering, deciding what to bring to your attention and what to ignore.
+
+What determines the filter? What you focus on. What you believe is important.
+
+Have you ever bought a new car and suddenly seen that same model everywhere? The cars were always there—but now your brain considers them relevant. Your observation changed your experience of reality.
+
+APPLIED QUANTUM LIVING
+
+When you set an intention, you're telling your brain what to observe. When you visualize a goal, you're collapsing possibility waves into probability. When you affirm "I am abundant," you're not lying to yourself—you're selecting which version of reality to bring into focus.
+
+The Abundance Recode app works on this principle:
+
+Every morning, you set your intention—you choose what to observe. Throughout the day, your brain filters reality to match. Every evening, you review evidence—you reinforce the observation.
+
+FOCUS IS CREATIVE
+
+This is perhaps the most empowering idea in human history: your focus is not passive. You are not merely witnessing reality. You are participating in its creation.
+
+What you consistently observe, you consistently experience. What you refuse to observe loses power over you. Where attention goes, energy flows.
+
+THE OBSERVER EFFECT IN DAILY LIFE
+
+Try this experiment: For one day, look for evidence that the universe is supporting you. Look for coincidences, small kindnesses, unexpected help. Count them. Write them down.
+
+The next day, notice how many more you see.
+
+You didn't change the universe. You changed your observation. And in doing so, you changed your experience of reality.
+
+This is the power you have. Use it wisely.`
+  },
+  {
+    id: 'art-of-letting-go',
+    title: 'The Art of Letting Go',
+    description: 'Releasing resistance to allow abundance to flow',
+    category: 'abundance',
+    readTime: 6,
+    heroGradient: 'linear-gradient(135deg, #1a3a2f 0%, #0d2818 50%, #0F172A 100%)',
+    author: 'Abundance Recode',
+    content: `There is a paradox at the heart of manifestation: the tighter you grip, the more slips through your fingers. The more you chase, the more eludes you. The secret to receiving is learning to let go.
+
+THE PHYSICS OF RESISTANCE
+
+Imagine trying to catch water by clenching your fist. The harder you squeeze, the more escapes. Now imagine holding your hands open, allowing the water to pool in your palms. This is the difference between resistance and allowing.
+
+Resistance creates tension. Tension blocks flow. And abundance, by its nature, flows.
+
+WHY WE HOLD ON
+
+We grip tightly because we're afraid. Afraid that if we don't control every outcome, things will fall apart. Afraid that relaxing our vigilance means inviting disaster. Afraid that letting go means giving up.
+
+But here's what fear doesn't understand: control is largely an illusion. And the energy spent maintaining that illusion could be used for creation.
+
+THE PRACTICE OF RELEASE
+
+Letting go is not passive. It's not giving up or not caring. It's an active practice of releasing attachment to specific outcomes while maintaining commitment to your intention.
+
+Here's the distinction:
+• Attachment: "I need this specific job by this specific date or I'll be devastated."
+• Intention with release: "I intend to work that fulfills me and trusts the path to unfold."
+
+One creates desperate, grasping energy. The other creates magnetic, attracting energy.
+
+TECHNIQUES FOR RELEASING
+
+The Breath Release: Breathe deeply. With each exhale, consciously release one worry, one fear, one need to control. Feel it leaving your body with the breath.
+
+The Water Visualization: Imagine your attachment as an object in your hands. Now visualize holding it under running water. Watch as the water slowly dissolves it, carrying it away. You're not fighting it. You're simply allowing it to go.
+
+The "What If" Flip: When you catch yourself thinking, "What if this doesn't work out?" flip it: "What if it works out better than I imagined?" Your brain doesn't know the difference—but your body does. Feel the shift.
+
+The Surrender Statement: Write down what you're holding onto. Then write: "I release my attachment to [this outcome]. I trust that what is meant for me will find me. I am open to receiving."
+
+THE ABUNDANCE PARADOX
+
+Here's what's strange but true: when you release your desperate grip on abundance, it comes more easily. When you trust that there is enough, you make room to receive. When you stop chasing, you become magnetic.
+
+This isn't about being passive. Take action. Work toward your goals. Do the practices. But do them from a place of inspired action rather than desperate grasping.
+
+YOUR ASSIGNMENT
+
+Today, identify one thing you're gripping too tightly. One outcome you're trying to force. One fear you're letting drive your actions.
+
+Then, consciously, with full awareness, practice letting it go.
+
+Not forever. Just for today. Just to see what happens when you trust.
+
+The river of abundance is always flowing. Your only job is to stop damming it up.`
+  },
+  {
+    id: 'morning-rituals',
+    title: 'Morning Rituals',
+    description: 'Why the first 20 minutes of your day matter most',
+    category: 'energy',
+    readTime: 5,
+    heroGradient: 'linear-gradient(135deg, #3d2914 0%, #5c3d1e 50%, #0F172A 100%)',
+    author: 'Abundance Recode',
+    content: `The first 20 minutes of your day are not created equal. They are, in fact, the most neurologically significant minutes you'll experience until you sleep again. What you do with them shapes everything that follows.
+
+THE SCIENCE OF MORNING BRAIN STATES
+
+When you first wake up, your brain is in a unique state. You're transitioning from theta waves (associated with dreams and deep relaxation) to alpha waves (relaxed alertness) to beta waves (normal waking consciousness).
+
+During this transition—roughly the first 20 minutes—your subconscious mind is exceptionally receptive. The critical filter that usually guards your beliefs is still drowsy. This is when you can most easily install new programming.
+
+Most people waste this window by immediately checking their phones, flooding their receptive minds with other people's agendas, news designed to trigger anxiety, and notifications that scatter their focus.
+
+THE COST OF A REACTIVE MORNING
+
+When you start your day reactively, you tell your brain: "Other things are more important than my intentions. I am not in control. The world happens to me."
+
+Your brain believes you. And it creates a day to match.
+
+THE ABUNDANCE MORNING PROTOCOL
+
+Here's a simple but powerful morning ritual designed to leverage your brain's receptive state:
+
+MINUTE 0-5: CONSCIOUS AWAKENING
+• Keep your eyes closed for a moment after waking
+• Take three deep breaths
+• Before any other thought, say internally: "Today is full of possibility"
+• Feel your body—notice that you're alive, that you have another day
+
+MINUTE 5-10: GRATITUDE ACTIVATION
+• While still in bed or sitting quietly, think of three things you're grateful for
+• But don't just think them—feel them. Let the gratitude expand in your chest
+• This isn't a checklist. This is a feeling practice
+
+MINUTE 10-15: INTENTION SETTING
+• Ask yourself: "Who do I want to be today?"
+• Visualize yourself moving through your day as that person
+• See yourself handling challenges with grace, noticing opportunities, feeling abundant
+
+MINUTE 15-20: AFFIRMATION ANCHORING
+• Speak or think your core affirmations
+• "I am worthy of abundance"
+• "I attract opportunities easily"
+• "I am becoming more [quality] every day"
+• Feel these as true, not as wishes
+
+WHY THIS WORKS
+
+This ritual works because it:
+• Leverages your brain's most receptive state
+• Sets an intentional rather than reactive tone
+• Activates positive emotion early (which affects your entire day)
+• Programs your reticular activating system to notice abundance
+• Creates consistency, which builds neural pathways
+
+THE 1% RULE
+
+You don't have to do this perfectly. You don't even have to do the full 20 minutes. Even 5 minutes of intentional morning practice creates ripples throughout your day.
+
+But here's the key: you must do it before you check your phone. Before you read the news. Before you let the world in.
+
+Those first minutes belong to you. Protect them fiercely.
+
+YOUR MORNING, YOUR LIFE
+
+How you start your day is how you live your day. How you live your days is how you live your life.
+
+Tomorrow morning, before the world rushes in, take those 20 minutes. Program your mind with intention. Set the tone consciously.
+
+Your abundant day—and life—begins with your abundant morning.`
+  }
+];
+
 // 1. Learn & Grow - Article Library Screen
-const LearnAndGrowScreen: React.FC<{ onClose: () => void; onArticle: (article: any) => void }> = ({ onClose, onArticle }) => {
+const LearnAndGrowScreen: React.FC<{ onClose: () => void; onArticle: (article: Article) => void }> = ({ onClose, onArticle }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [readArticles, setReadArticles] = useState<string[]>([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('readArticles');
+    if (saved) {
+      setReadArticles(JSON.parse(saved));
+    }
+  }, []);
 
   const categories = [
-    { id: 'mindset', title: 'Mindset', icon: Icons.sparkle, color: '#8B5CF6' },
-    { id: 'energy', title: 'Energy', icon: Icons.streak, color: '#F59E0B' },
-    { id: 'abundance', title: 'Abundance', icon: Icons.crown, color: '#10B981' },
-    { id: 'neuroscience', title: 'Neuroscience', icon: Icons.chart, color: '#3B82F6' },
+    { id: 'mindset', title: 'Mindset', icon: Icons.sparkle, color: '#8B5CF6', description: 'Transform your thinking' },
+    { id: 'energy', title: 'Energy', icon: Icons.streak, color: '#F59E0B', description: 'Optimize your vitality' },
+    { id: 'abundance', title: 'Abundance', icon: Icons.crown, color: '#10B981', description: 'Attract prosperity' },
+    { id: 'neuroscience', title: 'Neuroscience', icon: Icons.chart, color: '#3B82F6', description: 'Understand your brain' },
   ];
 
-  const articles: Record<string, Array<{ id: string; title: string; description: string; content: string; imageUrl: string }>> = {
-    mindset: [
-      { id: '1', title: 'The Power of Belief', description: 'How your beliefs shape your reality', content: 'Your beliefs are the invisible architects of your life. Every thought you consistently think becomes a belief, and every belief shapes the actions you take. When you believe something is possible, your brain begins to find evidence to support that belief, creating a self-fulfilling prophecy.\n\nThe science behind this is fascinating. Your reticular activating system (RAS) filters information based on what you deem important. When you believe in abundance, you start noticing opportunities everywhere. When you believe in scarcity, you see only limitations.\n\nTo shift your beliefs, start by questioning the thoughts you accept as truth. Ask yourself: "Is this belief serving me?" If not, consciously choose a new belief and look for evidence to support it. Over time, this new belief will become your default operating system.', imageUrl: '' },
-      { id: '2', title: 'Growth vs Fixed Mindset', description: 'Embrace challenges as opportunities', content: 'Carol Dweck\'s research on mindset has transformed how we understand human potential. A fixed mindset believes abilities are static—you either have them or you don\'t. A growth mindset understands that abilities can be developed through dedication and hard work.\n\nPeople with growth mindsets embrace challenges, persist through obstacles, learn from criticism, and find inspiration in others\' success. They understand that effort is the path to mastery.\n\nTo cultivate a growth mindset, replace "I can\'t" with "I can\'t yet." Celebrate your efforts, not just outcomes. View failures as valuable feedback rather than evidence of inadequacy.', imageUrl: '' },
-    ],
-    energy: [
-      { id: '3', title: 'Morning Energy Rituals', description: 'Start your day with power', content: 'How you start your morning sets the tone for your entire day. The first hour after waking is when your brain is most receptive to programming. Use this time wisely.\n\nA powerful morning routine might include: 5 minutes of deep breathing to activate your parasympathetic nervous system, 10 minutes of movement to increase blood flow and release endorphins, 5 minutes of visualization to prime your mind for success, and 10 minutes of journaling to clarify your intentions.\n\nConsistency is key. Your morning ritual doesn\'t need to be elaborate—it needs to be sustainable. Start small and build from there.', imageUrl: '' },
-      { id: '4', title: 'Energy Management', description: 'Protect and amplify your vital force', content: 'Energy is your most precious resource. Unlike time, which passes regardless of what you do, energy can be cultivated and protected.\n\nThere are four dimensions of energy: physical (sleep, nutrition, exercise), emotional (positive relationships, self-compassion), mental (focus, creativity), and spiritual (purpose, values). Neglecting any dimension affects the others.\n\nProtect your energy by setting boundaries, limiting exposure to negativity, and scheduling regular recovery time. Amplify your energy through practices that fill you up—nature, creativity, meaningful connection, and purposeful work.', imageUrl: '' },
-    ],
-    abundance: [
-      { id: '5', title: 'The Abundance Frequency', description: 'Tune into unlimited possibility', content: 'Abundance is not just about money—it\'s a state of being. It\'s the recognition that the universe is infinitely generous and that there is always enough.\n\nWhen you operate from abundance, you give freely because you know more is coming. You celebrate others\' success because you understand that their win doesn\'t diminish yours. You take inspired action without desperation because you trust in the timing of your life.\n\nTo tune into the abundance frequency, practice gratitude daily. What you appreciate, appreciates. Notice the abundance already present in your life—the air you breathe, the relationships you have, the opportunities before you.', imageUrl: '' },
-      { id: '6', title: 'Money Mindset Mastery', description: 'Transform your relationship with wealth', content: 'Your relationship with money often mirrors your relationship with yourself. If you feel unworthy of love, you likely feel unworthy of wealth. The inner work is the real work.\n\nCommon money blocks include: believing money is evil, feeling guilty about wanting more, fearing judgment from others, and associating wealth with negative characteristics.\n\nTo transform your money mindset, first become aware of your current beliefs. Journal about your earliest money memories. Notice the emotions that arise when you think about wealth. Then consciously choose new beliefs that align with who you want to become.', imageUrl: '' },
-    ],
-    neuroscience: [
-      { id: '7', title: 'Neuroplasticity & Change', description: 'Your brain can rewire itself', content: 'For decades, scientists believed the adult brain was fixed. We now know this isn\'t true. Neuroplasticity—the brain\'s ability to reorganize itself by forming new neural connections—continues throughout life.\n\nEvery thought you think, every action you take, physically changes your brain. Neurons that fire together wire together. This means you can literally rewire your brain through consistent practice.\n\nThis is both empowering and sobering. It means change is always possible. It also means that negative thought patterns are constantly reinforcing themselves. Choose your mental habits wisely—they\'re building your brain.', imageUrl: '' },
-      { id: '8', title: 'The Science of Habits', description: 'Automate your success', content: 'Habits are the brain\'s way of conserving energy. Once a behavior becomes habitual, it requires almost no conscious thought. This is why habits are so powerful—they operate on autopilot.\n\nThe habit loop consists of three parts: cue (trigger), routine (behavior), and reward (benefit). To change a habit, you need to identify the cue and reward, then insert a new routine.\n\nTo build new habits, start incredibly small. Want to meditate? Start with one minute. Want to exercise? Start with one pushup. Make it so easy you can\'t say no. Then gradually increase as the habit solidifies.', imageUrl: '' },
-    ],
+  const getArticlesByCategory = (categoryId: string): Article[] => {
+    return articlesLibrary.filter(article => article.category === categoryId);
   };
 
+  const getAllArticles = (): Article[] => articlesLibrary;
+
+  const featuredArticle = articlesLibrary[0]; // The Science of Recoding
+
   if (selectedCategory) {
-    const categoryArticles = articles[selectedCategory] || [];
+    const categoryArticles = getArticlesByCategory(selectedCategory);
+    const category = categories.find(c => c.id === selectedCategory);
     return (
       <div className={styles.screen}>
         <header className={styles.screenHeaderWithBack}>
@@ -3145,18 +3409,28 @@ const LearnAndGrowScreen: React.FC<{ onClose: () => void; onArticle: (article: a
             {Icons.back}
           </button>
           <div>
-            <h2>{categories.find(c => c.id === selectedCategory)?.title}</h2>
-            <p>{categoryArticles.length} articles</p>
+            <h2>{category?.title}</h2>
+            <p>{categoryArticles.length} article{categoryArticles.length !== 1 ? 's' : ''}</p>
           </div>
         </header>
         <div className={styles.articleList}>
           {categoryArticles.map((article) => (
-            <GlassCard key={article.id} className={styles.articleCard} onClick={() => onArticle(article)}>
-              <h3 className={styles.articleTitle}>{article.title}</h3>
-              <p className={styles.articleDescription}>{article.description}</p>
-              <div className={styles.articleMeta}>
-                <span>5 min read</span>
-                {Icons.chevronRight}
+            <GlassCard key={article.id} className={styles.articleCardEnhanced} onClick={() => onArticle(article)}>
+              <div className={styles.articleCardHero} style={{ background: article.heroGradient }}>
+                <div className={styles.articleCardOverlay} />
+              </div>
+              <div className={styles.articleCardContent}>
+                <h3 className={styles.articleTitle}>{article.title}</h3>
+                <p className={styles.articleDescription}>{article.description}</p>
+                <div className={styles.articleMeta}>
+                  <span>{article.readTime} min read</span>
+                  {readArticles.includes(article.id) && (
+                    <span className={styles.articleReadBadge}>
+                      {Icons.check} Read
+                    </span>
+                  )}
+                  {Icons.chevronRight}
+                </div>
               </div>
             </GlassCard>
           ))}
@@ -3173,48 +3447,249 @@ const LearnAndGrowScreen: React.FC<{ onClose: () => void; onArticle: (article: a
         </button>
         <div>
           <h2>Learn & Grow</h2>
-          <p>Expand your awareness</p>
+          <p>Transform your understanding</p>
         </div>
       </header>
-      <div className={styles.categoryGrid}>
-        {categories.map((category) => (
-          <GlassCard
-            key={category.id}
-            className={styles.categoryCard}
-            onClick={() => setSelectedCategory(category.id)}
-          >
-            <div className={styles.categoryIcon} style={{ color: category.color }}>
-              {category.icon}
+
+      {/* Featured Article */}
+      <div className={styles.featuredSection}>
+        <h3 className={styles.sectionLabel}>Featured</h3>
+        <GlassCard className={styles.featuredArticleCard} onClick={() => onArticle(featuredArticle)}>
+          <div className={styles.featuredHero} style={{ background: featuredArticle.heroGradient }}>
+            <div className={styles.featuredOverlay} />
+            <div className={styles.featuredContent}>
+              <span className={styles.featuredBadge}>Start Here</span>
+              <h3 className={styles.featuredTitle}>{featuredArticle.title}</h3>
+              <p className={styles.featuredDescription}>{featuredArticle.description}</p>
+              <span className={styles.featuredReadTime}>{featuredArticle.readTime} min read</span>
             </div>
-            <span className={styles.categoryTitle}>{category.title}</span>
-          </GlassCard>
-        ))}
+          </div>
+        </GlassCard>
+      </div>
+
+      {/* Categories */}
+      <div className={styles.categoriesSection}>
+        <h3 className={styles.sectionLabel}>Explore Topics</h3>
+        <div className={styles.categoryGrid}>
+          {categories.map((category) => {
+            const categoryArticles = getArticlesByCategory(category.id);
+            const unreadCount = categoryArticles.filter(a => !readArticles.includes(a.id)).length;
+            return (
+              <GlassCard
+                key={category.id}
+                className={styles.categoryCardEnhanced}
+                onClick={() => setSelectedCategory(category.id)}
+              >
+                <div className={styles.categoryIcon} style={{ color: category.color }}>
+                  {category.icon}
+                </div>
+                <span className={styles.categoryTitle}>{category.title}</span>
+                <span className={styles.categoryDescription}>{category.description}</span>
+                {unreadCount > 0 && (
+                  <span className={styles.categoryBadge} style={{ background: category.color }}>
+                    {unreadCount} new
+                  </span>
+                )}
+              </GlassCard>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* All Articles Quick Access */}
+      <div className={styles.allArticlesSection}>
+        <h3 className={styles.sectionLabel}>All Articles</h3>
+        <div className={styles.articleList}>
+          {getAllArticles().map((article) => (
+            <GlassCard key={article.id} className={styles.articleCardCompact} onClick={() => onArticle(article)}>
+              <div className={styles.articleCardDot} style={{ background: categories.find(c => c.id === article.category)?.color }} />
+              <div className={styles.articleCardInfo}>
+                <h4 className={styles.articleTitleCompact}>{article.title}</h4>
+                <span className={styles.articleMetaCompact}>{article.readTime} min</span>
+              </div>
+              {readArticles.includes(article.id) ? (
+                <span className={styles.articleCheckmark}>{Icons.check}</span>
+              ) : (
+                <span className={styles.articleChevron}>{Icons.chevronRight}</span>
+              )}
+            </GlassCard>
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
-// Article Reader Screen
-const ArticleReaderScreen: React.FC<{ article: any; onClose: () => void }> = ({ article, onClose }) => {
+// Article Reader Screen - Enhanced with progress bar, hero, and mark as read
+const ArticleReaderScreen: React.FC<{ article: Article; onClose: () => void; onMarkRead?: (articleId: string, points: number) => void }> = ({ article, onClose, onMarkRead }) => {
+  const [readProgress, setReadProgress] = useState(0);
+  const [isRead, setIsRead] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const savedReadArticles = localStorage.getItem('readArticles');
+    if (savedReadArticles) {
+      const readList = JSON.parse(savedReadArticles);
+      setIsRead(readList.includes(article.id));
+    }
+  }, [article.id]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (contentRef.current) {
+        const element = contentRef.current;
+        const scrollTop = element.scrollTop;
+        const scrollHeight = element.scrollHeight - element.clientHeight;
+        const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+        setReadProgress(Math.min(progress, 100));
+      }
+    };
+
+    const element = contentRef.current;
+    if (element) {
+      element.addEventListener('scroll', handleScroll);
+      return () => element.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
+  const handleMarkAsRead = () => {
+    if (isRead) return;
+
+    const savedReadArticles = localStorage.getItem('readArticles');
+    const readList = savedReadArticles ? JSON.parse(savedReadArticles) : [];
+
+    if (!readList.includes(article.id)) {
+      readList.push(article.id);
+      localStorage.setItem('readArticles', JSON.stringify(readList));
+      setIsRead(true);
+      setShowCelebration(true);
+
+      // Award alignment points
+      const currentPoints = parseInt(localStorage.getItem('alignmentPoints') || '0');
+      const newPoints = currentPoints + 50;
+      localStorage.setItem('alignmentPoints', newPoints.toString());
+
+      if (onMarkRead) {
+        onMarkRead(article.id, 50);
+      }
+
+      // Haptic feedback
+      if (navigator.vibrate) {
+        navigator.vibrate([50, 30, 50]);
+      }
+
+      setTimeout(() => setShowCelebration(false), 3000);
+    }
+  };
+
+  // Format content with special handling for headers (ALL CAPS lines)
+  const formatContent = (content: string) => {
+    return content.split('\n\n').map((paragraph, idx) => {
+      // Check if this is a header (ALL CAPS or starts with specific phrases)
+      const isHeader = paragraph === paragraph.toUpperCase() && paragraph.length < 100;
+
+      if (isHeader) {
+        return (
+          <h3 key={idx} className={styles.articleSectionHeader}>
+            {paragraph}
+          </h3>
+        );
+      }
+
+      // Check for bullet points
+      if (paragraph.includes('\n•') || paragraph.startsWith('•')) {
+        const lines = paragraph.split('\n');
+        return (
+          <ul key={idx} className={styles.articleBulletList}>
+            {lines.map((line, lineIdx) => {
+              if (line.startsWith('•')) {
+                return <li key={lineIdx}>{line.substring(1).trim()}</li>;
+              }
+              return <p key={lineIdx} className={styles.articleParagraph}>{line}</p>;
+            })}
+          </ul>
+        );
+      }
+
+      return (
+        <p key={idx} className={styles.articleParagraph}>
+          {paragraph}
+        </p>
+      );
+    });
+  };
+
   return (
-    <div className={styles.screen}>
-      <header className={styles.screenHeaderWithBack}>
-        <button className={styles.backButtonSmall} onClick={onClose}>
-          {Icons.back}
-        </button>
-        <div>
-          <h2>Article</h2>
+    <div className={styles.articleReaderScreen}>
+      {/* Reading Progress Bar */}
+      <div className={styles.readingProgressBar}>
+        <div
+          className={styles.readingProgressFill}
+          style={{ width: `${readProgress}%` }}
+        />
+      </div>
+
+      {/* Floating Back Button */}
+      <button className={styles.articleBackButton} onClick={onClose}>
+        {Icons.back}
+      </button>
+
+      <div className={styles.articleReaderScrollable} ref={contentRef}>
+        {/* Hero Section */}
+        <div className={styles.articleHero} style={{ background: article.heroGradient || 'linear-gradient(135deg, #1a1a4e 0%, #0F172A 100%)' }}>
+          <div className={styles.articleHeroOverlay} />
+          <div className={styles.articleHeroContent}>
+            <span className={styles.articleCategory}>
+              {article.category.charAt(0).toUpperCase() + article.category.slice(1)}
+            </span>
+            <h1 className={styles.articleHeroTitle}>{article.title}</h1>
+            <div className={styles.articleHeroMeta}>
+              <span>{article.readTime} min read</span>
+              <span className={styles.articleMetaDot}>•</span>
+              <span>{article.author || 'Abundance Recode'}</span>
+            </div>
+          </div>
         </div>
-      </header>
-      <div className={styles.articleReader}>
-        <h1 className={styles.articleReaderTitle}>{article.title}</h1>
-        <p className={styles.articleReaderMeta}>5 min read</p>
-        <div className={styles.articleReaderContent}>
-          {article.content.split('\n\n').map((paragraph: string, idx: number) => (
-            <p key={idx}>{paragraph}</p>
-          ))}
+
+        {/* Article Body */}
+        <div className={styles.articleBody}>
+          <p className={styles.articleLead}>{article.description}</p>
+          <div className={styles.articleDivider} />
+          <div className={styles.articleContent}>
+            {formatContent(article.content)}
+          </div>
+
+          {/* Mark as Read Section */}
+          <div className={styles.articleFooter}>
+            <div className={styles.articleDivider} />
+            {isRead ? (
+              <div className={styles.articleReadComplete}>
+                <span className={styles.articleReadIcon}>{Icons.check}</span>
+                <span>You've completed this article</span>
+                <span className={styles.articlePointsEarned}>+50 Alignment Points earned</span>
+              </div>
+            ) : (
+              <button className={styles.markAsReadButton} onClick={handleMarkAsRead}>
+                <span className={styles.markAsReadIcon}>{Icons.check}</span>
+                <span>Mark as Read</span>
+                <span className={styles.markAsReadPoints}>+50 pts</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Celebration Overlay */}
+      {showCelebration && (
+        <div className={styles.articleCelebration}>
+          <div className={styles.celebrationContent}>
+            <span className={styles.celebrationIcon}>{Icons.sparkle}</span>
+            <h3>Knowledge Absorbed!</h3>
+            <p>+50 Alignment Points</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -4473,7 +4948,7 @@ export default function Home() {
     alignmentScore: 82,
     streak: 7,
   });
-  const [currentArticle, setCurrentArticle] = useState<any>(null);
+  const [currentArticle, setCurrentArticle] = useState<Article | null>(null);
   const [currentVisualization, setCurrentVisualization] = useState<any>(null);
   const [showEnergyMode, setShowEnergyMode] = useState(false);
 
@@ -4699,7 +5174,14 @@ export default function Home() {
         />;
       case 'article':
         return currentArticle ? (
-          <ArticleReaderScreen article={currentArticle} onClose={() => setCurrentScreen('learn')} />
+          <ArticleReaderScreen
+            article={currentArticle}
+            onClose={() => setCurrentScreen('learn')}
+            onMarkRead={(articleId, points) => {
+              // Update user state or trigger celebration
+              console.log(`Article ${articleId} marked as read! +${points} points`);
+            }}
+          />
         ) : (
           <LearnAndGrowScreen onClose={() => setCurrentScreen('dashboard')} onArticle={(article) => { setCurrentArticle(article); setCurrentScreen('article'); }} />
         );
