@@ -5292,16 +5292,141 @@
 /* ==== Phase 4: Content Libraries ==== */
 
 /* Article Library */
+/* Learn & Grow - Enhanced Article Library */
+.featuredSection {
+  margin-bottom: 24px;
+}
+
+.sectionLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  padding-left: 4px;
+}
+
+.featuredArticleCard {
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.featuredHero {
+  position: relative;
+  height: 200px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.featuredOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, transparent 100%);
+}
+
+.featuredContent {
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+  width: 100%;
+}
+
+.featuredBadge {
+  display: inline-block;
+  padding: 4px 10px;
+  background: rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #D4AF37;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.featuredTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+
+.featuredDescription {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 8px;
+}
+
+.featuredReadTime {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.categoriesSection {
+  margin-bottom: 24px;
+}
+
+.categoryCardEnhanced {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 20px 12px;
+  position: relative;
+  cursor: pointer;
+}
+
+.categoryDescription {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+}
+
+.categoryBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 9px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.allArticlesSection {
+  margin-bottom: 100px;
+}
+
 .articleList {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   padding: 0 4px;
 }
 
-.articleCard {
-  padding: 16px;
+.articleCardEnhanced {
+  padding: 0;
+  overflow: hidden;
   cursor: pointer;
+}
+
+.articleCardHero {
+  position: relative;
+  height: 80px;
+}
+
+.articleCardOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(15, 23, 42, 0.8) 0%, transparent 100%);
+}
+
+.articleCardContent {
+  padding: 14px 16px;
 }
 
 .articleTitle {
@@ -5319,10 +5444,423 @@
 
 .articleMeta {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 12px;
   font-size: 12px;
   color: rgba(255, 255, 255, 0.4);
+}
+
+.articleReadBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #10B981;
+  font-weight: 500;
+}
+
+.articleReadBadge svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Compact Article Cards */
+.articleCardCompact {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+
+.articleCardDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.articleCardInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.articleTitleCompact {
+  font-size: 14px;
+  font-weight: 500;
+  color: #FFFFFF;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.articleMetaCompact {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.articleCheckmark {
+  color: #10B981;
+  flex-shrink: 0;
+}
+
+.articleCheckmark svg {
+  width: 18px;
+  height: 18px;
+}
+
+.articleChevron {
+  color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.articleChevron svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Article Reader Screen - Enhanced */
+.articleReaderScreen {
+  position: fixed;
+  inset: 0;
+  background: #0F172A;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.readingProgressBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 110;
+}
+
+.readingProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #D4AF37 0%, #F5D77A 100%);
+  transition: width 0.1s ease-out;
+}
+
+.articleBackButton {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  cursor: pointer;
+  z-index: 105;
+  transition: all 0.2s ease;
+}
+
+.articleBackButton:hover {
+  background: rgba(15, 23, 42, 0.95);
+  transform: scale(1.05);
+}
+
+.articleBackButton svg {
+  width: 20px;
+  height: 20px;
+}
+
+.articleReaderScrollable {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.articleHero {
+  position: relative;
+  min-height: 280px;
+  display: flex;
+  align-items: flex-end;
+  padding: 24px 20px;
+}
+
+.articleHeroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, #0F172A 0%, rgba(15, 23, 42, 0.5) 50%, transparent 100%);
+}
+
+.articleHeroContent {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+}
+
+.articleCategory {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #D4AF37;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.articleHeroTitle {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.25;
+  margin-bottom: 12px;
+}
+
+.articleHeroMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.articleMetaDot {
+  opacity: 0.4;
+}
+
+/* Article Body */
+.articleBody {
+  padding: 24px 20px 40px;
+}
+
+.articleLead {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+  font-style: italic;
+  margin-bottom: 24px;
+}
+
+.articleDivider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(212, 175, 55, 0.3) 50%, transparent 100%);
+  margin: 24px 0;
+}
+
+.articleContent {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 17px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.8;
+}
+
+.articleParagraph {
+  margin-bottom: 20px;
+}
+
+.articleSectionHeader {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #D4AF37;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 32px 0 16px;
+}
+
+.articleBulletList {
+  margin: 16px 0 20px 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.articleBulletList li {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 12px;
+}
+
+.articleBulletList li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #D4AF37;
+}
+
+/* Article Footer */
+.articleFooter {
+  margin-top: 40px;
+  padding-bottom: 40px;
+}
+
+.articleReadComplete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 16px;
+  text-align: center;
+}
+
+.articleReadIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #10B981;
+}
+
+.articleReadIcon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.articleReadComplete span:nth-child(2) {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.articlePointsEarned {
+  font-size: 13px;
+  color: #10B981;
+}
+
+.markAsReadButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 18px 24px;
+  background: linear-gradient(135deg, #D4AF37 0%, #B8962E 100%);
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0F172A;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.markAsReadButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.3);
+}
+
+.markAsReadButton:active {
+  transform: translateY(0);
+}
+
+.markAsReadIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.markAsReadIcon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.markAsReadPoints {
+  padding: 4px 10px;
+  background: rgba(15, 23, 42, 0.2);
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Celebration Overlay */
+.articleCelebration {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 120;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.celebrationContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  animation: scaleIn 0.4s ease-out;
+}
+
+.celebrationIcon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.3) 0%, rgba(212, 175, 55, 0.1) 100%);
+  border: 2px solid rgba(212, 175, 55, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #D4AF37;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.celebrationIcon svg {
+  width: 40px;
+  height: 40px;
+}
+
+.celebrationContent h3 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.celebrationContent p {
+  font-size: 18px;
+  color: #D4AF37;
+  font-weight: 600;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Legacy article styles kept for compatibility */
+.articleCard {
+  padding: 16px;
+  cursor: pointer;
 }
 
 .articleReader {
