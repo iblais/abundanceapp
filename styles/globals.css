@@ -1,23 +1,23 @@
 /**
- * Abundance Recode - Cosmic Minimalism Design System
- * Deep Navy & Metallic Gold
+ * Abundance Recode - Void Mode Design System
+ * True Black & Metallic Gold - Premium OLED Aesthetic
  */
 
 :root {
-  /* Background Colors - Deep Cosmic Navy */
-  --bg-primary: #0F172A;
-  --bg-secondary: #1E293B;
-  --bg-tertiary: #334155;
+  /* Background Colors - True Black (Void) */
+  --bg-primary: #000000;
+  --bg-secondary: #080808;
+  --bg-tertiary: #121212;
 
-  /* Glass Surfaces - Navy tinted */
-  --glass-bg: rgba(15, 23, 42, 0.7);
-  --glass-bg-medium: rgba(15, 23, 42, 0.8);
-  --glass-bg-strong: rgba(15, 23, 42, 0.9);
-  --glass-bg-elevated: rgba(30, 41, 59, 0.85);
-  --glass-border: rgba(248, 250, 252, 0.1);
-  --glass-border-strong: rgba(248, 250, 252, 0.2);
-  --glass-highlight: rgba(248, 250, 252, 0.1);
-  --glass-inner-glow: rgba(212, 175, 55, 0.05);
+  /* Glass Surfaces - Void Black */
+  --glass-bg: rgba(0, 0, 0, 0.6);
+  --glass-bg-medium: rgba(0, 0, 0, 0.7);
+  --glass-bg-strong: rgba(0, 0, 0, 0.8);
+  --glass-bg-elevated: rgba(8, 8, 8, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-border-strong: rgba(255, 255, 255, 0.2);
+  --glass-highlight: rgba(255, 255, 255, 0.1);
+  --glass-inner-glow: rgba(212, 175, 55, 0.08);
 
   /* Primary Accent - Metallic Gold */
   --primary: #D4AF37;
@@ -36,24 +36,24 @@
   --gold-glow: rgba(212, 175, 55, 0.4);
   --gold-glow-strong: rgba(212, 175, 55, 0.6);
 
-  /* Text Colors - Starlight White */
-  --text-primary: #F8FAFC;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
-  --text-disabled: rgba(148, 163, 184, 0.5);
+  /* Text Colors - Pure White & Silver */
+  --text-primary: #FFFFFF;
+  --text-secondary: #9CA3AF;
+  --text-muted: #6B7280;
+  --text-disabled: rgba(156, 163, 175, 0.5);
 
-  /* Dividers - Slate Blue */
-  --divider: rgba(248, 250, 252, 0.08);
-  --divider-strong: rgba(248, 250, 252, 0.15);
+  /* Dividers - White/Gray */
+  --divider: rgba(255, 255, 255, 0.08);
+  --divider-strong: rgba(255, 255, 255, 0.15);
 
-  /* Shadows - Gold focused */
-  --shadow-glass: 0 24px 60px rgba(0, 0, 0, 0.7);
-  --shadow-glass-light: 0 16px 40px rgba(0, 0, 0, 0.5);
-  --shadow-glass-subtle: 0 8px 24px rgba(0, 0, 0, 0.4);
-  --shadow-primary: 0 0 20px rgba(212, 175, 55, 0.25);
-  --shadow-primary-strong: 0 0 30px rgba(212, 175, 55, 0.45);
-  --shadow-gold: 0 0 20px rgba(212, 175, 55, 0.25);
-  --shadow-gold-strong: 0 0 30px rgba(212, 175, 55, 0.45);
+  /* Shadows - Void & Gold Glow */
+  --shadow-glass: 0 24px 60px rgba(0, 0, 0, 0.9);
+  --shadow-glass-light: 0 16px 40px rgba(0, 0, 0, 0.7);
+  --shadow-glass-subtle: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-primary: 0 0 24px rgba(212, 175, 55, 0.3);
+  --shadow-primary-strong: 0 0 40px rgba(212, 175, 55, 0.5);
+  --shadow-gold: 0 0 24px rgba(212, 175, 55, 0.3);
+  --shadow-gold-strong: 0 0 40px rgba(212, 175, 55, 0.5);
 
   /* Border Radius */
   --radius-sm: 12px;
@@ -170,20 +170,21 @@ input, textarea {
   }
 }
 
-/* Glass card base styles */
+/* Glass card base styles - Void aesthetic */
 .glass-card {
-  background: linear-gradient(
-    135deg,
-    var(--glass-bg-strong) 0%,
-    var(--glass-bg) 100%
-  );
-  backdrop-filter: blur(var(--blur-lg));
-  -webkit-backdrop-filter: blur(var(--blur-lg));
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(var(--blur-xl));
+  -webkit-backdrop-filter: blur(var(--blur-xl));
   border-radius: var(--radius-lg);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: var(--shadow-glass);
   position: relative;
   overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .glass-card::before {
@@ -196,7 +197,7 @@ input, textarea {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--glass-highlight) 50%,
+    rgba(255, 255, 255, 0.15) 50%,
     transparent 100%
   );
 }
@@ -215,12 +216,17 @@ input, textarea {
 
 /* Glass card elevated variant */
 .glass-card-elevated {
-  background: linear-gradient(
-    135deg,
-    var(--glass-bg-elevated) 0%,
-    var(--glass-bg-strong) 100%
-  );
-  border-color: var(--glass-border-strong);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Glass panel - Void aesthetic */
+.glass-panel {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(var(--blur-xl));
+  -webkit-backdrop-filter: blur(var(--blur-xl));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
 }
 
 /* Primary button - Gold glow */
@@ -290,7 +296,7 @@ input, textarea {
   transform: translateY(0) scale(0.98);
 }
 
-/* Secondary button */
+/* Secondary button - Void aesthetic */
 .btn-secondary {
   display: flex;
   align-items: center;
@@ -298,8 +304,8 @@ input, textarea {
   padding: 14px 28px;
   min-height: 48px;
   border-radius: var(--radius-full);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(var(--blur-md));
   color: var(--text-primary);
   font-size: 15px;
@@ -308,17 +314,17 @@ input, textarea {
 }
 
 .btn-secondary:hover {
-  background: var(--glass-bg-medium);
-  border-color: var(--glass-border-strong);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
-/* Icon button */
+/* Icon button - Void aesthetic */
 .btn-icon {
   width: 48px;
   height: 48px;
   border-radius: var(--radius-md);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(var(--blur-sm));
   display: flex;
   align-items: center;
@@ -327,9 +333,9 @@ input, textarea {
 }
 
 .btn-icon:hover {
-  background: var(--glass-bg-medium);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
-  border-color: var(--glass-border-strong);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 /* Typography utilities */
@@ -547,4 +553,84 @@ input, textarea {
 
 .animate-float {
   animation: floatOrb 20s ease-in-out infinite;
+}
+
+/* ==== Void Mode - Atmospheric Depth ==== */
+
+/* Nebula effect - subtle colored glow for depth */
+.bg-void-glow {
+  background: radial-gradient(
+    ellipse 100% 80% at 50% 0%,
+    rgba(29, 78, 216, 0.15) 0%,
+    rgba(147, 51, 234, 0.08) 30%,
+    rgba(0, 0, 0, 0) 70%
+  );
+}
+
+/* Gold accent glow variant */
+.bg-void-glow-gold {
+  background: radial-gradient(
+    ellipse 100% 80% at 50% 0%,
+    rgba(212, 175, 55, 0.12) 0%,
+    rgba(212, 175, 55, 0.05) 30%,
+    rgba(0, 0, 0, 0) 70%
+  );
+}
+
+/* Bottom ambient glow */
+.bg-void-glow-bottom {
+  background: radial-gradient(
+    ellipse 100% 60% at 50% 100%,
+    rgba(29, 78, 216, 0.1) 0%,
+    rgba(0, 0, 0, 0) 60%
+  );
+}
+
+/* Combined void atmosphere */
+.bg-void-atmosphere {
+  position: relative;
+}
+
+.bg-void-atmosphere::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(
+      ellipse 100% 50% at 50% 0%,
+      rgba(29, 78, 216, 0.12) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 80% 40% at 20% 80%,
+      rgba(147, 51, 234, 0.06) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 60% 30% at 80% 70%,
+      rgba(212, 175, 55, 0.05) 0%,
+      transparent 40%
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Input fields for void mode - better contrast */
+input, textarea, select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
 }
