@@ -1,6 +1,6 @@
 /**
  * Abundance Recode - Next.js App Entry
- * Alchemist Hybrid Design System (Cinzel + Manrope)
+ * Void Mode Design System - True Black & Gold (Cinzel + Manrope)
  */
 
 import type { AppProps } from 'next/app';
@@ -14,7 +14,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <title>Abundance Recode - Daily Guided Practices for Calm, Focus, and Confidence</title>
         <meta name="description" content="Daily guided practices to help you embody abundance, calm, and confidence. 7-minute Morning Visioneering, scene-based visualization, and identity-based transformation." />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-        <meta name="theme-color" content="#0F172A" />
+        <meta name="theme-color" content="#000000" />
 
         {/* Open Graph */}
         <meta property="og:title" content="Abundance Recode - Shift Your State. Reshape Your Reality." />
@@ -35,9 +35,11 @@ export default function App({ Component, pageProps }: AppProps) {
           rel="stylesheet"
         />
       </Head>
-      <main className="dark">
-        <Component {...pageProps} />
-      </main>
+      <div className="min-h-screen bg-void-atmosphere" style={{ background: '#000000' }}>
+        <main className="dark relative z-10">
+          <Component {...pageProps} />
+        </main>
+      </div>
     </>
   );
 }
