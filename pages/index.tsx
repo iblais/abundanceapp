@@ -1778,13 +1778,16 @@ const ASSET_AFFIRMATIONS = [
 const BoardScreen: React.FC = () => {
   const [boardItems, setBoardItems] = useState<BoardItem[]>([]);
   const [showAssetDrawer, setShowAssetDrawer] = useState(false);
-  const [assetTab, setAssetTab] = useState<'upload' | 'images' | 'affirmations'>('upload');
+  const [assetTab, setAssetTab] = useState<'upload' | 'ai' | 'images' | 'affirmations'>('upload');
   const [shiftMode, setShiftMode] = useState(false);
   const [shiftIndex, setShiftIndex] = useState(0);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [draggingItemId, setDraggingItemId] = useState<number | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isUploading, setIsUploading] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generateError, setGenerateError] = useState<string | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -1876,6 +1879,58 @@ const BoardScreen: React.FC = () => {
   // Trigger file input click
   const triggerFileUpload = () => {
     fileInputRef.current?.click();
+  };
+
+  // Generate AI image
+  const handleGenerateImage = async () => {
+    if (!aiPrompt.trim()) return;
+
+    setIsGenerating(true);
+    setGenerateError(null);
+
+    try {
+      const response = await fetch('/api/generate-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: aiPrompt.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate image');
+      }
+
+      if (data.imageUrl) {
+        // Add AI-generated image to board
+        const x = 10 + Math.random() * 60;
+        const y = 10 + Math.random() * 50;
+
+        const newItem: BoardItem = {
+          id: Date.now(),
+          type: 'image',
+          imageUrl: data.imageUrl,
+          x,
+          y,
+          width: 30,
+          height: 30,
+        };
+
+        setBoardItems(prev => [...prev, newItem]);
+        setShowAssetDrawer(false);
+        setAiPrompt('');
+
+        // Haptic feedback
+        if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+      }
+    } catch (error) {
+      console.error('AI generation error:', error);
+      setGenerateError(error instanceof Error ? error.message : 'Failed to generate image');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   // Add item directly (tap-to-add for mobile support)
@@ -2195,6 +2250,15 @@ const BoardScreen: React.FC = () => {
                 Upload
               </button>
               <button
+                className={`${styles.assetTab} ${styles.assetTabAi} ${assetTab === 'ai' ? styles.assetTabActive : ''}`}
+                onClick={() => setAssetTab('ai')}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                </svg>
+                AI
+              </button>
+              <button
                 className={`${styles.assetTab} ${assetTab === 'images' ? styles.assetTabActive : ''}`}
                 onClick={() => setAssetTab('images')}
               >
@@ -2231,6 +2295,73 @@ const BoardScreen: React.FC = () => {
                       <li>Include photos of your dream lifestyle</li>
                       <li>Mix images with powerful affirmations</li>
                     </ul>
+                  </div>
+                </div>
+              )}
+
+              {/* AI Generate Tab */}
+              {assetTab === 'ai' && (
+                <div className={styles.aiGenerateSection}>
+                  <div className={styles.aiGenerateHeader}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                    </svg>
+                    <h4>Manifest with AI</h4>
+                    <p>Describe your vision and let AI create it</p>
+                  </div>
+
+                  <textarea
+                    className={styles.aiPromptInput}
+                    placeholder="Describe your desired reality...&#10;&#10;Example: A beautiful beach house with sunset view, representing financial freedom and peace"
+                    value={aiPrompt}
+                    onChange={(e) => setAiPrompt(e.target.value)}
+                    rows={4}
+                    disabled={isGenerating}
+                  />
+
+                  {generateError && (
+                    <div className={styles.aiError}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 8v4M12 16h.01"/>
+                      </svg>
+                      {generateError}
+                    </div>
+                  )}
+
+                  <button
+                    className={styles.aiGenerateButton}
+                    onClick={handleGenerateImage}
+                    disabled={!aiPrompt.trim() || isGenerating}
+                  >
+                    {isGenerating ? (
+                      <>
+                        <div className={styles.aiSpinner} />
+                        Manifesting...
+                      </>
+                    ) : (
+                      <>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                        </svg>
+                        Manifest Image
+                      </>
+                    )}
+                  </button>
+
+                  <div className={styles.aiExamples}>
+                    <p>Try these prompts:</p>
+                    <div className={styles.aiExampleChips}>
+                      <button onClick={() => setAiPrompt('A golden key floating in a cosmic nebula, symbolizing unlocking infinite possibilities')}>
+                        Golden Key
+                      </button>
+                      <button onClick={() => setAiPrompt('A peaceful mountain retreat cabin with morning mist, representing tranquility and success')}>
+                        Dream Retreat
+                      </button>
+                      <button onClick={() => setAiPrompt('A thriving garden with golden coins growing like flowers, abundance and growth')}>
+                        Abundance Garden
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -2281,7 +2412,9 @@ const BoardScreen: React.FC = () => {
             </div>
 
             <p className={styles.assetDrawerHint}>
-              {assetTab === 'upload' ? 'Your photos stay private on your device' : 'Tap to add or drag onto canvas'}
+              {assetTab === 'upload' && 'Your photos stay private on your device'}
+              {assetTab === 'ai' && 'AI-generated images are created just for you'}
+              {(assetTab === 'images' || assetTab === 'affirmations') && 'Tap to add or drag onto canvas'}
             </p>
           </div>
         </div>
