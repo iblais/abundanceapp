@@ -1778,13 +1778,15 @@ const ASSET_AFFIRMATIONS = [
 const BoardScreen: React.FC = () => {
   const [boardItems, setBoardItems] = useState<BoardItem[]>([]);
   const [showAssetDrawer, setShowAssetDrawer] = useState(false);
-  const [assetTab, setAssetTab] = useState<'images' | 'affirmations'>('images');
+  const [assetTab, setAssetTab] = useState<'upload' | 'images' | 'affirmations'>('upload');
   const [shiftMode, setShiftMode] = useState(false);
   const [shiftIndex, setShiftIndex] = useState(0);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [draggingItemId, setDraggingItemId] = useState<number | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [isUploading, setIsUploading] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load board from localStorage
   useEffect(() => {
@@ -1814,6 +1816,67 @@ const BoardScreen: React.FC = () => {
       return () => clearInterval(interval);
     }
   }, [shiftMode, boardItems.length]);
+
+  // Handle image upload from device
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image must be less than 5MB');
+      return;
+    }
+
+    setIsUploading(true);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+
+      // Add uploaded image to board
+      const x = 10 + Math.random() * 60;
+      const y = 10 + Math.random() * 50;
+
+      const newItem: BoardItem = {
+        id: Date.now(),
+        type: 'image',
+        imageUrl: base64,
+        x,
+        y,
+        width: 28,
+        height: 28,
+      };
+
+      setBoardItems(prev => [...prev, newItem]);
+      setShowAssetDrawer(false);
+      setIsUploading(false);
+
+      // Haptic feedback
+      if (navigator.vibrate) navigator.vibrate(50);
+    };
+
+    reader.onerror = () => {
+      alert('Failed to read image file');
+      setIsUploading(false);
+    };
+
+    reader.readAsDataURL(file);
+
+    // Reset input so the same file can be selected again
+    e.target.value = '';
+  };
+
+  // Trigger file input click
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
+  };
 
   // Add item directly (tap-to-add for mobile support)
   const addItemToBoard = (type: 'image' | 'affirmation', content: string, imageUrl?: string) => {
@@ -2106,67 +2169,120 @@ const BoardScreen: React.FC = () => {
         {Icons.plus}
       </button>
 
+      {/* Hidden file input for image upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImageUpload}
+        style={{ display: 'none' }}
+      />
+
       {/* Asset Library Drawer */}
       {showAssetDrawer && (
         <div className={styles.assetDrawerOverlay} onClick={() => setShowAssetDrawer(false)}>
           <div className={styles.assetDrawer} onClick={(e) => e.stopPropagation()}>
             <div className={styles.assetDrawerHeader}>
-              <h3>Asset Library</h3>
+              <h3>Add to Board</h3>
               <button onClick={() => setShowAssetDrawer(false)}>{Icons.close}</button>
             </div>
 
             <div className={styles.assetTabs}>
               <button
+                className={`${styles.assetTab} ${assetTab === 'upload' ? styles.assetTabActive : ''}`}
+                onClick={() => setAssetTab('upload')}
+              >
+                Upload
+              </button>
+              <button
                 className={`${styles.assetTab} ${assetTab === 'images' ? styles.assetTabActive : ''}`}
                 onClick={() => setAssetTab('images')}
               >
-                Images
+                Gallery
               </button>
               <button
                 className={`${styles.assetTab} ${assetTab === 'affirmations' ? styles.assetTabActive : ''}`}
                 onClick={() => setAssetTab('affirmations')}
               >
-                Affirmations
+                Words
               </button>
             </div>
 
-            <div className={styles.assetGrid}>
-              {assetTab === 'images' && ASSET_IMAGES.map((img) => (
-                <div
-                  key={img.id}
-                  className={styles.assetImageItem}
-                  draggable
-                  onClick={() => addItemToBoard('image', img.label, img.url)}
-                  onDragStart={(e) => {
-                    e.dataTransfer.setData('assetType', 'image');
-                    e.dataTransfer.setData('assetUrl', img.url);
-                  }}
-                >
-                  <div
-                    className={styles.assetImageThumb}
-                    style={{ backgroundImage: `url(${img.url})` }}
-                  />
-                  <span>{img.label}</span>
-                </div>
-              ))}
+            <div className={styles.assetContent}>
+              {/* Upload Tab */}
+              {assetTab === 'upload' && (
+                <div className={styles.uploadSection}>
+                  <button
+                    className={styles.uploadButton}
+                    onClick={triggerFileUpload}
+                    disabled={isUploading}
+                  >
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                    </svg>
+                    <span>{isUploading ? 'Uploading...' : 'Upload from Device'}</span>
+                    <p>Add your own photos to visualize your dreams</p>
+                  </button>
 
-              {assetTab === 'affirmations' && ASSET_AFFIRMATIONS.map((text, i) => (
-                <div
-                  key={i}
-                  className={styles.assetAffirmationItem}
-                  draggable
-                  onClick={() => addItemToBoard('affirmation', text)}
-                  onDragStart={(e) => {
-                    e.dataTransfer.setData('assetType', 'affirmation');
-                    e.dataTransfer.setData('assetContent', text);
-                  }}
-                >
-                  <span>&ldquo;{text}&rdquo;</span>
+                  <div className={styles.uploadTips}>
+                    <h4>Vision Board Tips</h4>
+                    <ul>
+                      <li>Add images that represent your goals</li>
+                      <li>Include photos of your dream lifestyle</li>
+                      <li>Mix images with powerful affirmations</li>
+                    </ul>
+                  </div>
                 </div>
-              ))}
+              )}
+
+              {/* Images Gallery Tab */}
+              {assetTab === 'images' && (
+                <div className={styles.assetGrid}>
+                  {ASSET_IMAGES.map((img) => (
+                    <div
+                      key={img.id}
+                      className={styles.assetImageItem}
+                      draggable
+                      onClick={() => addItemToBoard('image', img.label, img.url)}
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('assetType', 'image');
+                        e.dataTransfer.setData('assetUrl', img.url);
+                      }}
+                    >
+                      <div
+                        className={styles.assetImageThumb}
+                        style={{ backgroundImage: `url(${img.url})` }}
+                      />
+                      <span>{img.label}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Affirmations Tab */}
+              {assetTab === 'affirmations' && (
+                <div className={styles.assetGrid}>
+                  {ASSET_AFFIRMATIONS.map((text, i) => (
+                    <div
+                      key={i}
+                      className={styles.assetAffirmationItem}
+                      draggable
+                      onClick={() => addItemToBoard('affirmation', text)}
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('assetType', 'affirmation');
+                        e.dataTransfer.setData('assetContent', text);
+                      }}
+                    >
+                      <span>&ldquo;{text}&rdquo;</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <p className={styles.assetDrawerHint}>Tap to add or drag onto canvas</p>
+            <p className={styles.assetDrawerHint}>
+              {assetTab === 'upload' ? 'Your photos stay private on your device' : 'Tap to add or drag onto canvas'}
+            </p>
           </div>
         </div>
       )}
