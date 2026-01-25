@@ -120,38 +120,62 @@ const ProgressRing: React.FC<{ progress: number; size?: number; strokeWidth?: nu
   );
 };
 
-// Glass Card Component
+// Glass Card Component with tactile effects
 const GlassCard: React.FC<{
   children: React.ReactNode;
   className?: string;
   onClick?: () => void;
   variant?: 'default' | 'elevated';
-}> = ({ children, className = '', onClick, variant = 'default' }) => (
-  <div
-    className={`${styles.glassCard} ${variant === 'elevated' ? styles.glassCardElevated : ''} ${className}`}
-    onClick={onClick}
-    style={{ cursor: onClick ? 'pointer' : 'default' }}
-  >
-    {children}
-  </div>
-);
+}> = ({ children, className = '', onClick, variant = 'default' }) => {
+  const handleClick = () => {
+    if (onClick) {
+      // Light haptic on card tap
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate(5);
+      }
+      onClick();
+    }
+  };
 
-// Button Component
+  return (
+    <div
+      className={`${styles.glassCard} ${variant === 'elevated' ? styles.glassCardElevated : ''} ${onClick ? styles.tactileCard : ''} ${className}`}
+      onClick={handleClick}
+      style={{ cursor: onClick ? 'pointer' : 'default' }}
+    >
+      {children}
+    </div>
+  );
+};
+
+// Button Component with haptic feedback
 const Button: React.FC<{
   children: React.ReactNode;
   onClick: () => void;
   variant?: 'primary' | 'secondary' | 'ghost';
   fullWidth?: boolean;
   disabled?: boolean;
-}> = ({ children, onClick, variant = 'primary', fullWidth = false, disabled = false }) => (
-  <button
-    className={`${styles.button} ${styles[`button${variant.charAt(0).toUpperCase() + variant.slice(1)}`]} ${fullWidth ? styles.buttonFullWidth : ''}`}
-    onClick={onClick}
-    disabled={disabled}
-  >
-    {children}
-  </button>
-);
+}> = ({ children, onClick, variant = 'primary', fullWidth = false, disabled = false }) => {
+  const handleClick = () => {
+    if (!disabled) {
+      // Haptic feedback on tap
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate(variant === 'primary' ? 15 : 8);
+      }
+      onClick();
+    }
+  };
+
+  return (
+    <button
+      className={`${styles.button} ${styles[`button${variant.charAt(0).toUpperCase() + variant.slice(1)}`]} ${fullWidth ? styles.buttonFullWidth : ''} ${styles.tactileButton}`}
+      onClick={handleClick}
+      disabled={disabled}
+    >
+      {children}
+    </button>
+  );
+};
 
 // Icon Components
 const Icons = {
@@ -377,6 +401,264 @@ const Icons = {
       <line x1="10" y1="14" x2="21" y2="3" />
     </svg>
   ),
+};
+
+// ==== Haptic Feedback Utility ====
+const triggerHaptic = (pattern: 'light' | 'medium' | 'heavy' | 'success' | 'error' = 'light') => {
+  if (typeof navigator !== 'undefined' && navigator.vibrate) {
+    const patterns: Record<string, number | number[]> = {
+      light: 5,
+      medium: 15,
+      heavy: 30,
+      success: [15, 50, 15],
+      error: [50, 30, 50, 30, 50]
+    };
+    navigator.vibrate(patterns[pattern]);
+  }
+};
+
+// ==== Cinematic Splash Screen ====
+const SplashScreen: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
+  const [isDissolving, setIsDissolving] = useState(false);
+  const [particles] = useState(() =>
+    Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      delay: Math.random() * 3,
+      duration: 3 + Math.random() * 2
+    }))
+  );
+
+  useEffect(() => {
+    // Start dissolve after logo animation completes
+    const dissolveTimer = setTimeout(() => {
+      setIsDissolving(true);
+      triggerHaptic('success');
+    }, 2500);
+
+    // Complete transition
+    const completeTimer = setTimeout(() => {
+      onComplete();
+    }, 3700);
+
+    return () => {
+      clearTimeout(dissolveTimer);
+      clearTimeout(completeTimer);
+    };
+  }, [onComplete]);
+
+  return (
+    <div className={`${styles.splashScreen} ${isDissolving ? styles.splashDissolving : ''}`}>
+      {/* Floating particles */}
+      <div className={styles.splashParticles}>
+        {particles.map((p) => (
+          <div
+            key={p.id}
+            className={styles.splashParticle}
+            style={{
+              left: `${p.left}%`,
+              animationDelay: `${p.delay}s`,
+              animationDuration: `${p.duration}s`
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Logo with 3D reveal */}
+      <div className={styles.splashLogo}>
+        <div className={styles.splashLogoInner}>
+          <svg width="60" height="60" viewBox="0 0 100 100">
+            <defs>
+              <linearGradient id="splashGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#FFFFFF" />
+                <stop offset="100%" stopColor="#D4AF37" />
+              </linearGradient>
+            </defs>
+            <g>
+              <path
+                d="M50 15 C70 15, 85 30, 85 50 C85 60, 75 70, 60 65 C45 60, 45 45, 55 40 C65 35, 75 45, 70 55"
+                stroke="url(#splashGradient)"
+                strokeWidth="5"
+                fill="none"
+                strokeLinecap="round"
+              />
+              <path
+                d="M50 85 C30 85, 15 70, 15 50 C15 40, 25 30, 40 35 C55 40, 55 55, 45 60 C35 65, 25 55, 30 45"
+                stroke="url(#splashGradient)"
+                strokeWidth="5"
+                fill="none"
+                strokeLinecap="round"
+              />
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <h1 className={styles.splashTitle}>Abundance</h1>
+      <p className={styles.splashSubtitle}>Recode Your Reality</p>
+    </div>
+  );
+};
+
+// ==== Daily Geode (Crystal Reveal Check-in) ====
+const dailyAffirmations = [
+  "I am worthy of abundance in all forms",
+  "Today, I choose to see opportunities everywhere",
+  "I am aligned with the energy of prosperity",
+  "My potential is limitless",
+  "I attract success effortlessly",
+  "I am grateful for all that flows to me",
+  "I release all resistance to receiving",
+  "My thoughts create my reality",
+  "I am becoming more abundant every day",
+  "The universe supports my highest good"
+];
+
+const DailyGeode: React.FC<{ onCheckIn: (affirmation: string, points: number) => void }> = ({ onCheckIn }) => {
+  const [tapCount, setTapCount] = useState(0);
+  const [isRevealed, setIsRevealed] = useState(false);
+  const [showParticles, setShowParticles] = useState(false);
+  const [affirmation, setAffirmation] = useState('');
+  const [hasCheckedIn, setHasCheckedIn] = useState(false);
+
+  // Check if already checked in today
+  useEffect(() => {
+    const today = new Date().toDateString();
+    const lastCheckIn = localStorage.getItem('lastGeodeCheckIn');
+    if (lastCheckIn === today) {
+      setHasCheckedIn(true);
+      const savedAffirmation = localStorage.getItem('todayAffirmation') || dailyAffirmations[0];
+      setAffirmation(savedAffirmation);
+      setIsRevealed(true);
+      setTapCount(3);
+    }
+  }, []);
+
+  const handleTap = () => {
+    if (isRevealed || hasCheckedIn) return;
+
+    triggerHaptic(tapCount < 2 ? 'medium' : 'heavy');
+
+    const newTapCount = tapCount + 1;
+    setTapCount(newTapCount);
+
+    if (newTapCount >= 3) {
+      // Reveal the crystal!
+      setShowParticles(true);
+      triggerHaptic('success');
+
+      setTimeout(() => {
+        setIsRevealed(true);
+        setShowParticles(false);
+
+        // Pick random affirmation
+        const randomAffirmation = dailyAffirmations[Math.floor(Math.random() * dailyAffirmations.length)];
+        setAffirmation(randomAffirmation);
+
+        // Save check-in
+        const today = new Date().toDateString();
+        localStorage.setItem('lastGeodeCheckIn', today);
+        localStorage.setItem('todayAffirmation', randomAffirmation);
+        setHasCheckedIn(true);
+
+        // Award points
+        onCheckIn(randomAffirmation, 25);
+      }, 600);
+    }
+  };
+
+  // Generate particle positions for explosion
+  const particles = Array.from({ length: 12 }, (_, i) => {
+    const angle = (i / 12) * Math.PI * 2;
+    const distance = 80 + Math.random() * 40;
+    return {
+      id: i,
+      tx: Math.cos(angle) * distance,
+      ty: Math.sin(angle) * distance,
+      delay: Math.random() * 0.2
+    };
+  });
+
+  return (
+    <div className={styles.geodeContainer}>
+      <div className={styles.geodeTitle}>
+        {hasCheckedIn ? "Today's Crystal" : "Daily Check-In"}
+      </div>
+
+      <div className={styles.geodeWrapper} onClick={handleTap}>
+        {/* The rock */}
+        {!isRevealed && (
+          <div className={styles.geodeRock}>
+            {/* Crack overlays */}
+            <div className={`${styles.geodeCrack} ${styles.geodeCrack1} ${tapCount >= 1 ? styles.geodeCrackVisible : ''}`}>
+              <svg viewBox="0 0 140 140">
+                <path
+                  d="M70 20 L75 50 L65 55 L70 70"
+                  stroke="rgba(212, 175, 55, 0.6)"
+                  strokeWidth="2"
+                  fill="none"
+                />
+              </svg>
+            </div>
+            <div className={`${styles.geodeCrack} ${styles.geodeCrack2} ${tapCount >= 2 ? styles.geodeCrackVisible : ''}`}>
+              <svg viewBox="0 0 140 140">
+                <path
+                  d="M70 20 L75 50 L65 55 L70 70 M55 40 L70 55 L85 45 M60 75 L70 70 L80 80"
+                  stroke="rgba(212, 175, 55, 0.8)"
+                  strokeWidth="2"
+                  fill="none"
+                />
+              </svg>
+            </div>
+
+            {/* Glow through cracks */}
+            <div className={`${styles.geodeGlow} ${tapCount >= 1 ? styles.geodeGlow1 : ''} ${tapCount >= 2 ? styles.geodeGlow2 : ''}`} />
+          </div>
+        )}
+
+        {/* Explosion particles */}
+        {showParticles && (
+          <div className={styles.geodeParticles}>
+            {particles.map((p) => (
+              <div
+                key={p.id}
+                className={`${styles.geodeParticle} ${styles.geodeParticleExplode}`}
+                style={{
+                  '--tx': `${p.tx}px`,
+                  '--ty': `${p.ty}px`,
+                  animationDelay: `${p.delay}s`
+                } as React.CSSProperties}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Revealed crystal */}
+        <div className={`${styles.geodeCrystal} ${isRevealed ? styles.geodeCrystalRevealed : ''}`}>
+          <div className={styles.crystalShape}>
+            <div className={styles.crystalInner} />
+          </div>
+        </div>
+      </div>
+
+      {/* Affirmation message */}
+      <div className={`${styles.geodeMessage} ${isRevealed ? styles.geodeMessageVisible : ''}`}>
+        {isRevealed && (
+          <>
+            <div className={styles.geodeAffirmation}>"{affirmation}"</div>
+            {!hasCheckedIn && <div className={styles.geodePoints}>+25 Alignment Points</div>}
+          </>
+        )}
+      </div>
+
+      {/* Tap hint */}
+      {!isRevealed && !hasCheckedIn && (
+        <div className={styles.geodeTapHint}>
+          Tap {3 - tapCount} more time{3 - tapCount !== 1 ? 's' : ''} to reveal
+        </div>
+      )}
+    </div>
+  );
 };
 
 // Tab Bar Component - matches reference with 5 icons
@@ -778,7 +1060,8 @@ const RhythmScreen: React.FC<{ onComplete: (morning: string, evening: string) =>
 const DashboardScreen: React.FC<{
   user: UserState;
   onNavigate: (screen: Screen) => void;
-}> = ({ user, onNavigate }) => {
+  onGeodeCheckIn?: (affirmation: string, points: number) => void;
+}> = ({ user, onNavigate, onGeodeCheckIn }) => {
   const quickActions = [
     { title: 'Quick Shifts', subtitle: 'Instant reset exercises.', icon: Icons.heart, screen: 'quickshifts' as Screen },
     { title: 'Gratitude Journal', subtitle: 'Capture what you are grateful for.', icon: Icons.journal, screen: 'gratitude' as Screen },
@@ -824,11 +1107,19 @@ const DashboardScreen: React.FC<{
 
       {/* Shift Your State Button */}
       <button
-        className={styles.shiftStateButton}
-        onClick={() => onNavigate('quickshifts')}
+        className={`${styles.shiftStateButton} ${styles.tactileButton}`}
+        onClick={() => {
+          triggerHaptic('medium');
+          onNavigate('quickshifts');
+        }}
       >
         Shift Your State
       </button>
+
+      {/* Daily Geode Check-in */}
+      {onGeodeCheckIn && (
+        <DailyGeode onCheckIn={onGeodeCheckIn} />
+      )}
 
       {/* Alignment Score */}
       <div className={styles.scoreSection}>
@@ -5590,6 +5881,9 @@ const PaywallGate: React.FC<{
 
 // Main App Component
 export default function Home() {
+  // Cinematic splash screen state
+  const [showSplash, setShowSplash] = useState(true);
+
   // Default directly to dashboard - feels like a tool, not a website
   const [currentScreen, setCurrentScreen] = useState<Screen>('dashboard');
   const [user, setUser] = useState<UserState>({
@@ -5769,7 +6063,7 @@ export default function Home() {
       case 'rhythm':
         return <RhythmScreen onComplete={handleRhythmComplete} />;
       case 'dashboard':
-        return <DashboardScreen user={user} onNavigate={navigateToScreen} />;
+        return <DashboardScreen user={user} onNavigate={navigateToScreen} onGeodeCheckIn={handleGeodeCheckIn} />;
       case 'meditations':
         return (
           <MeditationsScreen
@@ -5941,24 +6235,46 @@ export default function Home() {
       case 'energyMode':
         return null; // Handled as overlay
       default:
-        return <DashboardScreen user={user} onNavigate={navigateToScreen} />;
+        return <DashboardScreen user={user} onNavigate={navigateToScreen} onGeodeCheckIn={handleGeodeCheckIn} />;
     }
   };
 
   const showTabBar = ['dashboard', 'meditations', 'journal', 'progress', 'profile'].includes(currentScreen);
 
+  // Handle geode check-in
+  const handleGeodeCheckIn = (affirmation: string, points: number) => {
+    setUser(prev => ({
+      ...prev,
+      alignmentScore: Math.min(100, prev.alignmentScore + 2),
+      streak: prev.streak + 1
+    }));
+    // Save points
+    const currentPoints = parseInt(localStorage.getItem('alignmentPoints') || '0');
+    localStorage.setItem('alignmentPoints', (currentPoints + points).toString());
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.phoneFrame}>
-        {renderScreen()}
-        {showTabBar && <TabBar activeTab={currentScreen} onTabChange={setCurrentScreen} />}
-        {showEnergyMode && (
-          <EnergyModeScreen
-            onClose={() => setShowEnergyMode(false)}
-            onSelect={(mode) => { setShowEnergyMode(false); /* Handle mode selection */ }}
-          />
-        )}
-      </div>
-    </main>
+    <>
+      {/* Atmospheric noise overlay */}
+      <div className={styles.atmosphericOverlay} />
+
+      {/* Cinematic Splash Screen */}
+      {showSplash && (
+        <SplashScreen onComplete={() => setShowSplash(false)} />
+      )}
+
+      <main className={styles.main}>
+        <div className={styles.phoneFrame}>
+          {renderScreen()}
+          {showTabBar && <TabBar activeTab={currentScreen} onTabChange={setCurrentScreen} />}
+          {showEnergyMode && (
+            <EnergyModeScreen
+              onClose={() => setShowEnergyMode(false)}
+              onSelect={(mode) => { setShowEnergyMode(false); /* Handle mode selection */ }}
+            />
+          )}
+        </div>
+      </main>
+    </>
   );
 }
