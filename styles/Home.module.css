@@ -2161,11 +2161,52 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: radial-gradient(
-    ellipse 100% 50% at 50% 0%,
-    rgba(212, 175, 55, 0.08) 0%,
-    transparent 50%
-  );
+  position: relative;
+  overflow: hidden;
+  /* Deep mystical "Midnight Library" / "Cosmic Void" gradient */
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(30, 27, 75, 0.8) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(30, 41, 59, 0.5) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 30% at 20% 80%, rgba(55, 48, 107, 0.3) 0%, transparent 50%),
+    linear-gradient(180deg, #070B14 0%, #0A0F1F 50%, #0D1225 100%);
+}
+
+/* Floating dust motes for sacred space atmosphere */
+.mentorParticles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.dustMote {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.8) 0%, rgba(212, 175, 55, 0) 70%);
+  animation: floatDust linear infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes floatDust {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: var(--particle-opacity, 0.3);
+  }
+  50% {
+    transform: translateY(-30vh) translateX(20px);
+    opacity: var(--particle-opacity, 0.3);
+  }
+  90% {
+    opacity: var(--particle-opacity, 0.3);
+  }
+  100% {
+    transform: translateY(-60vh) translateX(-10px);
+    opacity: 0;
+  }
 }
 
 .mentorHeader {
@@ -2173,19 +2214,23 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+  position: relative;
+  z-index: 10;
+  background: linear-gradient(180deg, rgba(7, 11, 20, 0.9) 0%, transparent 100%);
 }
 
 .mentorHeader button {
   background: none;
   border: none;
-  color: #C6CBDA;
+  color: rgba(212, 175, 55, 0.7);
   cursor: pointer;
   padding: 8px;
+  transition: color 0.2s ease;
 }
 
 .mentorHeader button:hover {
-  color: #FFFFFF;
+  color: #D4AF37;
 }
 
 .mentorTitle {
@@ -2193,31 +2238,49 @@
 }
 
 .mentorTitle h3 {
-  font-size: 17px;
-  font-weight: 600;
-  color: #FFFFFF;
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: #D4AF37;
+  letter-spacing: 0.05em;
 }
 
 .mentorTitle p {
+  font-family: 'Manrope', sans-serif;
   font-size: 12px;
-  color: #9BA3C3;
-  margin-top: 2px;
+  color: rgba(212, 175, 55, 0.6);
+  margin-top: 4px;
+  letter-spacing: 0.02em;
 }
 
 .messagesContainer {
   flex: 1;
   padding: 24px 20px;
+  padding-bottom: 100px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
+  position: relative;
+  z-index: 5;
 }
 
 .message {
   display: flex;
   gap: 12px;
-  max-width: 88%;
-  animation: fadeIn 0.3s ease-out;
+  max-width: 85%;
+  animation: messageSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes messageSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .messageUser {
@@ -2230,44 +2293,64 @@
 }
 
 .mentorAvatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.2));
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
+  border: 1px solid rgba(212, 175, 55, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
 }
 
 .mentorAvatar svg {
   width: 20px;
   height: 20px;
   color: #D4AF37;
+  filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.5));
 }
 
 .messageBubble {
   padding: 16px 20px;
-  border-radius: 24px;
+  border-radius: 20px;
   font-size: 15px;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
+/* Mentor messages: Elegant serif font with gold border/glow */
 .messageMentor .messageBubble {
-  background: rgba(255, 255, 255, 0.08);
-  color: #FFFFFF;
-  border-bottom-left-radius: 8px;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-style: italic;
+  background: rgba(30, 27, 75, 0.4);
+  color: #F0E6D3;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-bottom-left-radius: 6px;
+  box-shadow:
+    0 0 20px rgba(212, 175, 55, 0.08),
+    inset 0 1px 0 rgba(212, 175, 55, 0.1);
+  letter-spacing: 0.01em;
 }
 
+/* User messages: Clean sans-serif with semi-transparent white */
 .messageUser .messageBubble {
-  background: linear-gradient(135deg, #D4AF37, #E9BB51);
-  color: #0F172A;
-  border-bottom-right-radius: 8px;
+  font-family: 'Manrope', sans-serif;
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom-right-radius: 6px;
+  backdrop-filter: blur(10px);
 }
 
 .inputContainer {
-  padding: 16px 20px 28px;
-  background: linear-gradient(180deg, transparent, rgba(5, 7, 22, 0.8));
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px 32px;
+  background: linear-gradient(180deg, transparent 0%, rgba(7, 11, 20, 0.95) 40%);
+  z-index: 20;
 }
 
 .inputCard {
@@ -2277,36 +2360,69 @@
   padding: 8px 12px 8px 20px;
 }
 
+.mentorInputCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 8px 6px 20px;
+  background: rgba(30, 27, 75, 0.5);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 28px;
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 4px 30px rgba(0, 0, 0, 0.3),
+    0 0 40px rgba(212, 175, 55, 0.05);
+}
+
 .chatInput {
   flex: 1;
   background: none;
   border: none;
   color: #FFFFFF;
+  font-family: 'Manrope', sans-serif;
   font-size: 15px;
   outline: none;
+  padding: 8px 0;
 }
 
 .chatInput::placeholder {
-  color: #9BA3C3;
+  color: rgba(212, 175, 55, 0.5);
+  font-style: italic;
 }
 
 .sendButton {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.08);
-  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #9BA3C3;
+  color: rgba(212, 175, 55, 0.5);
+  transition: all 0.3s ease;
+}
+
+.sendButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .sendButtonActive {
-  background: linear-gradient(135deg, #D4AF37, #E9BB51);
+  background: linear-gradient(135deg, #D4AF37, #B8962E);
+  border-color: #D4AF37;
   color: #0F172A;
-  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.35);
+  box-shadow:
+    0 4px 20px rgba(212, 175, 55, 0.4),
+    0 0 40px rgba(212, 175, 55, 0.2);
+}
+
+.sendButtonActive:hover {
+  transform: scale(1.05);
+  box-shadow:
+    0 6px 25px rgba(212, 175, 55, 0.5),
+    0 0 50px rgba(212, 175, 55, 0.3);
 }
 
 /* ==== Player Screen ==== */
@@ -3957,28 +4073,47 @@
 .typingIndicator {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   padding: 16px 20px;
-  min-width: 60px;
+  min-width: 100px;
+}
+
+.tuningText {
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: rgba(212, 175, 55, 0.8);
+  margin-right: 4px;
+  animation: tuningPulse 2s ease-in-out infinite;
+}
+
+@keyframes tuningPulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .typingDot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
+  background: #D4AF37;
   animation: typingBounce 1.4s ease-in-out infinite;
-}
-
-.typingDot:nth-child(1) {
-  animation-delay: 0s;
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
 }
 
 .typingDot:nth-child(2) {
-  animation-delay: 0.2s;
+  animation-delay: 0s;
 }
 
 .typingDot:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.typingDot:nth-child(4) {
   animation-delay: 0.4s;
 }
 
@@ -3988,7 +4123,7 @@
     opacity: 0.5;
   }
   30% {
-    transform: translateY(-6px);
+    transform: translateY(-8px);
     opacity: 1;
   }
 }

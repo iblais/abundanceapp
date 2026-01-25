@@ -287,6 +287,12 @@ const Icons = {
       <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
     </svg>
   ),
+  mentorChat: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      <path d="M12 7l1.2 3.7h3.8l-3 2.3 1.15 3.5L12 14.2l-3.15 2.3 1.15-3.5-3-2.3h3.8z" fill="currentColor" strokeWidth="0"/>
+    </svg>
+  ),
   meditation: (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="8" r="3" />
@@ -764,7 +770,7 @@ const DashboardScreen: React.FC<{
   const quickActions = [
     { title: 'Quick Shifts', subtitle: 'Instant reset exercises.', icon: Icons.heart, screen: 'quickshifts' as Screen },
     { title: 'Gratitude Journal', subtitle: 'Capture what you are grateful for.', icon: Icons.journal, screen: 'gratitude' as Screen },
-    { title: 'Inner Mentor', subtitle: 'Chat with your higher self.', icon: Icons.chat, screen: 'mentor' as Screen },
+    { title: 'Inner Mentor', subtitle: 'Consult your higher wisdom.', icon: Icons.mentorChat, screen: 'mentor' as Screen },
     { title: 'Reality Shift Board', subtitle: 'Visualize your new identity.', icon: Icons.grid, screen: 'board' as Screen },
     { title: 'Learn & Grow', subtitle: 'Articles for transformation.', icon: Icons.book, screen: 'learn' as Screen },
     { title: 'Meditations', subtitle: 'Guided sessions for every mood.', icon: Icons.headphones, screen: 'meditations' as Screen },
@@ -1366,12 +1372,41 @@ const ProgressScreen: React.FC<{ user: UserState }> = ({ user }) => {
 // Inner Mentor Chat Screen - AI-powered guidance with Firestore persistence
 const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [messages, setMessages] = useState<Array<{ id: number; role: string; content: string }>>([
-    { id: 1, role: 'mentor', content: "Welcome. I am the voice of your higher self. What clarity are you seeking today?" },
+    { id: 1, role: 'mentor', content: "I am here. What is on your mind, Creator?" },
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
+
+  // Floating particles for mystical atmosphere
+  const [dustParticles] = useState(() =>
+    Array.from({ length: 30 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: 2 + Math.random() * 3,
+      duration: 15 + Math.random() * 20,
+      delay: Math.random() * 10,
+      opacity: 0.2 + Math.random() * 0.3,
+    }))
+  );
+
+  // Wisdom snippets for simulated responses
+  const wisdomSnippets = [
+    "The answer you seek is already vibrating within your heart's frequency.",
+    "Abundance is not something you acquire. It is something you tune into.",
+    "What would your most courageous self do in this situation?",
+    "Trust the timing of your life. The universe is orchestrating a masterpiece.",
+    "Your thoughts are seeds. What garden are you planting today?",
+    "The resistance you feel is the doorway to your next expansion.",
+    "You are not broken. You are breaking open to receive more light.",
+    "Every ending is a beginning wearing a different costume.",
+    "The universe doesn't give you what you ask for. It gives you what you vibrate.",
+    "Your future self is already celebrating this moment of awakening.",
+    "Surrender is not giving up. It is opening up to infinite possibilities.",
+    "The wound is where the light enters. Honor your tender places.",
+  ];
 
   // Initialize user ID and load chat history
   useEffect(() => {
@@ -1402,6 +1437,11 @@ const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Get random wisdom snippet
+  const getWisdomSnippet = () => {
+    return wisdomSnippets[Math.floor(Math.random() * wisdomSnippets.length)];
+  };
+
   const sendMessage = async () => {
     if (!input.trim()) return;
 
@@ -1412,6 +1452,9 @@ const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     setMessages(prev => [...prev, { id: userMsgId, role: 'user', content: userMessage }]);
     setInput('');
     setIsTyping(true);
+
+    // Haptic feedback
+    if (navigator.vibrate) navigator.vibrate(30);
 
     // Save user message to Firestore
     if (userId) {
@@ -1427,10 +1470,14 @@ const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
       const { response, error } = await aiMentorService.getResponse(userMessage, conversationHistory);
 
+      // Add slight delay for contemplative feel (min 2 seconds)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
       setIsTyping(false);
 
       const mentorMsgId = Date.now();
-      const mentorResponse = error ? "I'm here with you. Take a deep breath. What does your heart want to explore?" : response;
+      // Use wisdom snippet if AI fails, otherwise use AI response
+      const mentorResponse = error ? getWisdomSnippet() : response;
 
       // Add mentor response to UI
       setMessages(prev => [...prev, {
@@ -1445,24 +1492,46 @@ const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       }
     } catch (error) {
       console.error('Error getting AI response:', error);
+
+      // Add delay before fallback response
+      await new Promise(resolve => setTimeout(resolve, 2500));
       setIsTyping(false);
 
-      // Fallback response on error
+      // Fallback with wisdom snippet
       setMessages(prev => [...prev, {
         id: Date.now(),
         role: 'mentor',
-        content: "I sense your energy seeking clarity. What truth is waiting to be acknowledged?",
+        content: getWisdomSnippet(),
       }]);
     }
   };
 
   return (
     <div className={styles.mentorScreen}>
+      {/* Floating dust particles for mystical atmosphere */}
+      <div className={styles.mentorParticles}>
+        {dustParticles.map((particle) => (
+          <div
+            key={particle.id}
+            className={styles.dustMote}
+            style={{
+              left: `${particle.x}%`,
+              top: `${particle.y}%`,
+              width: particle.size,
+              height: particle.size,
+              opacity: particle.opacity,
+              animationDuration: `${particle.duration}s`,
+              animationDelay: `${particle.delay}s`,
+            }}
+          />
+        ))}
+      </div>
+
       <header className={styles.mentorHeader}>
-        <button onClick={onClose}>{Icons.close}</button>
+        <button onClick={onClose} aria-label="Close">{Icons.close}</button>
         <div className={styles.mentorTitle}>
           <h3>Inner Mentor</h3>
-          <p>The voice of your higher self</p>
+          <p>Consult your higher wisdom</p>
         </div>
         <div style={{ width: 24 }} />
       </header>
@@ -1474,7 +1543,11 @@ const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             className={`${styles.message} ${message.role === 'user' ? styles.messageUser : styles.messageMentor}`}
           >
             {message.role === 'mentor' && (
-              <div className={styles.mentorAvatar}>{Icons.sparkle}</div>
+              <div className={styles.mentorAvatar}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2L14.09 8.26L20 9.27L15.55 13.97L16.91 20L12 16.9L7.09 20L8.45 13.97L4 9.27L9.91 8.26L12 2Z" fill="currentColor"/>
+                </svg>
+              </div>
             )}
             <div className={styles.messageBubble}>
               {message.content}
@@ -1483,8 +1556,13 @@ const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         ))}
         {isTyping && (
           <div className={`${styles.message} ${styles.messageMentor}`}>
-            <div className={styles.mentorAvatar}>{Icons.sparkle}</div>
+            <div className={styles.mentorAvatar}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L14.09 8.26L20 9.27L15.55 13.97L16.91 20L12 16.9L7.09 20L8.45 13.97L4 9.27L9.91 8.26L12 2Z" fill="currentColor"/>
+              </svg>
+            </div>
             <div className={`${styles.messageBubble} ${styles.typingIndicator}`}>
+              <span className={styles.tuningText}>Tuning in</span>
               <span className={styles.typingDot} />
               <span className={styles.typingDot} />
               <span className={styles.typingDot} />
@@ -1495,10 +1573,10 @@ const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       </div>
 
       <div className={styles.inputContainer}>
-        <GlassCard className={styles.inputCard}>
+        <div className={styles.mentorInputCard}>
           <input
             type="text"
-            placeholder="Share your thoughts..."
+            placeholder="Ask your Inner Mentor..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
@@ -1508,10 +1586,14 @@ const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             className={`${styles.sendButton} ${input.trim() ? styles.sendButtonActive : ''}`}
             onClick={sendMessage}
             disabled={isTyping}
+            aria-label="Send message"
           >
-            {Icons.send}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor" opacity="0.3"/>
+              <path d="M22 2L2 11L11 13L13 22L22 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </button>
-        </GlassCard>
+        </div>
       </div>
     </div>
   );
