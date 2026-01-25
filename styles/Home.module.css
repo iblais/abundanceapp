@@ -2709,6 +2709,320 @@
   background: rgba(180, 160, 220, 0.4);
 }
 
+/* Identity Statement Section */
+.identitySection {
+  width: 100%;
+  max-width: 360px;
+  padding: 20px;
+  background: rgba(212, 175, 55, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.identitySectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.identitySectionHeader h3 {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #D4AF37;
+  letter-spacing: 0.05em;
+}
+
+.editButton {
+  padding: 6px 14px;
+  background: rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 20px;
+  color: #D4AF37;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editButton:hover {
+  background: rgba(212, 175, 55, 0.25);
+}
+
+.statementDisplay {
+  text-align: center;
+}
+
+.statementQuote {
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  font-size: 16px;
+  color: #F0E6D3;
+  line-height: 1.6;
+}
+
+.statementEditor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.statementTextarea {
+  width: 100%;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 12px;
+  color: #FFFFFF;
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.5;
+  resize: none;
+}
+
+.statementTextarea:focus {
+  outline: none;
+  border-color: rgba(212, 175, 55, 0.5);
+}
+
+.statementActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.cancelButton {
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #9BA3C3;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.saveButton {
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #D4AF37, #B8962E);
+  border: none;
+  border-radius: 8px;
+  color: #0F172A;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.saveButton:hover {
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4);
+}
+
+/* Enhanced Stats Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.statNumber {
+  font-size: 28px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 4px;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: #9BA3C3;
+  margin-bottom: 4px;
+}
+
+.statIcon {
+  font-size: 16px;
+}
+
+.alignmentRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.alignmentLabel {
+  font-size: 14px;
+  color: #9BA3C3;
+}
+
+.alignmentValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: #D4AF37;
+}
+
+/* Quick Settings Section */
+.quickSettingsSection {
+  width: 100%;
+  max-width: 360px;
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.settingToggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.settingInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.settingIcon {
+  font-size: 20px;
+}
+
+.settingName {
+  display: block;
+  font-size: 15px;
+  font-weight: 500;
+  color: #FFFFFF;
+  margin-bottom: 2px;
+}
+
+.settingDesc {
+  display: block;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.toggleSwitch {
+  width: 52px;
+  height: 28px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.toggleSwitchOn {
+  background: #D4AF37;
+}
+
+.toggleKnob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  transition: transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggleSwitchOn .toggleKnob {
+  transform: translateX(24px);
+}
+
+/* Data Management Section */
+.dataManagementSection {
+  width: 100%;
+  max-width: 360px;
+  margin-bottom: 40px;
+}
+
+.clearDataButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 12px;
+  color: #EF4444;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clearDataButton:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.clearConfirmBox {
+  padding: 20px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 12px;
+}
+
+.clearConfirmBox p {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.clearConfirmActions {
+  display: flex;
+  gap: 10px;
+}
+
+.confirmDeleteButton {
+  flex: 1;
+  padding: 12px;
+  background: #EF4444;
+  border: none;
+  border-radius: 8px;
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirmDeleteButton:hover {
+  background: #DC2626;
+}
+
 /* Legacy profile styles for backwards compat */
 .email {
   font-size: 14px;
