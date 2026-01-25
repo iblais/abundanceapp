@@ -226,6 +226,13 @@ const Icons = {
       <polyline points="20 6 9 17 4 12" />
     </svg>
   ),
+  warning: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+      <line x1="12" y1="9" x2="12" y2="13" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
+    </svg>
+  ),
   back: (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M15 19l-7-7 7-7" />
@@ -909,7 +916,7 @@ const categoryGradients: Record<string, string> = {
 
 // Meditations Library Screen - Enhanced with search and category grid
 const MeditationsScreen: React.FC<{
-  onPlay: () => void;
+  onPlay: (session: AudioSession) => void;
   isPremium?: boolean;
   onUpgrade?: () => void;
 }> = ({ onPlay, isPremium = false, onUpgrade }) => {
@@ -949,7 +956,24 @@ const MeditationsScreen: React.FC<{
 
   const handleMeditationClick = (meditation: typeof allMeditations[0]) => {
     if (meditation.isFree || isPremium) {
-      onPlay();
+      // Find matching audio session
+      const audioSession = getMeditationAudioSession(meditation.title);
+      if (audioSession) {
+        onPlay(audioSession);
+      } else {
+        // Create a temporary session if no audio mapping exists
+        const tempSession: AudioSession = {
+          id: meditation.title.toLowerCase().replace(/\s+/g, '-'),
+          title: meditation.title,
+          description: meditation.description,
+          duration: meditation.duration * 60,
+          category: 'meditation',
+          audioUrl: `/audio/meditations/${meditation.title.toLowerCase().replace(/\s+/g, '-')}.mp3`,
+          thumbnailGradient: categoryGradients[meditation.category] || 'linear-gradient(135deg, #D4AF37 0%, #8B6914 100%)',
+          isFree: meditation.isFree
+        };
+        onPlay(tempSession);
+      }
     } else {
       setSelectedMeditation(meditation.title);
       setShowPaywall(true);
@@ -1605,32 +1629,88 @@ const MentorScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 };
 
 // Player Screen - matches reference with outlined play button
-const PlayerScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [selectedDuration, setSelectedDuration] = useState(5);
+// Meditation Player Props
+interface MeditationPlayerProps {
+  session: AudioSession | null;
+  onClose: () => void;
+  onComplete?: () => void;
+}
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isPlaying && progress < 100) {
-      interval = setInterval(() => {
-        setProgress(p => Math.min(p + 0.5, 100));
-      }, (selectedDuration * 60 * 1000) / 200);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying, selectedDuration, progress]);
-
-  const formatTime = (percent: number) => {
-    const totalSeconds = (selectedDuration * 60 * percent) / 100;
-    const mins = Math.floor(totalSeconds / 60);
-    const secs = Math.floor(totalSeconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+const PlayerScreen: React.FC<MeditationPlayerProps> = ({ session, onClose, onComplete }) => {
+  // Use default session if none provided (backwards compatibility)
+  const activeSession = session || getAudioSession('morning-visioneering') || {
+    id: 'default',
+    title: 'Morning Visioneering',
+    description: 'Start your day by connecting with your highest potential.',
+    duration: 720,
+    category: 'meditation' as const,
+    audioUrl: '/audio/meditations/morning-visioneering.mp3',
+    thumbnailGradient: 'linear-gradient(135deg, #D4AF37 0%, #8B6914 100%)',
+    instructor: 'Sarah Chen',
+    isFree: false
   };
+
+  const {
+    audioRef,
+    isPlaying,
+    isLoading,
+    error,
+    currentTime,
+    duration: audioDuration,
+    progress,
+    isBuffering,
+    toggle,
+    seekByPercent,
+    reset
+  } = useAudio(activeSession.audioUrl);
+
+  // Use audio duration if available, otherwise use session duration
+  const totalDuration = audioDuration > 0 ? audioDuration : activeSession.duration;
+
+  // Handle seek via progress bar click
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percent = (x / rect.width) * 100;
+    seekByPercent(percent);
+  };
+
+  // Handle completion
+  useEffect(() => {
+    if (progress >= 100 && totalDuration > 0) {
+      // Track session completion
+      const completedSessions = parseInt(localStorage.getItem('completedSessions') || '0');
+      localStorage.setItem('completedSessions', (completedSessions + 1).toString());
+
+      // Award alignment points
+      const currentPoints = parseInt(localStorage.getItem('alignmentPoints') || '0');
+      const pointsEarned = Math.floor(totalDuration / 60) * 10; // 10 points per minute
+      localStorage.setItem('alignmentPoints', (currentPoints + pointsEarned).toString());
+
+      // Haptic feedback
+      if (navigator.vibrate) {
+        navigator.vibrate([100, 50, 100]);
+      }
+
+      if (onComplete) {
+        onComplete();
+      }
+    }
+  }, [progress, totalDuration, onComplete]);
+
+  // Parse title for multi-line display
+  const titleParts = activeSession.title.split(' ');
+  const titleDisplay = titleParts.length > 1
+    ? `${titleParts.slice(0, Math.ceil(titleParts.length / 2)).join(' ')}\n${titleParts.slice(Math.ceil(titleParts.length / 2)).join(' ')}`
+    : activeSession.title;
 
   return (
     <div className={styles.playerScreen}>
-      {/* Aurora wave background */}
-      <div className={styles.playerWaveBackground}>
+      {/* Hidden audio element */}
+      <audio ref={audioRef} preload="metadata" />
+
+      {/* Aurora wave background with session gradient */}
+      <div className={styles.playerWaveBackground} style={{ background: activeSession.thumbnailGradient }}>
         <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" className={styles.auroraWave}>
           <defs>
             <linearGradient id="aurora1" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -1651,35 +1731,63 @@ const PlayerScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       <button className={styles.closeButton} onClick={onClose}>{Icons.close}</button>
 
       <div className={styles.playerContent}>
-        <h2 className={styles.playerTitle}>Morning<br />Visioneering</h2>
+        {/* Category badge */}
+        <span className={styles.playerCategory}>
+          {activeSession.category === 'meditation' ? 'Guided Meditation' : 'Quick Shift'}
+        </span>
 
-        {/* Outlined play button */}
+        <h2 className={styles.playerTitle}>
+          {titleDisplay.split('\n').map((line, i) => (
+            <span key={i}>{line}{i === 0 && titleDisplay.includes('\n') ? <br /> : null}</span>
+          ))}
+        </h2>
+
+        {activeSession.instructor && (
+          <p className={styles.playerInstructor}>with {activeSession.instructor}</p>
+        )}
+
+        {/* Error message */}
+        {error && (
+          <div className={styles.playerError}>
+            <span>{Icons.warning}</span>
+            <span>{error}</span>
+          </div>
+        )}
+
+        {/* Outlined play button with loading state */}
         <button
-          className={styles.playButtonOutlined}
-          onClick={() => setIsPlaying(!isPlaying)}
+          className={`${styles.playButtonOutlined} ${isLoading || isBuffering ? styles.playButtonLoading : ''}`}
+          onClick={toggle}
+          disabled={isLoading}
         >
-          {isPlaying ? Icons.pause : Icons.playOutline}
+          {isLoading || isBuffering ? (
+            <div className={styles.audioSpinner} />
+          ) : isPlaying ? (
+            Icons.pause
+          ) : (
+            Icons.playOutline
+          )}
         </button>
 
-        {/* Progress bar */}
-        <div className={styles.progressBar}>
+        {/* Time display */}
+        <div className={styles.playerTimeDisplay}>
+          <span>{formatAudioTime(currentTime)}</span>
+          <span>{formatAudioTime(totalDuration)}</span>
+        </div>
+
+        {/* Progress bar - clickable for seeking */}
+        <div className={styles.progressBar} onClick={handleProgressClick}>
           <div className={styles.progressTrack}>
             <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+            <div
+              className={styles.progressKnob}
+              style={{ left: `${progress}%` }}
+            />
           </div>
         </div>
 
-        {/* Duration selector */}
-        <div className={styles.durationSelector}>
-          {[5, 8, 12].map((dur) => (
-            <button
-              key={dur}
-              className={`${styles.durationPill} ${selectedDuration === dur ? styles.durationPillActive : ''}`}
-              onClick={() => !isPlaying && setSelectedDuration(dur)}
-            >
-              {dur} min
-            </button>
-          ))}
-        </div>
+        {/* Session description */}
+        <p className={styles.playerDescription}>{activeSession.description}</p>
       </div>
     </div>
   );
@@ -2919,10 +3027,14 @@ const GratitudeJournalScreen: React.FC<{ onClose: () => void }> = ({ onClose }) 
 };
 
 // Quick Shift Tools Screen
-const QuickShiftToolsScreen: React.FC<{ onClose: () => void; onBreathing: () => void }> = ({ onClose, onBreathing }) => {
+const QuickShiftToolsScreen: React.FC<{
+  onClose: () => void;
+  onBreathing: () => void;
+  onPlayQuickShift?: (session: AudioSession) => void;
+}> = ({ onClose, onBreathing, onPlayQuickShift }) => {
   const tools = [
     {
-      id: 'breathing',
+      id: 'coherent-breathing',
       title: 'Coherent Breathing',
       description: 'A 3-minute guided breathing exercise to reset your nervous system.',
       duration: '3 min',
@@ -2934,9 +3046,10 @@ const QuickShiftToolsScreen: React.FC<{ onClose: () => void; onBreathing: () => 
         </svg>
       ),
       action: onBreathing,
+      hasAudio: false, // Uses visual-only breathing exercise
     },
     {
-      id: 'bodyscan',
+      id: 'body-scan',
       title: 'Body Scan',
       description: 'A 5-minute guided audio practice to release tension.',
       duration: '5 min',
@@ -2946,19 +3059,67 @@ const QuickShiftToolsScreen: React.FC<{ onClose: () => void; onBreathing: () => 
           <path d="M12 8v4m-4 8l2-6h4l2 6m-8-4h8" />
         </svg>
       ),
-      action: () => alert('Body Scan audio would play here'),
+      action: () => {
+        const session = getAudioSession('body-scan');
+        if (session && onPlayQuickShift) {
+          onPlayQuickShift(session);
+        }
+      },
+      hasAudio: true,
     },
     {
-      id: 'affirmation',
+      id: 'affirmation-repetition',
       title: 'Affirmation Repetition',
-      description: 'A 2-minute practice where you repeat a chosen affirmation.',
+      description: 'A 2-minute practice where you repeat powerful affirmations.',
       duration: '2 min',
       icon: (
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74L12 2z" />
         </svg>
       ),
-      action: () => alert('Affirmation audio would play here'),
+      action: () => {
+        const session = getAudioSession('affirmation-repetition');
+        if (session && onPlayQuickShift) {
+          onPlayQuickShift(session);
+        }
+      },
+      hasAudio: true,
+    },
+    {
+      id: 'energy-boost',
+      title: 'Energy Boost',
+      description: 'A quick energizing practice to elevate your state.',
+      duration: '3 min',
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+        </svg>
+      ),
+      action: () => {
+        const session = getAudioSession('energy-boost');
+        if (session && onPlayQuickShift) {
+          onPlayQuickShift(session);
+        }
+      },
+      hasAudio: true,
+    },
+    {
+      id: 'stress-release',
+      title: 'Stress Release',
+      description: 'Let go of tension in just a few minutes.',
+      duration: '4 min',
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+      ),
+      action: () => {
+        const session = getAudioSession('stress-release');
+        if (session && onPlayQuickShift) {
+          onPlayQuickShift(session);
+        }
+      },
+      hasAudio: true,
     },
   ];
 
@@ -2981,7 +3142,14 @@ const QuickShiftToolsScreen: React.FC<{ onClose: () => void; onBreathing: () => 
               {tool.icon}
             </div>
             <div className={styles.quickShiftInfo}>
-              <h4>{tool.title}</h4>
+              <div className={styles.quickShiftTitleRow}>
+                <h4>{tool.title}</h4>
+                {tool.hasAudio && (
+                  <span className={styles.audioIndicator}>
+                    {Icons.headphones}
+                  </span>
+                )}
+              </div>
               <p>{tool.description}</p>
               <span className={styles.quickShiftDuration}>{tool.duration}</span>
             </div>
@@ -2996,23 +3164,70 @@ const QuickShiftToolsScreen: React.FC<{ onClose: () => void; onBreathing: () => 
 // Breathing Exercise Screen (Coherent Breathing)
 const BreathingExerciseScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [isActive, setIsActive] = useState(false);
-  const [phase, setPhase] = useState<'inhale' | 'exhale'>('inhale');
+  const [phase, setPhase] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
+  const [phaseProgress, setPhaseProgress] = useState(0);
   const [timeLeft, setTimeLeft] = useState(180); // 3 minutes in seconds
+  const [cycleCount, setCycleCount] = useState(0);
+  const [useAudioCues, setUseAudioCues] = useState(false);
+
+  // Audio for breathing cues (optional)
+  const audioSession = getAudioSession('coherent-breathing');
+  const {
+    audioRef,
+    isPlaying: isAudioPlaying,
+    toggle: toggleAudio,
+    reset: resetAudio
+  } = useAudio(useAudioCues && audioSession ? audioSession.audioUrl : null);
+
+  // Breathing phase timing (in ms)
+  const INHALE_DURATION = 6000; // 6 seconds
+  const EXHALE_DURATION = 6000; // 6 seconds
+  const CYCLE_DURATION = INHALE_DURATION + EXHALE_DURATION;
 
   useEffect(() => {
     let countdownInterval: NodeJS.Timeout;
-    let phaseInterval: NodeJS.Timeout;
+    let progressInterval: NodeJS.Timeout;
+    let cycleStartTime: number;
 
     if (isActive && timeLeft > 0) {
-      // Phase text updates: toggle every 6 seconds to match CSS animation
-      phaseInterval = setInterval(() => {
-        setPhase((p) => (p === 'inhale' ? 'exhale' : 'inhale'));
-      }, 6000);
+      cycleStartTime = Date.now();
+
+      // Update phase progress every 50ms for smooth animation
+      progressInterval = setInterval(() => {
+        const elapsed = (Date.now() - cycleStartTime) % CYCLE_DURATION;
+        const cycleProgress = (elapsed / CYCLE_DURATION) * 100;
+
+        if (elapsed < INHALE_DURATION) {
+          setPhase('inhale');
+          setPhaseProgress((elapsed / INHALE_DURATION) * 100);
+        } else {
+          setPhase('exhale');
+          setPhaseProgress(((elapsed - INHALE_DURATION) / EXHALE_DURATION) * 100);
+        }
+
+        // Count cycles
+        const totalElapsed = 180 - timeLeft;
+        const newCycleCount = Math.floor((totalElapsed * 1000) / CYCLE_DURATION);
+        if (newCycleCount !== cycleCount) {
+          setCycleCount(newCycleCount);
+          // Haptic feedback on cycle completion
+          if (navigator.vibrate) {
+            navigator.vibrate(30);
+          }
+        }
+      }, 50);
 
       countdownInterval = setInterval(() => {
         setTimeLeft((t) => {
           if (t <= 1) {
             setIsActive(false);
+            // Session complete - award points
+            const currentPoints = parseInt(localStorage.getItem('alignmentPoints') || '0');
+            localStorage.setItem('alignmentPoints', (currentPoints + 30).toString());
+            // Haptic celebration
+            if (navigator.vibrate) {
+              navigator.vibrate([100, 50, 100, 50, 100]);
+            }
             return 0;
           }
           return t - 1;
@@ -3022,17 +3237,32 @@ const BreathingExerciseScreen: React.FC<{ onClose: () => void }> = ({ onClose })
 
     return () => {
       clearInterval(countdownInterval);
-      clearInterval(phaseInterval);
+      clearInterval(progressInterval);
     };
-  }, [isActive, timeLeft]);
+  }, [isActive, timeLeft, cycleCount]);
 
-  // Reset phase when starting
+  // Sync audio with exercise
+  useEffect(() => {
+    if (useAudioCues && audioSession) {
+      if (isActive && !isAudioPlaying) {
+        toggleAudio();
+      } else if (!isActive && isAudioPlaying) {
+        toggleAudio();
+      }
+    }
+  }, [isActive, useAudioCues, audioSession, isAudioPlaying, toggleAudio]);
+
   const handleStartPause = () => {
     if (!isActive) {
-      setPhase('inhale'); // Always start with inhale
+      setPhase('inhale');
+      setPhaseProgress(0);
     }
     if (timeLeft === 0) {
       setTimeLeft(180);
+      setCycleCount(0);
+      if (useAudioCues) {
+        resetAudio();
+      }
     }
     setIsActive(!isActive);
   };
@@ -3043,24 +3273,62 @@ const BreathingExerciseScreen: React.FC<{ onClose: () => void }> = ({ onClose })
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // Calculate circle scale based on phase
+  const getCircleScale = () => {
+    if (!isActive) return 1;
+    if (phase === 'inhale') {
+      return 1 + (phaseProgress / 100) * 0.5; // Scale from 1 to 1.5
+    } else {
+      return 1.5 - (phaseProgress / 100) * 0.5; // Scale from 1.5 to 1
+    }
+  };
+
   return (
     <div className={styles.breathingScreen}>
+      {/* Hidden audio element for audio cues */}
+      <audio ref={audioRef} />
+
       <button className={styles.closeButton} onClick={onClose}>{Icons.close}</button>
 
       <div className={styles.breathingContent}>
         <h2 className={styles.breathingTitle}>Coherent Breathing</h2>
         <p className={styles.breathingSubtitle}>6 seconds inhale, 6 seconds exhale</p>
 
+        {/* Cycle counter */}
+        {isActive && (
+          <div className={styles.breathingCycleCount}>
+            Cycle {cycleCount + 1} of 15
+          </div>
+        )}
+
         <div className={styles.breathingCircleContainer}>
           <div
             className={`${styles.breathingCircle} ${isActive ? styles.breathingCircleActive : ''}`}
+            style={{
+              transform: `scale(${getCircleScale()})`,
+              transition: 'transform 0.05s linear'
+            }}
           />
           <div className={styles.breathingPhase}>
             {isActive ? (phase === 'inhale' ? 'Breathe In' : 'Breathe Out') : 'Ready'}
           </div>
+          {isActive && (
+            <div className={styles.breathingPhaseTimer}>
+              {Math.ceil((phase === 'inhale' ? INHALE_DURATION : EXHALE_DURATION) * (1 - phaseProgress / 100) / 1000)}s
+            </div>
+          )}
         </div>
 
         <div className={styles.breathingTimer}>{formatTime(timeLeft)}</div>
+
+        {/* Audio toggle */}
+        <button
+          className={`${styles.audioToggleButton} ${useAudioCues ? styles.audioToggleActive : ''}`}
+          onClick={() => setUseAudioCues(!useAudioCues)}
+        >
+          {Icons.headphones}
+          <span>{useAudioCues ? 'Audio On' : 'Audio Off'}</span>
+        </button>
 
         <Button
           onClick={handleStartPause}
@@ -3068,6 +3336,13 @@ const BreathingExerciseScreen: React.FC<{ onClose: () => void }> = ({ onClose })
         >
           {isActive ? 'Pause' : (timeLeft === 0 ? 'Restart' : 'Start')}
         </Button>
+
+        {timeLeft === 0 && (
+          <div className={styles.breathingComplete}>
+            <span className={styles.breathingCompleteIcon}>{Icons.check}</span>
+            <span>Session Complete! +30 points</span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -3371,6 +3646,387 @@ Tomorrow morning, before the world rushes in, take those 20 minutes. Program you
 Your abundant day—and life—begins with your abundant morning.`
   }
 ];
+
+// ============================================
+// AUDIO CONTENT INTEGRATION
+// ============================================
+
+// Audio Session Interface
+interface AudioSession {
+  id: string;
+  title: string;
+  description: string;
+  duration: number; // in seconds
+  category: 'meditation' | 'quickshift' | 'soundscape' | 'affirmation';
+  audioUrl: string;
+  thumbnailGradient: string;
+  instructor?: string;
+  isFree: boolean;
+}
+
+// Audio Sessions Library - URLs point to public audio files
+// For production, replace with CDN URLs or public/audio folder paths
+const audioSessionsLibrary: AudioSession[] = [
+  // Meditations
+  {
+    id: 'morning-visioneering',
+    title: 'Morning Visioneering',
+    description: 'Start your day by connecting with your highest potential.',
+    duration: 720, // 12 min
+    category: 'meditation',
+    audioUrl: '/audio/meditations/morning-visioneering.mp3',
+    thumbnailGradient: 'linear-gradient(135deg, #D4AF37 0%, #8B6914 100%)',
+    instructor: 'Sarah Chen',
+    isFree: false
+  },
+  {
+    id: 'mindful-breathing',
+    title: 'Mindful Breathing',
+    description: 'A simple breathing practice to center your mind.',
+    duration: 300, // 5 min
+    category: 'meditation',
+    audioUrl: '/audio/meditations/mindful-breathing.mp3',
+    thumbnailGradient: 'linear-gradient(135deg, #10B981 0%, #065F46 100%)',
+    instructor: 'Sarah Chen',
+    isFree: true
+  },
+  {
+    id: 'gratitude-expansion',
+    title: 'Gratitude Expansion',
+    description: 'Cultivate appreciation that attracts more abundance.',
+    duration: 600, // 10 min
+    category: 'meditation',
+    audioUrl: '/audio/meditations/gratitude-expansion.mp3',
+    thumbnailGradient: 'linear-gradient(135deg, #F59E0B 0%, #B45309 100%)',
+    instructor: 'Michael Rivers',
+    isFree: false
+  },
+  {
+    id: 'confidence-activation',
+    title: 'Confidence Activation',
+    description: 'Awaken your inner certainty and calm assurance.',
+    duration: 900, // 15 min
+    category: 'meditation',
+    audioUrl: '/audio/meditations/confidence-activation.mp3',
+    thumbnailGradient: 'linear-gradient(135deg, #8B5CF6 0%, #5B21B6 100%)',
+    instructor: 'Sarah Chen',
+    isFree: false
+  },
+  {
+    id: 'first-steps',
+    title: 'First Steps',
+    description: 'A gentle introduction to meditation practice.',
+    duration: 420, // 7 min
+    category: 'meditation',
+    audioUrl: '/audio/meditations/first-steps.mp3',
+    thumbnailGradient: 'linear-gradient(135deg, #06B6D4 0%, #0E7490 100%)',
+    instructor: 'Sarah Chen',
+    isFree: true
+  },
+  {
+    id: 'calm-reset',
+    title: 'Calm Reset',
+    description: 'Return to peaceful clarity when life feels overwhelming.',
+    duration: 480, // 8 min
+    category: 'meditation',
+    audioUrl: '/audio/meditations/calm-reset.mp3',
+    thumbnailGradient: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
+    instructor: 'Michael Rivers',
+    isFree: false
+  },
+  {
+    id: 'focus-flow',
+    title: 'Focus Flow',
+    description: 'Clear mental clutter and enter deep, productive focus.',
+    duration: 720, // 12 min
+    category: 'meditation',
+    audioUrl: '/audio/meditations/focus-flow.mp3',
+    thumbnailGradient: 'linear-gradient(135deg, #EC4899 0%, #BE185D 100%)',
+    instructor: 'Sarah Chen',
+    isFree: false
+  },
+  {
+    id: 'abundance-alignment',
+    title: 'Abundance Alignment',
+    description: 'Tune your energy to the frequency of abundance.',
+    duration: 900, // 15 min
+    category: 'meditation',
+    audioUrl: '/audio/meditations/abundance-alignment.mp3',
+    thumbnailGradient: 'linear-gradient(135deg, #D4AF37 0%, #92702E 100%)',
+    instructor: 'Michael Rivers',
+    isFree: false
+  },
+  {
+    id: 'deep-sleep-journey',
+    title: 'Deep Sleep Journey',
+    description: 'Drift into restful sleep with guided relaxation.',
+    duration: 1200, // 20 min
+    category: 'meditation',
+    audioUrl: '/audio/meditations/deep-sleep-journey.mp3',
+    thumbnailGradient: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
+    instructor: 'Sarah Chen',
+    isFree: false
+  },
+  {
+    id: 'walking-meditation',
+    title: 'Walking Meditation',
+    description: 'Find peace and presence in every step.',
+    duration: 900, // 15 min
+    category: 'meditation',
+    audioUrl: '/audio/meditations/walking-meditation.mp3',
+    thumbnailGradient: 'linear-gradient(135deg, #22C55E 0%, #15803D 100%)',
+    instructor: 'Michael Rivers',
+    isFree: false
+  },
+  // Quick Shifts
+  {
+    id: 'coherent-breathing',
+    title: 'Coherent Breathing',
+    description: 'A 3-minute guided breathing exercise to reset your nervous system.',
+    duration: 180, // 3 min
+    category: 'quickshift',
+    audioUrl: '/audio/quickshifts/coherent-breathing.mp3',
+    thumbnailGradient: 'linear-gradient(135deg, #06B6D4 0%, #0891B2 100%)',
+    isFree: true
+  },
+  {
+    id: 'body-scan',
+    title: 'Body Scan',
+    description: 'A 5-minute guided audio practice to release tension.',
+    duration: 300, // 5 min
+    category: 'quickshift',
+    audioUrl: '/audio/quickshifts/body-scan.mp3',
+    thumbnailGradient: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+    isFree: true
+  },
+  {
+    id: 'affirmation-repetition',
+    title: 'Affirmation Repetition',
+    description: 'A 2-minute practice where you repeat powerful affirmations.',
+    duration: 120, // 2 min
+    category: 'quickshift',
+    audioUrl: '/audio/quickshifts/affirmation-repetition.mp3',
+    thumbnailGradient: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+    isFree: true
+  },
+  {
+    id: 'energy-boost',
+    title: 'Energy Boost',
+    description: 'A quick energizing practice to elevate your state.',
+    duration: 180, // 3 min
+    category: 'quickshift',
+    audioUrl: '/audio/quickshifts/energy-boost.mp3',
+    thumbnailGradient: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
+    isFree: false
+  },
+  {
+    id: 'stress-release',
+    title: 'Stress Release',
+    description: 'Let go of tension in just a few minutes.',
+    duration: 240, // 4 min
+    category: 'quickshift',
+    audioUrl: '/audio/quickshifts/stress-release.mp3',
+    thumbnailGradient: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+    isFree: false
+  }
+];
+
+// Helper function to get audio session by ID
+const getAudioSession = (id: string): AudioSession | undefined => {
+  return audioSessionsLibrary.find(session => session.id === id);
+};
+
+// Helper to map meditation title to audio session
+const getMeditationAudioSession = (title: string): AudioSession | undefined => {
+  const normalizedTitle = title.toLowerCase().replace(/\s+/g, '-');
+  return audioSessionsLibrary.find(session =>
+    session.id === normalizedTitle ||
+    session.title.toLowerCase() === title.toLowerCase()
+  );
+};
+
+// useAudio Hook - Manages audio playback with loading, error handling, and background support
+interface UseAudioState {
+  isPlaying: boolean;
+  isLoading: boolean;
+  error: string | null;
+  currentTime: number;
+  duration: number;
+  progress: number;
+  isBuffering: boolean;
+}
+
+interface UseAudioActions {
+  play: () => void;
+  pause: () => void;
+  toggle: () => void;
+  seek: (time: number) => void;
+  seekByPercent: (percent: number) => void;
+  setVolume: (volume: number) => void;
+  reset: () => void;
+}
+
+type UseAudioReturn = UseAudioState & UseAudioActions & { audioRef: React.RefObject<HTMLAudioElement> };
+
+const useAudio = (audioUrl: string | null, options?: { autoPlay?: boolean; loop?: boolean }): UseAudioReturn => {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isBuffering, setIsBuffering] = useState(false);
+
+  // Calculate progress percentage
+  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+
+  // Initialize audio element
+  useEffect(() => {
+    if (!audioUrl) return;
+
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    setIsLoading(true);
+    setError(null);
+    audio.src = audioUrl;
+    audio.load();
+
+    const handleLoadedMetadata = () => {
+      setDuration(audio.duration);
+      setIsLoading(false);
+      if (options?.autoPlay) {
+        audio.play().catch(e => setError('Autoplay blocked. Tap to play.'));
+      }
+    };
+
+    const handleTimeUpdate = () => {
+      setCurrentTime(audio.currentTime);
+    };
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+      if (!options?.loop) {
+        setCurrentTime(0);
+      }
+    };
+
+    const handleError = () => {
+      setIsLoading(false);
+      setError('Unable to load audio. Please try again.');
+    };
+
+    const handleWaiting = () => setIsBuffering(true);
+    const handleCanPlay = () => {
+      setIsBuffering(false);
+      setIsLoading(false);
+    };
+
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('error', handleError);
+    audio.addEventListener('waiting', handleWaiting);
+    audio.addEventListener('canplay', handleCanPlay);
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
+
+    return () => {
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('error', handleError);
+      audio.removeEventListener('waiting', handleWaiting);
+      audio.removeEventListener('canplay', handleCanPlay);
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
+    };
+  }, [audioUrl, options?.autoPlay, options?.loop]);
+
+  // Set loop property
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.loop = options?.loop || false;
+    }
+  }, [options?.loop]);
+
+  const play = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.play().catch(e => {
+        console.error('Play failed:', e);
+        setError('Playback failed. Please try again.');
+      });
+    }
+  }, []);
+
+  const pause = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+  }, []);
+
+  const toggle = useCallback(() => {
+    if (isPlaying) {
+      pause();
+    } else {
+      play();
+    }
+  }, [isPlaying, play, pause]);
+
+  const seek = useCallback((time: number) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = Math.max(0, Math.min(time, duration));
+    }
+  }, [duration]);
+
+  const seekByPercent = useCallback((percent: number) => {
+    if (audioRef.current && duration > 0) {
+      const time = (percent / 100) * duration;
+      audioRef.current.currentTime = time;
+    }
+  }, [duration]);
+
+  const setVolume = useCallback((volume: number) => {
+    if (audioRef.current) {
+      audioRef.current.volume = Math.max(0, Math.min(1, volume));
+    }
+  }, []);
+
+  const reset = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      setCurrentTime(0);
+    }
+  }, []);
+
+  return {
+    audioRef,
+    isPlaying,
+    isLoading,
+    error,
+    currentTime,
+    duration,
+    progress,
+    isBuffering,
+    play,
+    pause,
+    toggle,
+    seek,
+    seekByPercent,
+    setVolume,
+    reset
+  };
+};
+
+// Format time helper (seconds to MM:SS)
+const formatAudioTime = (seconds: number): string => {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
 
 // 1. Learn & Grow - Article Library Screen
 const LearnAndGrowScreen: React.FC<{ onClose: () => void; onArticle: (article: Article) => void }> = ({ onClose, onArticle }) => {
@@ -4950,6 +5606,7 @@ export default function Home() {
   });
   const [currentArticle, setCurrentArticle] = useState<Article | null>(null);
   const [currentVisualization, setCurrentVisualization] = useState<any>(null);
+  const [currentAudioSession, setCurrentAudioSession] = useState<AudioSession | null>(null);
   const [showEnergyMode, setShowEnergyMode] = useState(false);
 
   // Screen to URL path mapping
@@ -5116,7 +5773,10 @@ export default function Home() {
       case 'meditations':
         return (
           <MeditationsScreen
-            onPlay={() => setCurrentScreen('player')}
+            onPlay={(session) => {
+              setCurrentAudioSession(session);
+              setCurrentScreen('player');
+            }}
             isPremium={user.isPremium}
             onUpgrade={() => setCurrentScreen('pricing')}
           />
@@ -5148,7 +5808,21 @@ export default function Home() {
           </PaywallGate>
         );
       case 'player':
-        return <PlayerScreen onClose={() => setCurrentScreen('dashboard')} />;
+        return (
+          <PlayerScreen
+            session={currentAudioSession}
+            onClose={() => {
+              setCurrentScreen('meditations');
+              setCurrentAudioSession(null);
+            }}
+            onComplete={() => {
+              // Update streak if completing morning meditation
+              if (currentAudioSession?.title.toLowerCase().includes('morning')) {
+                setUser(prev => ({ ...prev, streak: prev.streak + 1 }));
+              }
+            }}
+          />
+        );
       case 'profile':
         return <ProfileScreen user={user} onClose={() => setCurrentScreen('dashboard')} onSettings={() => setCurrentScreen('settings')} onPricing={() => setCurrentScreen('pricing')} />;
       case 'settings':
@@ -5163,7 +5837,16 @@ export default function Home() {
       case 'gratitude':
         return <GratitudeJournalScreen onClose={() => setCurrentScreen('dashboard')} />;
       case 'quickshifts':
-        return <QuickShiftToolsScreen onClose={() => setCurrentScreen('dashboard')} onBreathing={() => setCurrentScreen('breathing')} />;
+        return (
+          <QuickShiftToolsScreen
+            onClose={() => setCurrentScreen('dashboard')}
+            onBreathing={() => setCurrentScreen('breathing')}
+            onPlayQuickShift={(session) => {
+              setCurrentAudioSession(session);
+              setCurrentScreen('player');
+            }}
+          />
+        );
       case 'breathing':
         return <BreathingExerciseScreen onClose={() => setCurrentScreen('quickshifts')} />;
       // New Phase 4 screens
