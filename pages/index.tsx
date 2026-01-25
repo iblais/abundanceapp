@@ -1681,61 +1681,237 @@ const PlayerScreen: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 };
 
 // Profile Screen - Clean premium design matching reference
-const ProfileScreen: React.FC<{ user: UserState; onClose: () => void; onSettings: () => void; onPricing?: () => void }> = ({ user, onClose, onSettings, onPricing }) => (
-  <div className={styles.profileScreen}>
-    <header className={styles.profileHeader}>
-      <button onClick={onClose}>{Icons.back}</button>
-      <button onClick={onSettings}>{Icons.settings}</button>
-    </header>
+const ProfileScreen: React.FC<{ user: UserState; onClose: () => void; onSettings: () => void; onPricing?: () => void }> = ({ user, onClose, onSettings, onPricing }) => {
+  const [iAmStatement, setIAmStatement] = useState('');
+  const [isEditingStatement, setIsEditingStatement] = useState(false);
+  const [morningReminders, setMorningReminders] = useState(true);
+  const [eveningCheckins, setEveningCheckins] = useState(false);
+  const [totalSessions, setTotalSessions] = useState(0);
+  const [anchorsDropped, setAnchorsDropped] = useState(0);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
-    <div className={styles.profileContent}>
-      <div className={styles.avatar}>
-        {Icons.profile}
+  // Load data from localStorage
+  useEffect(() => {
+    // Load I AM statement
+    const savedStatement = localStorage.getItem('iAmStatement');
+    if (savedStatement) {
+      setIAmStatement(savedStatement);
+    } else {
+      setIAmStatement('I am a powerful creator of my reality');
+    }
+
+    // Load notification settings
+    const savedMorning = localStorage.getItem('morningReminders');
+    const savedEvening = localStorage.getItem('eveningCheckins');
+    if (savedMorning !== null) setMorningReminders(savedMorning === 'true');
+    if (savedEvening !== null) setEveningCheckins(savedEvening === 'true');
+
+    // Calculate stats
+    const gratitudeEntries = localStorage.getItem('gratitudeEntries');
+    if (gratitudeEntries) {
+      try {
+        const entries = JSON.parse(gratitudeEntries);
+        setAnchorsDropped(entries.length);
+      } catch (e) {
+        console.error('Error parsing gratitude entries:', e);
+      }
+    }
+
+    // Mock total sessions (could be tracked more precisely)
+    const sessions = localStorage.getItem('totalSessions');
+    setTotalSessions(sessions ? parseInt(sessions) : Math.floor(user.streak * 1.5));
+  }, [user.streak]);
+
+  // Save I AM statement
+  const saveStatement = () => {
+    localStorage.setItem('iAmStatement', iAmStatement);
+    setIsEditingStatement(false);
+    if (navigator.vibrate) navigator.vibrate(30);
+  };
+
+  // Toggle notification settings
+  const toggleMorningReminders = () => {
+    const newValue = !morningReminders;
+    setMorningReminders(newValue);
+    localStorage.setItem('morningReminders', String(newValue));
+  };
+
+  const toggleEveningCheckins = () => {
+    const newValue = !eveningCheckins;
+    setEveningCheckins(newValue);
+    localStorage.setItem('eveningCheckins', String(newValue));
+  };
+
+  // Clear all data
+  const handleClearAllData = () => {
+    localStorage.removeItem('gratitudeEntries');
+    localStorage.removeItem('realityShiftBoard');
+    localStorage.removeItem('iAmStatement');
+    localStorage.removeItem('morningReminders');
+    localStorage.removeItem('eveningCheckins');
+    localStorage.removeItem('totalSessions');
+    localStorage.removeItem('abundanceUser');
+    localStorage.removeItem('lastStreakDate');
+
+    setIAmStatement('I am a powerful creator of my reality');
+    setAnchorsDropped(0);
+    setTotalSessions(0);
+    setShowClearConfirm(false);
+
+    if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+    alert('All data has been cleared. You have a fresh start!');
+  };
+
+  return (
+    <div className={styles.profileScreen}>
+      <header className={styles.profileHeader}>
+        <button onClick={onClose}>{Icons.back}</button>
+        <button onClick={onSettings}>{Icons.settings}</button>
+      </header>
+
+      {/* Creator Profile Card */}
+      <div className={styles.profileContent}>
+        <div className={styles.avatar}>
+          {Icons.profile}
+        </div>
+        <h2>{user.displayName || 'Creator'}</h2>
+        <div className={styles.subscriptionStatus}>
+          <span className={`${styles.subscriptionBadge} ${user.isPremium ? styles.subscriptionBadgePremium : styles.subscriptionBadgeFree}`}>
+            {user.isPremium ? 'Premium Member' : 'Free Member'}
+          </span>
+        </div>
+        {!user.isPremium && onPricing && (
+          <button className={styles.upgradeProfileButton} onClick={onPricing}>
+            Upgrade to Premium
+          </button>
+        )}
       </div>
-      <h2>{user.displayName}</h2>
-      <div className={styles.subscriptionStatus}>
-        <span className={`${styles.subscriptionBadge} ${user.isPremium ? styles.subscriptionBadgePremium : styles.subscriptionBadgeFree}`}>
-          {user.isPremium ? 'Premium Member' : 'Free Member'}
-        </span>
-        {user.isPremium && user.subscriptionPlan && (
-          <div className={styles.subscriptionDetails}>
-            <span className={styles.subscriptionPlanName}>
-              {user.subscriptionPlan === 'annual' ? 'Annual Plan' : 'Monthly Plan'}
-            </span>
+
+      {/* I AM Statement Section */}
+      <div className={styles.identitySection}>
+        <div className={styles.identitySectionHeader}>
+          <h3>My Identity Statement</h3>
+          {!isEditingStatement && (
+            <button className={styles.editButton} onClick={() => setIsEditingStatement(true)}>
+              Edit
+            </button>
+          )}
+        </div>
+        {isEditingStatement ? (
+          <div className={styles.statementEditor}>
+            <textarea
+              className={styles.statementTextarea}
+              value={iAmStatement}
+              onChange={(e) => setIAmStatement(e.target.value)}
+              placeholder="I am..."
+              rows={3}
+            />
+            <div className={styles.statementActions}>
+              <button className={styles.cancelButton} onClick={() => setIsEditingStatement(false)}>
+                Cancel
+              </button>
+              <button className={styles.saveButton} onClick={saveStatement}>
+                Save
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className={styles.statementDisplay}>
+            <span className={styles.statementQuote}>&ldquo;{iAmStatement}&rdquo;</span>
           </div>
         )}
       </div>
-      {!user.isPremium && onPricing && (
-        <button className={styles.upgradeProfileButton} onClick={onPricing}>
-          Upgrade to Premium
-        </button>
-      )}
+
+      {/* Stats Overview */}
+      <GlassCard className={styles.profileStatsCard}>
+        <div className={styles.statsGrid}>
+          <div className={styles.statItem}>
+            <span className={styles.statNumber}>{user.streak}</span>
+            <span className={styles.statLabel}>Day Streak</span>
+            <span className={styles.statIcon}>🔥</span>
+          </div>
+          <div className={styles.statItem}>
+            <span className={styles.statNumber}>{totalSessions}</span>
+            <span className={styles.statLabel}>Sessions</span>
+            <span className={styles.statIcon}>🧘</span>
+          </div>
+          <div className={styles.statItem}>
+            <span className={styles.statNumber}>{anchorsDropped}</span>
+            <span className={styles.statLabel}>Anchors</span>
+            <span className={styles.statIcon}>⚓</span>
+          </div>
+        </div>
+        <div className={styles.alignmentRow}>
+          <span className={styles.alignmentLabel}>Alignment Score</span>
+          <span className={styles.alignmentValue}>{user.alignmentScore}%</span>
+        </div>
+      </GlassCard>
+
+      {/* Quick Settings */}
+      <div className={styles.quickSettingsSection}>
+        <h3 className={styles.sectionTitle}>Notifications</h3>
+
+        <div className={styles.settingToggleRow}>
+          <div className={styles.settingInfo}>
+            <span className={styles.settingIcon}>🌅</span>
+            <div>
+              <span className={styles.settingName}>Morning Reminders</span>
+              <span className={styles.settingDesc}>Start your day aligned</span>
+            </div>
+          </div>
+          <button
+            className={`${styles.toggleSwitch} ${morningReminders ? styles.toggleSwitchOn : ''}`}
+            onClick={toggleMorningReminders}
+          >
+            <span className={styles.toggleKnob} />
+          </button>
+        </div>
+
+        <div className={styles.settingToggleRow}>
+          <div className={styles.settingInfo}>
+            <span className={styles.settingIcon}>🌙</span>
+            <div>
+              <span className={styles.settingName}>Evening Check-ins</span>
+              <span className={styles.settingDesc}>Reflect on your day</span>
+            </div>
+          </div>
+          <button
+            className={`${styles.toggleSwitch} ${eveningCheckins ? styles.toggleSwitchOn : ''}`}
+            onClick={toggleEveningCheckins}
+          >
+            <span className={styles.toggleKnob} />
+          </button>
+        </div>
+      </div>
+
+      {/* Data Management */}
+      <div className={styles.dataManagementSection}>
+        <h3 className={styles.sectionTitle}>Data Management</h3>
+
+        {!showClearConfirm ? (
+          <button className={styles.clearDataButton} onClick={() => setShowClearConfirm(true)}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" />
+            </svg>
+            Clear All Data
+          </button>
+        ) : (
+          <div className={styles.clearConfirmBox}>
+            <p>Are you sure? This will delete all your data including gratitude entries and vision board.</p>
+            <div className={styles.clearConfirmActions}>
+              <button className={styles.cancelButton} onClick={() => setShowClearConfirm(false)}>
+                Cancel
+              </button>
+              <button className={styles.confirmDeleteButton} onClick={handleClearAllData}>
+                Yes, Clear All
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
-
-    <GlassCard className={styles.profileStatsCard}>
-      <div className={styles.profileStatRow}>
-        <span className={styles.profileStatNumber}>{user.streak}</span>
-        <span className={styles.profileStatIcon}>{Icons.streak}</span>
-        <span className={styles.profileStatLabel}>day streak</span>
-      </div>
-
-      <div className={styles.profileStatDivider} />
-
-      <div className={styles.profileStatRow}>
-        <span className={styles.profileStatNumber}>203</span>
-        <span className={styles.profileStatLabel}>sessions completed</span>
-      </div>
-
-      <div className={styles.profileStatDivider} />
-
-      <div className={styles.profileStatRow}>
-        <span className={styles.profileStatLabel}>Alignment Score: {user.alignmentScore}</span>
-      </div>
-    </GlassCard>
-
-    <button className={styles.editProfileButton}>Edit Profile</button>
-  </div>
-);
+  );
+};
 
 // Reality Shift Board - Bento grid vision board with add functionality
 interface BoardItem {
