@@ -961,14 +961,14 @@ const MeditationsScreen: React.FC<{
       if (audioSession) {
         onPlay(audioSession);
       } else {
-        // Create a temporary session if no audio mapping exists
+        // Create a temporary session if no audio mapping exists - use working public audio
         const tempSession: AudioSession = {
           id: meditation.title.toLowerCase().replace(/\s+/g, '-'),
           title: meditation.title,
           description: meditation.description,
           duration: meditation.duration * 60,
           category: 'meditation',
-          audioUrl: `/audio/meditations/${meditation.title.toLowerCase().replace(/\s+/g, '-')}.mp3`,
+          audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
           thumbnailGradient: categoryGradients[meditation.category] || 'linear-gradient(135deg, #D4AF37 0%, #8B6914 100%)',
           isFree: meditation.isFree
         };
@@ -1644,7 +1644,7 @@ const PlayerScreen: React.FC<MeditationPlayerProps> = ({ session, onClose, onCom
     description: 'Start your day by connecting with your highest potential.',
     duration: 720,
     category: 'meditation' as const,
-    audioUrl: '/audio/meditations/morning-visioneering.mp3',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
     thumbnailGradient: 'linear-gradient(135deg, #D4AF37 0%, #8B6914 100%)',
     instructor: 'Sarah Chen',
     isFree: false
@@ -3664,17 +3664,17 @@ interface AudioSession {
   isFree: boolean;
 }
 
-// Audio Sessions Library - URLs point to public audio files
-// For production, replace with CDN URLs or public/audio folder paths
+// Audio Sessions Library - URLs point to public audio files for testing
+// Using publicly available royalty-free ambient/meditation audio samples
 const audioSessionsLibrary: AudioSession[] = [
-  // Meditations
+  // Meditations - Using SoundHelix sample audio for testing
   {
     id: 'morning-visioneering',
     title: 'Morning Visioneering',
     description: 'Start your day by connecting with your highest potential.',
     duration: 720, // 12 min
     category: 'meditation',
-    audioUrl: '/audio/meditations/morning-visioneering.mp3',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
     thumbnailGradient: 'linear-gradient(135deg, #D4AF37 0%, #8B6914 100%)',
     instructor: 'Sarah Chen',
     isFree: false
@@ -3685,7 +3685,7 @@ const audioSessionsLibrary: AudioSession[] = [
     description: 'A simple breathing practice to center your mind.',
     duration: 300, // 5 min
     category: 'meditation',
-    audioUrl: '/audio/meditations/mindful-breathing.mp3',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
     thumbnailGradient: 'linear-gradient(135deg, #10B981 0%, #065F46 100%)',
     instructor: 'Sarah Chen',
     isFree: true
@@ -3696,7 +3696,7 @@ const audioSessionsLibrary: AudioSession[] = [
     description: 'Cultivate appreciation that attracts more abundance.',
     duration: 600, // 10 min
     category: 'meditation',
-    audioUrl: '/audio/meditations/gratitude-expansion.mp3',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
     thumbnailGradient: 'linear-gradient(135deg, #F59E0B 0%, #B45309 100%)',
     instructor: 'Michael Rivers',
     isFree: false
@@ -3707,7 +3707,7 @@ const audioSessionsLibrary: AudioSession[] = [
     description: 'Awaken your inner certainty and calm assurance.',
     duration: 900, // 15 min
     category: 'meditation',
-    audioUrl: '/audio/meditations/confidence-activation.mp3',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
     thumbnailGradient: 'linear-gradient(135deg, #8B5CF6 0%, #5B21B6 100%)',
     instructor: 'Sarah Chen',
     isFree: false
@@ -3718,7 +3718,7 @@ const audioSessionsLibrary: AudioSession[] = [
     description: 'A gentle introduction to meditation practice.',
     duration: 420, // 7 min
     category: 'meditation',
-    audioUrl: '/audio/meditations/first-steps.mp3',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
     thumbnailGradient: 'linear-gradient(135deg, #06B6D4 0%, #0E7490 100%)',
     instructor: 'Sarah Chen',
     isFree: true
@@ -3729,7 +3729,7 @@ const audioSessionsLibrary: AudioSession[] = [
     description: 'Return to peaceful clarity when life feels overwhelming.',
     duration: 480, // 8 min
     category: 'meditation',
-    audioUrl: '/audio/meditations/calm-reset.mp3',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3',
     thumbnailGradient: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
     instructor: 'Michael Rivers',
     isFree: false
@@ -3740,7 +3740,7 @@ const audioSessionsLibrary: AudioSession[] = [
     description: 'Clear mental clutter and enter deep, productive focus.',
     duration: 720, // 12 min
     category: 'meditation',
-    audioUrl: '/audio/meditations/focus-flow.mp3',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3',
     thumbnailGradient: 'linear-gradient(135deg, #EC4899 0%, #BE185D 100%)',
     instructor: 'Sarah Chen',
     isFree: false
@@ -3751,7 +3751,7 @@ const audioSessionsLibrary: AudioSession[] = [
     description: 'Tune your energy to the frequency of abundance.',
     duration: 900, // 15 min
     category: 'meditation',
-    audioUrl: '/audio/meditations/abundance-alignment.mp3',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
     thumbnailGradient: 'linear-gradient(135deg, #D4AF37 0%, #92702E 100%)',
     instructor: 'Michael Rivers',
     isFree: false
@@ -3762,7 +3762,7 @@ const audioSessionsLibrary: AudioSession[] = [
     description: 'Drift into restful sleep with guided relaxation.',
     duration: 1200, // 20 min
     category: 'meditation',
-    audioUrl: '/audio/meditations/deep-sleep-journey.mp3',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3',
     thumbnailGradient: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
     instructor: 'Sarah Chen',
     isFree: false
@@ -3773,7 +3773,7 @@ const audioSessionsLibrary: AudioSession[] = [
     description: 'Find peace and presence in every step.',
     duration: 900, // 15 min
     category: 'meditation',
-    audioUrl: '/audio/meditations/walking-meditation.mp3',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3',
     thumbnailGradient: 'linear-gradient(135deg, #22C55E 0%, #15803D 100%)',
     instructor: 'Michael Rivers',
     isFree: false
@@ -3785,7 +3785,7 @@ const audioSessionsLibrary: AudioSession[] = [
     description: 'A 3-minute guided breathing exercise to reset your nervous system.',
     duration: 180, // 3 min
     category: 'quickshift',
-    audioUrl: '/audio/quickshifts/coherent-breathing.mp3',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3',
     thumbnailGradient: 'linear-gradient(135deg, #06B6D4 0%, #0891B2 100%)',
     isFree: true
   },
@@ -3795,7 +3795,7 @@ const audioSessionsLibrary: AudioSession[] = [
     description: 'A 5-minute guided audio practice to release tension.',
     duration: 300, // 5 min
     category: 'quickshift',
-    audioUrl: '/audio/quickshifts/body-scan.mp3',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3',
     thumbnailGradient: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
     isFree: true
   },
@@ -3805,7 +3805,7 @@ const audioSessionsLibrary: AudioSession[] = [
     description: 'A 2-minute practice where you repeat powerful affirmations.',
     duration: 120, // 2 min
     category: 'quickshift',
-    audioUrl: '/audio/quickshifts/affirmation-repetition.mp3',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3',
     thumbnailGradient: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
     isFree: true
   },
@@ -3815,7 +3815,7 @@ const audioSessionsLibrary: AudioSession[] = [
     description: 'A quick energizing practice to elevate your state.',
     duration: 180, // 3 min
     category: 'quickshift',
-    audioUrl: '/audio/quickshifts/energy-boost.mp3',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-14.mp3',
     thumbnailGradient: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
     isFree: false
   },
@@ -3825,7 +3825,7 @@ const audioSessionsLibrary: AudioSession[] = [
     description: 'Let go of tension in just a few minutes.',
     duration: 240, // 4 min
     category: 'quickshift',
-    audioUrl: '/audio/quickshifts/stress-release.mp3',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3',
     thumbnailGradient: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
     isFree: false
   }
