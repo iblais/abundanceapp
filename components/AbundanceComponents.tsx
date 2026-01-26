@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
-import { Check, Lock } from 'lucide-react';
+import { Check, Lock, Sparkles, Hammer } from 'lucide-react';
+import { UserProgress, GeodeState } from '../src/types/journey';
 
 // --- Types ---
 export interface Crystal {
@@ -208,6 +209,224 @@ export const FocusSelector: React.FC<{ onSelect: (crystal: Crystal) => void }> =
         >
           Set Focus
         </button>
+      </div>
+    </div>
+  );
+};
+
+// --- Journey Carousel (Hero's Path System) ---
+interface JourneyCarouselProps {
+  progress: UserProgress;
+  onSelectGeode: (crystal: Crystal) => void;
+  onContinueJourney: (crystal: Crystal) => void;
+  onDeepenPractice?: (crystal: Crystal) => void;
+}
+
+export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
+  progress,
+  onSelectGeode,
+  onContinueJourney,
+  onDeepenPractice
+}) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // On mount, scroll to active geode if there is one
+  useEffect(() => {
+    if (progress.activeGeodeId) {
+      const index = CRYSTALS.findIndex(c => c.id === progress.activeGeodeId);
+      if (index !== -1 && containerRef.current) {
+        const itemWidth = containerRef.current.offsetWidth * 0.5;
+        containerRef.current.scrollTo({ left: index * itemWidth, behavior: 'smooth' });
+        setActiveIndex(index);
+      }
+    }
+  }, [progress.activeGeodeId]);
+
+  const handleScroll = () => {
+    if (containerRef.current) {
+      const scrollLeft = containerRef.current.scrollLeft;
+      const width = containerRef.current.offsetWidth;
+      const itemWidth = width * 0.5;
+      const index = Math.round(scrollLeft / itemWidth);
+      setActiveIndex(Math.min(Math.max(index, 0), CRYSTALS.length - 1));
+    }
+  };
+
+  // Helper to determine the state of a specific crystal slot
+  const getSlotState = (crystalId: string): GeodeState => {
+    if (progress.masteredGeodeIds.includes(crystalId)) return 'MASTERED';
+    if (progress.activeGeodeId === crystalId) return 'ACTIVE';
+    if (progress.journeyStatus === 'IN_PROGRESS') return 'LOCKED';
+    return 'AVAILABLE';
+  };
+
+  const handleItemClick = (crystal: Crystal, slotState: GeodeState) => {
+    if (slotState === 'AVAILABLE') onSelectGeode(crystal);
+    if (slotState === 'ACTIVE') onContinueJourney(crystal);
+    if (slotState === 'MASTERED' && onDeepenPractice) onDeepenPractice(crystal);
+  };
+
+  return (
+    <div className="w-full flex flex-col items-center">
+      {/* Journey Status Header */}
+      <div className="text-center mb-4 px-6">
+        {progress.journeyStatus === 'SELECTING' && progress.masteredGeodeIds.length === 0 && (
+          <p className="text-xs text-white/50 uppercase tracking-widest">Choose your path to begin</p>
+        )}
+        {progress.journeyStatus === 'SELECTING' && progress.masteredGeodeIds.length > 0 && (
+          <p className="text-xs text-emerald-400/80 uppercase tracking-widest">
+            {progress.masteredGeodeIds.length} / {CRYSTALS.length} Mastered - Select your next path
+          </p>
+        )}
+        {progress.journeyStatus === 'IN_PROGRESS' && (
+          <p className="text-xs text-yellow-400/80 uppercase tracking-widest animate-pulse">
+            Journey in progress - Crack level {progress.currentCrackLevel} / 3
+          </p>
+        )}
+        {progress.journeyStatus === 'ALL_MASTERED' && (
+          <p className="text-xs text-purple-400/80 uppercase tracking-widest">
+            Sage Mode - All paths mastered
+          </p>
+        )}
+      </div>
+
+      {/* 3D Carousel Container */}
+      <div
+        ref={containerRef}
+        onScroll={handleScroll}
+        className="flex overflow-x-auto snap-x snap-mandatory w-full py-12 px-[25%] gap-4"
+        style={{ scrollBehavior: 'smooth', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        {CRYSTALS.map((crystal, index) => {
+          const isActiveInCarousel = index === activeIndex;
+          const slotState = getSlotState(crystal.id);
+
+          // Visual Logic
+          const scale = isActiveInCarousel ? 1.2 : 0.8;
+          const translateY = isActiveInCarousel ? 0 : 10;
+          const opacity = isActiveInCarousel ? 1 : 0.5;
+          const grayscale = isActiveInCarousel ? 0 : 1;
+
+          // Image Logic - Default to geode, switch to crystal when mastered
+          const displayImage = slotState === 'MASTERED' ? crystal.image : '/images/geode-closed.png';
+
+          // If it's the ACTIVE path, show cracks based on progress
+          const showCracks = slotState === 'ACTIVE' && progress.currentCrackLevel > 0;
+
+          return (
+            <div
+              key={crystal.id}
+              className="snap-center shrink-0 w-[50vw] max-w-[200px] flex flex-col items-center justify-center transition-all duration-500 relative cursor-pointer"
+              style={{
+                transform: `scale(${scale}) translateY(${translateY}px)`,
+                opacity,
+                filter: `grayscale(${grayscale})`
+              }}
+              onClick={() => handleItemClick(crystal, slotState)}
+            >
+              {/* Status Indicators */}
+              {slotState === 'LOCKED' && (
+                <div className="absolute z-20 -top-4 bg-black/50 backdrop-blur px-3 py-1 rounded-full border border-white/10 flex items-center gap-2">
+                  <Lock className="w-3 h-3 text-white/50" />
+                  <span className="text-[10px] uppercase tracking-widest text-white/50">Locked</span>
+                </div>
+              )}
+
+              {slotState === 'ACTIVE' && (
+                <div className="absolute z-20 -top-8 animate-bounce">
+                  <span className="text-[10px] uppercase tracking-widest text-yellow-400 font-bold" style={{ textShadow: '0 0 10px rgba(234, 179, 8, 0.6)' }}>
+                    Current Path
+                  </span>
+                </div>
+              )}
+
+              <div className="relative w-32 h-32 mb-4">
+                {/* Glow Effect for Active/Mastered */}
+                {(slotState === 'ACTIVE' || slotState === 'MASTERED') && isActiveInCarousel && (
+                  <div className={`absolute inset-0 ${crystal.glow} blur-2xl rounded-full animate-pulse`} />
+                )}
+
+                {/* Main Image (Geode or Crystal) */}
+                <img
+                  src={displayImage}
+                  alt={crystal.name}
+                  className="relative w-full h-full object-contain z-10"
+                  style={{ filter: 'drop-shadow(0 25px 25px rgba(0, 0, 0, 0.5))' }}
+                />
+
+                {/* Crack Overlay for Active Geode */}
+                {showCracks && (
+                  <img
+                    src={`/images/geode-crack-mask-${progress.currentCrackLevel}.png`}
+                    alt="Cracks"
+                    className={`absolute inset-0 w-full h-full object-contain z-20 ${crystal.crackColor}`}
+                  />
+                )}
+
+                {/* Mastered badge */}
+                {slotState === 'MASTERED' && isActiveInCarousel && (
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 z-30">
+                    <Sparkles className="w-5 h-5 text-yellow-400" />
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Action Area */}
+      <div className="text-center mt-4 h-32 px-6 w-full max-w-md">
+        <h3 className="text-xl font-heading tracking-[0.2em] text-white uppercase mb-1">
+          {CRYSTALS[activeIndex].name}
+        </h3>
+
+        <p className={`text-xs font-medium tracking-widest uppercase mb-6 ${CRYSTALS[activeIndex].color}`}>
+          {getSlotState(CRYSTALS[activeIndex].id) === 'MASTERED'
+            ? "Mastery Unlocked"
+            : `The Path of ${CRYSTALS[activeIndex].meaning}`}
+        </p>
+
+        {/* Dynamic Button */}
+        {getSlotState(CRYSTALS[activeIndex].id) === 'AVAILABLE' && (
+          <button
+            onClick={() => onSelectGeode(CRYSTALS[activeIndex])}
+            className="w-full max-w-xs py-4 bg-white text-black font-bold uppercase tracking-widest text-xs rounded-full hover:scale-105 transition-transform active:scale-95"
+          >
+            Begin This Journey
+          </button>
+        )}
+
+        {getSlotState(CRYSTALS[activeIndex].id) === 'ACTIVE' && (
+          <button
+            onClick={() => onContinueJourney(CRYSTALS[activeIndex])}
+            className="w-full max-w-xs py-4 bg-gradient-to-r from-yellow-200 to-yellow-500 text-black font-bold uppercase tracking-widest text-xs rounded-full hover:scale-105 transition-transform animate-pulse active:scale-95"
+          >
+            <span className="flex items-center justify-center gap-2">
+              <Hammer className="w-4 h-4" />
+              Crack Geode
+            </span>
+          </button>
+        )}
+
+        {getSlotState(CRYSTALS[activeIndex].id) === 'LOCKED' && (
+          <div className="text-white/30 text-xs uppercase tracking-widest py-4">
+            Complete your current path to unlock
+          </div>
+        )}
+
+        {getSlotState(CRYSTALS[activeIndex].id) === 'MASTERED' && (
+          <button
+            onClick={() => onDeepenPractice?.(CRYSTALS[activeIndex])}
+            className="w-full max-w-xs py-4 bg-white/10 border border-white/20 text-white font-bold uppercase tracking-widest text-xs rounded-full hover:bg-white/20 transition-colors active:scale-95"
+          >
+            <span className="flex items-center justify-center gap-2">
+              <Sparkles className="w-4 h-4" />
+              Deepen Practice
+            </span>
+          </button>
+        )}
       </div>
     </div>
   );
