@@ -1061,8 +1061,8 @@ const RhythmScreen: React.FC<{ onComplete: (morning: string, evening: string) =>
 const DashboardScreen: React.FC<{
   user: UserState;
   onNavigate: (screen: Screen) => void;
-  onGeodeCheckIn?: (affirmation: string, points: number) => void;
-}> = ({ user, onNavigate, onGeodeCheckIn }) => {
+  onCrackComplete?: () => void;
+}> = ({ user, onNavigate, onCrackComplete }) => {
   const quickActions = [
     { title: 'Quick Shifts', subtitle: 'Instant reset exercises.', icon: Icons.heart, screen: 'quickshifts' as Screen },
     { title: 'Gratitude Journal', subtitle: 'Capture what you are grateful for.', icon: Icons.journal, screen: 'gratitude' as Screen },
@@ -1118,8 +1118,8 @@ const DashboardScreen: React.FC<{
       </button>
 
       {/* Daily Geode Check-in */}
-      {onGeodeCheckIn && (
-        <GeodeCracker onCheckIn={onGeodeCheckIn} />
+      {onCrackComplete && (
+        <GeodeCracker onCrackComplete={onCrackComplete} />
       )}
 
       {/* Alignment Score */}
@@ -6064,7 +6064,7 @@ export default function Home() {
       case 'rhythm':
         return <RhythmScreen onComplete={handleRhythmComplete} />;
       case 'dashboard':
-        return <DashboardScreen user={user} onNavigate={navigateToScreen} onGeodeCheckIn={handleGeodeCheckIn} />;
+        return <DashboardScreen user={user} onNavigate={navigateToScreen} onCrackComplete={handleCrackComplete} />;
       case 'meditations':
         return (
           <MeditationsScreen
@@ -6236,22 +6236,19 @@ export default function Home() {
       case 'energyMode':
         return null; // Handled as overlay
       default:
-        return <DashboardScreen user={user} onNavigate={navigateToScreen} onGeodeCheckIn={handleGeodeCheckIn} />;
+        return <DashboardScreen user={user} onNavigate={navigateToScreen} onCrackComplete={handleCrackComplete} />;
     }
   };
 
   const showTabBar = ['dashboard', 'meditations', 'journal', 'progress', 'profile'].includes(currentScreen);
 
-  // Handle geode check-in
-  const handleGeodeCheckIn = (affirmation: string, points: number) => {
+  // Handle geode crack complete
+  const handleCrackComplete = () => {
     setUser(prev => ({
       ...prev,
       alignmentScore: Math.min(100, prev.alignmentScore + 2),
       streak: prev.streak + 1
     }));
-    // Save points
-    const currentPoints = parseInt(localStorage.getItem('alignmentPoints') || '0');
-    localStorage.setItem('alignmentPoints', (currentPoints + points).toString());
   };
 
   return (
