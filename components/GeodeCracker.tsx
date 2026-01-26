@@ -1,10 +1,10 @@
 /**
- * GeodeCracker Component - Opal-Level Physics Upgrade
- * Progressive fracturing system with shatter explosion reveal
- * High-fidelity, tactile feel matching premium app standards
+ * GeodeCracker Component - Premium 8-Crystal Edition
+ * Features 8 unique crystals with dynamic crack coloring
+ * The glowing cracks match the color of the crystal inside
  */
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 
@@ -27,38 +27,96 @@ const dailyAffirmations = [
   "I trust the journey and embrace the unknown"
 ];
 
-// Crystal types with meanings
+// Extended Crystal Database - 8 unique crystals with dynamic crack colors
 const crystalTypes = [
   {
+    id: 'amethyst',
     name: 'Amethyst',
+    image: '/images/gem-amethyst.png',
     meaning: 'Clarity • Intuition • Peace',
     primary: '#8B5CF6',
-    glow: 'rgba(139, 92, 246, 0.6)'
+    glow: 'rgba(139, 92, 246, 0.6)',
+    // Purple tint for cracks
+    crackFilter: 'brightness(1.5) sepia(0) hue-rotate(260deg) saturate(2)',
+    crackBlendMode: 'color-dodge' as const
   },
   {
+    id: 'rose-quartz',
     name: 'Rose Quartz',
+    image: '/images/gem-rose-quartz.png',
     meaning: 'Love • Compassion • Healing',
     primary: '#F472B6',
-    glow: 'rgba(244, 114, 182, 0.6)'
+    glow: 'rgba(244, 114, 182, 0.6)',
+    // Pink tint for cracks
+    crackFilter: 'brightness(1.25) sepia(0) hue-rotate(320deg) saturate(1.5)',
+    crackBlendMode: 'color-dodge' as const
   },
   {
+    id: 'citrine',
     name: 'Citrine',
-    meaning: 'Abundance • Joy • Manifestation',
+    image: '/images/gem-citrine.png',
+    meaning: 'Abundance • Joy • Success',
     primary: '#FBBF24',
-    glow: 'rgba(251, 191, 36, 0.6)'
+    glow: 'rgba(251, 191, 36, 0.6)',
+    // Gold tint for cracks
+    crackFilter: 'brightness(1.5) sepia(1) hue-rotate(40deg) saturate(2)',
+    crackBlendMode: 'color-dodge' as const
   },
   {
+    id: 'clear-quartz',
     name: 'Clear Quartz',
-    meaning: 'Amplification • Clarity • Energy',
+    image: '/images/gem-clear-quartz.png',
+    meaning: 'Amplification • Focus • Energy',
     primary: '#E5E7EB',
-    glow: 'rgba(255, 255, 255, 0.6)'
+    glow: 'rgba(255, 255, 255, 0.6)',
+    // White/Blue tint for cracks
+    crackFilter: 'brightness(2)',
+    crackBlendMode: 'overlay' as const
   },
   {
+    id: 'emerald',
     name: 'Emerald',
-    meaning: 'Growth • Prosperity • Renewal',
+    image: '/images/gem-emerald.png',
+    meaning: 'Growth • Harmony • Renewal',
     primary: '#10B981',
-    glow: 'rgba(16, 185, 129, 0.6)'
+    glow: 'rgba(16, 185, 129, 0.6)',
+    // Green tint for cracks
+    crackFilter: 'brightness(1.5) sepia(0) hue-rotate(120deg) saturate(2)',
+    crackBlendMode: 'color-dodge' as const
   },
+  {
+    id: 'sapphire',
+    name: 'Sapphire',
+    image: '/images/gem-sapphire.png',
+    meaning: 'Wisdom • Truth • Insight',
+    primary: '#2563EB',
+    glow: 'rgba(37, 99, 235, 0.6)',
+    // Deep Blue tint for cracks
+    crackFilter: 'brightness(1.5) sepia(0) hue-rotate(220deg) saturate(2)',
+    crackBlendMode: 'color-dodge' as const
+  },
+  {
+    id: 'ruby',
+    name: 'Ruby',
+    image: '/images/gem-ruby.png',
+    meaning: 'Passion • Vitality • Courage',
+    primary: '#DC2626',
+    glow: 'rgba(220, 38, 38, 0.6)',
+    // Red tint for cracks
+    crackFilter: 'brightness(1.5) sepia(0) hue-rotate(340deg) saturate(2)',
+    crackBlendMode: 'color-dodge' as const
+  },
+  {
+    id: 'obsidian',
+    name: 'Obsidian',
+    image: '/images/gem-obsidian.png',
+    meaning: 'Protection • Grounding • Truth',
+    primary: '#4B5563',
+    glow: 'rgba(75, 85, 99, 0.6)',
+    // Dark/Silver tint for cracks
+    crackFilter: 'brightness(0.5)',
+    crackBlendMode: 'overlay' as const
+  }
 ];
 
 // Haptic feedback helper
@@ -97,9 +155,10 @@ const GeodeCracker: React.FC<GeodeCrackerProps> = ({ onCheckIn }) => {
     if (lastCheckIn === today) {
       setHasCheckedIn(true);
       const savedAffirmation = localStorage.getItem('todayAffirmation') || dailyAffirmations[0];
-      const savedCrystalIndex = parseInt(localStorage.getItem('todayCrystal') || '0');
+      const savedCrystalId = localStorage.getItem('todayCrystalId');
+      const savedCrystal = crystalTypes.find(c => c.id === savedCrystalId) || crystalTypes[0];
       setAffirmation(savedAffirmation);
-      setCrystal(crystalTypes[savedCrystalIndex]);
+      setCrystal(savedCrystal);
       setIsCracked(true);
       setTaps(MAX_TAPS);
     }
@@ -143,17 +202,16 @@ const GeodeCracker: React.FC<GeodeCrackerProps> = ({ onCheckIn }) => {
 
         // Pick random affirmation and crystal
         const randomAffirmation = dailyAffirmations[Math.floor(Math.random() * dailyAffirmations.length)];
-        const randomCrystalIndex = Math.floor(Math.random() * crystalTypes.length);
-        const randomCrystal = crystalTypes[randomCrystalIndex];
+        const randomCrystal = crystalTypes[Math.floor(Math.random() * crystalTypes.length)];
 
         setAffirmation(randomAffirmation);
         setCrystal(randomCrystal);
 
-        // Save check-in
+        // Save check-in with crystal ID for reliable lookup
         const today = new Date().toDateString();
         localStorage.setItem('lastGeodeCheckIn', today);
         localStorage.setItem('todayAffirmation', randomAffirmation);
-        localStorage.setItem('todayCrystal', randomCrystalIndex.toString());
+        localStorage.setItem('todayCrystalId', randomCrystal.id);
         setHasCheckedIn(true);
 
         onCheckIn?.(randomAffirmation, 25);
@@ -222,34 +280,44 @@ const GeodeCracker: React.FC<GeodeCrackerProps> = ({ onCheckIn }) => {
                   draggable={false}
                 />
 
-                {/* Progressive Cracks Overlay */}
+                {/* Progressive Cracks Overlay with Dynamic Tinting */}
                 <AnimatePresence>
                   {taps >= 1 && (
                     <motion.img
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      src="/images/geode-cracked-1.png"
+                      src="/images/geode-crack-mask-1.png"
                       alt=""
-                      style={{...styles.crackOverlay, zIndex: 20}}
+                      style={{
+                        ...styles.crackOverlay,
+                        zIndex: 20,
+                        filter: crystal.crackFilter,
+                        mixBlendMode: crystal.crackBlendMode
+                      }}
                     />
                   )}
                   {taps >= 2 && (
                     <motion.img
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      src="/images/geode-cracked-2.png"
+                      src="/images/geode-crack-mask-2.png"
                       alt=""
-                      style={{...styles.crackOverlay, zIndex: 30}}
+                      style={{
+                        ...styles.crackOverlay,
+                        zIndex: 30,
+                        filter: crystal.crackFilter,
+                        mixBlendMode: crystal.crackBlendMode
+                      }}
                     />
                   )}
                 </AnimatePresence>
 
-                {/* Internal Glow Leak */}
+                {/* Internal Glow Leak - Matches Crystal Color */}
                 <motion.div
-                  animate={{ opacity: taps * 0.3 }}
+                  animate={{ opacity: taps * 0.4 }}
                   style={{
                     ...styles.internalGlow,
-                    background: `radial-gradient(circle, ${crystal.glow} 0%, transparent 70%)`
+                    background: `radial-gradient(circle, ${crystal.glow.replace('0.6', '0.8')} 0%, transparent 70%)`
                   }}
                 />
               </div>
@@ -297,9 +365,9 @@ const GeodeCracker: React.FC<GeodeCrackerProps> = ({ onCheckIn }) => {
                 }}
               />
 
-              {/* The Gemstone */}
+              {/* The Gemstone - Uses crystal-specific image */}
               <motion.img
-                src="/images/gem-amethyst.png"
+                src={crystal.image}
                 alt={`Revealed ${crystal.name}`}
                 initial={{ scale: 0, rotate: -180, opacity: 0 }}
                 animate={{ scale: 1, rotate: 0, opacity: 1 }}
@@ -359,8 +427,15 @@ const GeodeCracker: React.FC<GeodeCrackerProps> = ({ onCheckIn }) => {
             }}>
               {crystal.name.toUpperCase()}
             </h3>
-            <div style={styles.divider} />
-            <p style={styles.meaning}>
+            <div style={{
+              ...styles.divider,
+              background: `linear-gradient(to right, transparent, ${crystal.glow}, transparent)`
+            }} />
+            <p style={{
+              ...styles.meaning,
+              color: crystal.primary,
+              opacity: 0.9
+            }}>
               {crystal.meaning}
             </p>
             <motion.p
@@ -498,7 +573,6 @@ const styles: Record<string, React.CSSProperties> = {
     width: '100%',
     height: '100%',
     objectFit: 'contain',
-    mixBlendMode: 'lighten',
     userSelect: 'none',
     pointerEvents: 'none',
   },
@@ -570,12 +644,10 @@ const styles: Record<string, React.CSSProperties> = {
   divider: {
     height: '1px',
     width: '48px',
-    background: 'linear-gradient(to right, transparent, rgba(168,85,247,0.5), transparent)',
     margin: '0 auto 8px',
   },
   meaning: {
     fontSize: '12px',
-    color: 'rgba(216, 180, 254, 0.9)',
     letterSpacing: '2px',
     textTransform: 'uppercase',
     fontWeight: 500,
