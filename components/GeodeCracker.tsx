@@ -77,11 +77,11 @@ export const GeodeCracker: React.FC<GeodeCrackerProps> = ({ onCrackComplete }) =
   };
 
   return (
-    <div className="flex flex-col items-center w-full min-h-[700px]">
+    <div className="flex flex-col items-center w-full min-h-screen pb-32">
       {/* Crown of Abundance (Top Bar) */}
       <CrownOfAbundance collectedIds={collectedIds} />
 
-      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md relative">
+      <div className="flex-1 flex flex-col items-center w-full max-w-md relative pt-6">
         <AnimatePresence mode="wait">
 
           {/* PHASE 1: SELECTOR */}
@@ -93,8 +93,8 @@ export const GeodeCracker: React.FC<GeodeCrackerProps> = ({ onCrackComplete }) =
               exit={{ opacity: 0, y: -20 }}
               className="w-full flex flex-col items-center"
             >
-              <h2 className="text-center text-xl font-heading text-white mb-2 tracking-widest uppercase">Choose Your Anchor</h2>
-              <p className="text-center text-white/50 text-sm mb-8 font-light">What energy are you calling in today?</p>
+              <h2 className="text-center text-lg font-heading text-white mb-1 tracking-widest uppercase">Choose Your Anchor</h2>
+              <p className="text-center text-white/50 text-xs mb-4 font-light">What energy are you calling in today?</p>
               <FocusSelector onSelect={handleSelect} />
             </motion.div>
           )}
