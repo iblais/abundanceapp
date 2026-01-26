@@ -1,7 +1,7 @@
 /**
- * GeodeCracker Component - Premium Quality
- * A tactile, physics-based daily check-in with realistic 3D geode
- * and organic cracking mechanics revealing a crystal cluster.
+ * GeodeCracker Component - Opal-Level Physics Upgrade
+ * Progressive fracturing system with shatter explosion reveal
+ * High-fidelity, tactile feel matching premium app standards
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -27,47 +27,37 @@ const dailyAffirmations = [
   "I trust the journey and embrace the unknown"
 ];
 
-// Crystal types with richer color palettes
+// Crystal types with meanings
 const crystalTypes = [
   {
     name: 'Amethyst',
+    meaning: 'Clarity • Intuition • Peace',
     primary: '#8B5CF6',
-    secondary: '#A78BFA',
-    highlight: '#C4B5FD',
-    glow: 'rgba(139, 92, 246, 0.7)',
-    deep: '#5B21B6'
+    glow: 'rgba(139, 92, 246, 0.6)'
   },
   {
     name: 'Rose Quartz',
+    meaning: 'Love • Compassion • Healing',
     primary: '#F472B6',
-    secondary: '#F9A8D4',
-    highlight: '#FBCFE8',
-    glow: 'rgba(244, 114, 182, 0.7)',
-    deep: '#BE185D'
+    glow: 'rgba(244, 114, 182, 0.6)'
   },
   {
     name: 'Citrine',
+    meaning: 'Abundance • Joy • Manifestation',
     primary: '#FBBF24',
-    secondary: '#FCD34D',
-    highlight: '#FDE68A',
-    glow: 'rgba(251, 191, 36, 0.7)',
-    deep: '#B45309'
+    glow: 'rgba(251, 191, 36, 0.6)'
   },
   {
     name: 'Clear Quartz',
+    meaning: 'Amplification • Clarity • Energy',
     primary: '#E5E7EB',
-    secondary: '#F3F4F6',
-    highlight: '#FFFFFF',
-    glow: 'rgba(255, 255, 255, 0.7)',
-    deep: '#9CA3AF'
+    glow: 'rgba(255, 255, 255, 0.6)'
   },
   {
     name: 'Emerald',
+    meaning: 'Growth • Prosperity • Renewal',
     primary: '#10B981',
-    secondary: '#34D399',
-    highlight: '#6EE7B7',
-    glow: 'rgba(16, 185, 129, 0.7)',
-    deep: '#047857'
+    glow: 'rgba(16, 185, 129, 0.6)'
   },
 ];
 
@@ -89,86 +79,16 @@ interface GeodeCrackerProps {
   onCheckIn?: (affirmation: string, points: number) => void;
 }
 
-// Generate organic crack paths with branching
-const generateCrackNetwork = (stage: number, seed: number): string[] => {
-  const paths: string[] = [];
-  const random = (min: number, max: number, s: number) => {
-    const x = Math.sin(s * 9999) * 10000;
-    return min + (x - Math.floor(x)) * (max - min);
-  };
-
-  if (stage >= 1) {
-    // Main crack from top
-    const mainStart = { x: 85 + random(-5, 5, seed), y: 30 };
-    const mainMid1 = { x: 80 + random(-8, 8, seed + 1), y: 50 + random(-5, 5, seed + 2) };
-    const mainMid2 = { x: 85 + random(-10, 10, seed + 3), y: 70 + random(-5, 5, seed + 4) };
-    const mainEnd = { x: 80 + random(-8, 8, seed + 5), y: 90 };
-    paths.push(`M${mainStart.x},${mainStart.y} Q${mainMid1.x - 10},${mainMid1.y} ${mainMid1.x},${mainMid1.y} T${mainMid2.x},${mainMid2.y} T${mainEnd.x},${mainEnd.y}`);
-
-    // Small branch
-    paths.push(`M${mainMid1.x},${mainMid1.y} L${mainMid1.x + 15},${mainMid1.y + 8}`);
-  }
-
-  if (stage >= 2) {
-    // Secondary crack system
-    const sec1Start = { x: 55 + random(-5, 5, seed + 10), y: 45 };
-    const sec1Mid = { x: 70 + random(-8, 8, seed + 11), y: 60 + random(-5, 5, seed + 12) };
-    const sec1End = { x: 65 + random(-8, 8, seed + 13), y: 85 };
-    paths.push(`M${sec1Start.x},${sec1Start.y} Q${sec1Mid.x},${sec1Mid.y - 10} ${sec1Mid.x},${sec1Mid.y} T${sec1End.x},${sec1End.y}`);
-
-    // Branches from secondary
-    paths.push(`M${sec1Mid.x},${sec1Mid.y} L${sec1Mid.x - 12},${sec1Mid.y + 10}`);
-    paths.push(`M${sec1Mid.x},${sec1Mid.y} L${sec1Mid.x + 8},${sec1Mid.y - 12}`);
-
-    // Connecting crack
-    paths.push(`M${70},${65} L${80},${70}`);
-  }
-
-  if (stage >= 3) {
-    // Tertiary crack network - more fragmentation
-    paths.push(`M${95},${55} Q${90},${65} ${85},${75}`);
-    paths.push(`M${50},${60} L${58},${55} L${55},${48}`);
-    paths.push(`M${60},${75} L${72},${78} L${68},${88}`);
-    paths.push(`M${75},${50} L${82},${55}`);
-    paths.push(`M${90},${70} L${98},${75}`);
-    // Surface micro-cracks
-    paths.push(`M${45},${70} L${52},${72}`);
-    paths.push(`M${95},${45} L${102},${50}`);
-  }
-
-  return paths;
-};
-
-// Generate rock debris particles
-const generateDebris = (count: number, crystalColor: string) => {
-  return Array.from({ length: count }, (_, i) => {
-    const angle = (Math.random() * Math.PI * 2);
-    const speed = 80 + Math.random() * 120;
-    const isRock = i < count * 0.6;
-    return {
-      id: i,
-      x: Math.cos(angle) * speed,
-      y: Math.sin(angle) * speed - 30, // Bias upward initially
-      rotation: Math.random() * 720 - 360,
-      scale: isRock ? 0.4 + Math.random() * 0.6 : 0.2 + Math.random() * 0.4,
-      delay: Math.random() * 0.15,
-      isRock,
-      color: isRock ? `hsl(${30 + Math.random() * 20}, ${10 + Math.random() * 15}%, ${25 + Math.random() * 20}%)` : crystalColor,
-      shape: isRock ? Math.floor(Math.random() * 3) : 3, // 0-2 for rocks, 3 for crystal
-    };
-  });
-};
-
 const GeodeCracker: React.FC<GeodeCrackerProps> = ({ onCheckIn }) => {
-  const [tapCount, setTapCount] = useState(0);
-  const [isRevealed, setIsRevealed] = useState(false);
-  const [isCracking, setIsCracking] = useState(false);
-  const [showParticles, setShowParticles] = useState(false);
+  const [taps, setTaps] = useState(0);
+  const [isCracked, setIsCracked] = useState(false);
+  const [hasCheckedIn, setHasCheckedIn] = useState(false);
   const [affirmation, setAffirmation] = useState('');
   const [crystal, setCrystal] = useState(crystalTypes[0]);
-  const [hasCheckedIn, setHasCheckedIn] = useState(false);
-  const [crackSeed] = useState(() => Math.random() * 1000);
   const controls = useAnimation();
+  const [particles, setParticles] = useState<{ id: number; x: number; y: number; angle: number; scale: number; speed: number }[]>([]);
+
+  const MAX_TAPS = 3;
 
   // Check if already checked in today
   useEffect(() => {
@@ -180,67 +100,66 @@ const GeodeCracker: React.FC<GeodeCrackerProps> = ({ onCheckIn }) => {
       const savedCrystalIndex = parseInt(localStorage.getItem('todayCrystal') || '0');
       setAffirmation(savedAffirmation);
       setCrystal(crystalTypes[savedCrystalIndex]);
-      setIsRevealed(true);
-      setTapCount(3);
+      setIsCracked(true);
+      setTaps(MAX_TAPS);
     }
   }, []);
 
-  const crackPaths = useMemo(() => generateCrackNetwork(tapCount, crackSeed), [tapCount, crackSeed]);
-  const debris = useMemo(() => generateDebris(35, crystal.primary), [crystal.primary]);
-
   const handleTap = useCallback(async () => {
-    if (isRevealed || hasCheckedIn || isCracking) return;
+    if (isCracked || hasCheckedIn) return;
 
-    setIsCracking(true);
-    const newTapCount = tapCount + 1;
-    setTapCount(newTapCount);
+    const newTaps = taps + 1;
+    setTaps(newTaps);
 
     // Progressive haptic feedback
-    triggerHaptic(newTapCount === 3 ? 'crack' : newTapCount === 2 ? 'heavy' : 'medium');
+    triggerHaptic(newTaps === MAX_TAPS ? 'crack' : newTaps === 2 ? 'heavy' : 'medium');
 
-    // Impact shake - more intense with each tap
-    const intensity = 4 + newTapCount * 3;
+    // Progressive shake intensity based on taps
+    const intensity = newTaps * 2;
+
     await controls.start({
-      x: [0, -intensity, intensity, -intensity/2, intensity/2, 0],
-      y: [0, -intensity/2, 0, intensity/2, 0, 0],
-      rotate: [0, -1.5 * newTapCount, 1.5 * newTapCount, -0.5 * newTapCount, 0],
-      scale: [1, 0.97, 1.02, 0.99, 1],
-      transition: { duration: 0.35, ease: 'easeOut' }
+      x: [0, -5 * intensity, 5 * intensity, -3 * intensity, 3 * intensity, 0],
+      rotate: [0, -2 * intensity, 2 * intensity, -1 * intensity, 1 * intensity, 0],
+      scale: [1, 0.95, 1.05, 1],
+      transition: { duration: 0.3, ease: "easeInOut" }
     });
 
-    setIsCracking(false);
+    if (newTaps >= MAX_TAPS) {
+      // Generate debris particles
+      const newParticles = Array.from({ length: 30 }).map((_, i) => ({
+        id: i,
+        x: 0,
+        y: 0,
+        angle: (Math.random() * 360) * (Math.PI / 180),
+        scale: Math.random() * 0.5 + 0.5,
+        speed: Math.random() * 200 + 100
+      }));
+      setParticles(newParticles);
 
-    if (newTapCount >= 3) {
-      // Final crack - dramatic pause then explode
+      triggerHaptic('success');
+
       setTimeout(() => {
-        setShowParticles(true);
-        triggerHaptic('success');
+        setIsCracked(true);
 
-        setTimeout(() => {
-          setIsRevealed(true);
+        // Pick random affirmation and crystal
+        const randomAffirmation = dailyAffirmations[Math.floor(Math.random() * dailyAffirmations.length)];
+        const randomCrystalIndex = Math.floor(Math.random() * crystalTypes.length);
+        const randomCrystal = crystalTypes[randomCrystalIndex];
 
-          // Pick random affirmation and crystal
-          const randomAffirmation = dailyAffirmations[Math.floor(Math.random() * dailyAffirmations.length)];
-          const randomCrystalIndex = Math.floor(Math.random() * crystalTypes.length);
-          const randomCrystal = crystalTypes[randomCrystalIndex];
+        setAffirmation(randomAffirmation);
+        setCrystal(randomCrystal);
 
-          setAffirmation(randomAffirmation);
-          setCrystal(randomCrystal);
+        // Save check-in
+        const today = new Date().toDateString();
+        localStorage.setItem('lastGeodeCheckIn', today);
+        localStorage.setItem('todayAffirmation', randomAffirmation);
+        localStorage.setItem('todayCrystal', randomCrystalIndex.toString());
+        setHasCheckedIn(true);
 
-          // Save check-in
-          const today = new Date().toDateString();
-          localStorage.setItem('lastGeodeCheckIn', today);
-          localStorage.setItem('todayAffirmation', randomAffirmation);
-          localStorage.setItem('todayCrystal', randomCrystalIndex.toString());
-          setHasCheckedIn(true);
-
-          onCheckIn?.(randomAffirmation, 25);
-
-          setTimeout(() => setShowParticles(false), 1200);
-        }, 400);
-      }, 200);
+        onCheckIn?.(randomAffirmation, 25);
+      }, 400);
     }
-  }, [controls, hasCheckedIn, isCracking, isRevealed, onCheckIn, tapCount]);
+  }, [controls, hasCheckedIn, isCracked, onCheckIn, taps]);
 
   return (
     <div style={styles.container}>
@@ -255,441 +174,146 @@ const GeodeCracker: React.FC<GeodeCrackerProps> = ({ onCheckIn }) => {
         {hasCheckedIn ? "Today's Crystal" : "Daily Geode"}
       </motion.div>
 
-      {/* Geode Container */}
-      <motion.div
-        style={styles.geodeWrapper}
-        animate={controls}
-        onClick={handleTap}
-        whileHover={!isRevealed && !hasCheckedIn ? { scale: 1.02 } : {}}
-        whileTap={!isRevealed && !hasCheckedIn ? { scale: 0.96 } : {}}
-      >
-        {/* Ambient glow behind geode */}
-        <motion.div
-          style={{
-            ...styles.ambientGlow,
-            background: `radial-gradient(circle, ${crystal.glow} 0%, transparent 70%)`
-          }}
-          animate={{
-            opacity: tapCount > 0 ? 0.3 + tapCount * 0.2 : 0,
-            scale: tapCount > 0 ? 1 + tapCount * 0.1 : 1
-          }}
-          transition={{ duration: 0.4 }}
-        />
-
-        {/* Closed Geode Rock - High Quality Image */}
-        <AnimatePresence>
-          {!isRevealed && (
+      {/* Main Geode Container */}
+      <div style={styles.geodeContainer}>
+        <AnimatePresence mode="wait">
+          {!isCracked ? (
             <motion.div
-              style={styles.rockContainer}
-              initial={{ scale: 1, opacity: 1 }}
-              exit={{
-                scale: [1, 1.1, 0.8],
-                opacity: [1, 1, 0],
-                transition: { duration: 0.4, ease: 'easeOut' }
-              }}
+              key="closed-geode"
+              style={styles.closedGeode}
+              onClick={handleTap}
+              animate={controls}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.95 }}
             >
-              {/* Geode rock image */}
-              <img
-                src="/images/geode-closed.png"
-                alt="Closed geode"
-                style={styles.geodeImage}
-                draggable={false}
+              {/* Progress Ring */}
+              <svg style={styles.progressRing}>
+                <circle
+                  cx="50%"
+                  cy="50%"
+                  r="46%"
+                  fill="none"
+                  stroke="#1e293b"
+                  strokeWidth="1"
+                />
+                <motion.circle
+                  cx="50%"
+                  cy="50%"
+                  r="46%"
+                  fill="none"
+                  stroke="#F5D547"
+                  strokeWidth="2"
+                  strokeDasharray="289 289"
+                  strokeLinecap="round"
+                  initial={{ strokeDashoffset: 289 }}
+                  animate={{ strokeDashoffset: 289 - (289 * (taps / MAX_TAPS)) }}
+                  transition={{ duration: 0.3 }}
+                  style={{ filter: 'drop-shadow(0 0 8px rgba(245,213,71,0.5))' }}
+                />
+              </svg>
+
+              {/* The Rock Container */}
+              <div style={styles.rockContainer}>
+                {/* Base Rock */}
+                <img
+                  src="/images/geode-closed.png"
+                  alt="Mysterious Geode"
+                  style={styles.geodeImage}
+                  draggable={false}
+                />
+
+                {/* Progressive Cracks Overlay */}
+                <AnimatePresence>
+                  {taps >= 1 && (
+                    <motion.img
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      src="/images/geode-cracked-1.png"
+                      alt=""
+                      style={{...styles.crackOverlay, zIndex: 20}}
+                    />
+                  )}
+                  {taps >= 2 && (
+                    <motion.img
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      src="/images/geode-cracked-2.png"
+                      alt=""
+                      style={{...styles.crackOverlay, zIndex: 30}}
+                    />
+                  )}
+                </AnimatePresence>
+
+                {/* Internal Glow Leak */}
+                <motion.div
+                  animate={{ opacity: taps * 0.3 }}
+                  style={{
+                    ...styles.internalGlow,
+                    background: `radial-gradient(circle, ${crystal.glow} 0%, transparent 70%)`
+                  }}
+                />
+              </div>
+
+              {/* Debris Particles (shown during final crack) */}
+              {particles.length > 0 && (
+                <div style={styles.particlesContainer}>
+                  {particles.map((p) => (
+                    <motion.div
+                      key={p.id}
+                      style={styles.debrisWrapper}
+                      initial={{ x: 0, y: 0, opacity: 1, scale: 0 }}
+                      animate={{
+                        x: Math.cos(p.angle) * p.speed,
+                        y: Math.sin(p.angle) * p.speed,
+                        opacity: 0,
+                        scale: p.scale,
+                        rotate: p.angle * 50
+                      }}
+                      transition={{ duration: 1.2, ease: "easeOut" }}
+                    >
+                      <img
+                        src="/images/rock-debris.png"
+                        alt=""
+                        style={styles.debrisImage}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="open-geode"
+              style={styles.openGeode}
+            >
+              {/* Radiant Glow Background */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1.5 }}
+                transition={{ duration: 1 }}
+                style={{
+                  ...styles.radiantGlow,
+                  background: `radial-gradient(circle, ${crystal.glow} 0%, transparent 70%)`
+                }}
               />
 
-              {/* SVG overlay for cracks and glow effects */}
-              <svg viewBox="0 0 160 150" style={styles.crackOverlay}>
-                <defs>
-                  {/* Inner crystal glow filter */}
-                  <filter id="innerGlow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="8" result="blur"/>
-                    <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-                  </filter>
-
-                  {/* Crack glow effect */}
-                  <filter id="crackGlow" x="-100%" y="-100%" width="300%" height="300%">
-                    <feGaussianBlur stdDeviation="3" result="blur1"/>
-                    <feGaussianBlur stdDeviation="6" result="blur2"/>
-                    <feMerge>
-                      <feMergeNode in="blur2"/>
-                      <feMergeNode in="blur1"/>
-                      <feMergeNode in="SourceGraphic"/>
-                    </feMerge>
-                  </filter>
-
-                  {/* Crystal color gradient for cracks */}
-                  <linearGradient id="crackColor" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor={crystal.highlight} />
-                    <stop offset="50%" stopColor={crystal.primary} />
-                    <stop offset="100%" stopColor={crystal.secondary} />
-                  </linearGradient>
-                </defs>
-
-                {/* Inner crystal cavity hint - glows through cracks */}
-                {tapCount > 0 && (
-                  <motion.ellipse
-                    cx="80"
-                    cy="75"
-                    rx="35"
-                    ry="40"
-                    fill={crystal.glow}
-                    filter="url(#innerGlow)"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 0.3 + tapCount * 0.25 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                )}
-
-                {/* Crack network - progressive reveal */}
-                {crackPaths.map((path, index) => (
-                  <motion.g key={index}>
-                    {/* Crack depth/shadow */}
-                    <motion.path
-                      d={path}
-                      stroke="rgba(0,0,0,0.8)"
-                      strokeWidth="4"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      initial={{ pathLength: 0, opacity: 0 }}
-                      animate={{ pathLength: 1, opacity: 1 }}
-                      transition={{ duration: 0.25, delay: index * 0.03, ease: 'easeOut' }}
-                    />
-                    {/* Crack inner glow */}
-                    <motion.path
-                      d={path}
-                      stroke="url(#crackColor)"
-                      strokeWidth="2.5"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      filter="url(#crackGlow)"
-                      initial={{ pathLength: 0, opacity: 0 }}
-                      animate={{ pathLength: 1, opacity: 1 }}
-                      transition={{ duration: 0.25, delay: index * 0.03 + 0.05, ease: 'easeOut' }}
-                    />
-                    {/* Crack highlight edge */}
-                    <motion.path
-                      d={path}
-                      stroke={crystal.highlight}
-                      strokeWidth="1"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      initial={{ pathLength: 0, opacity: 0 }}
-                      animate={{ pathLength: 1, opacity: 0.8 }}
-                      transition={{ duration: 0.2, delay: index * 0.03 + 0.1, ease: 'easeOut' }}
-                    />
-                  </motion.g>
-                ))}
-              </svg>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Debris Particles */}
-        <AnimatePresence>
-          {showParticles && (
-            <div style={styles.particlesContainer}>
-              {debris.map((p) => (
-                <motion.div
-                  key={p.id}
-                  style={{
-                    ...styles.debris,
-                    background: p.color,
-                    borderRadius: p.isRock ? '2px' : '0',
-                    clipPath: p.isRock
-                      ? p.shape === 0
-                        ? 'polygon(20% 0%, 80% 0%, 100% 60%, 60% 100%, 0% 80%)'
-                        : p.shape === 1
-                        ? 'polygon(0% 30%, 50% 0%, 100% 30%, 80% 100%, 20% 100%)'
-                        : 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)'
-                      : 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)', // Crystal shard
-                    boxShadow: p.isRock
-                      ? 'inset 1px 1px 2px rgba(255,255,255,0.2), inset -1px -1px 2px rgba(0,0,0,0.3)'
-                      : `0 0 8px ${crystal.glow}`,
-                    width: p.isRock ? '12px' : '8px',
-                    height: p.isRock ? '10px' : '12px',
-                  }}
-                  initial={{ x: 0, y: 0, scale: 0, opacity: 1, rotate: 0 }}
-                  animate={{
-                    x: p.x,
-                    y: [0, p.y * 0.3, p.y + 80], // Arc with gravity
-                    scale: [0, p.scale * 1.2, p.scale, 0],
-                    opacity: [1, 1, 1, 0],
-                    rotate: p.rotation,
-                  }}
-                  transition={{
-                    duration: 1,
-                    delay: p.delay,
-                    ease: [0.25, 0.46, 0.45, 0.94],
-                    y: { duration: 1, ease: 'easeIn' }
-                  }}
-                />
-              ))}
-              {/* Dust particles */}
-              {Array.from({ length: 20 }, (_, i) => (
-                <motion.div
-                  key={`dust-${i}`}
-                  style={{
-                    ...styles.dust,
-                    background: `rgba(${150 + Math.random() * 50}, ${140 + Math.random() * 40}, ${130 + Math.random() * 30}, 0.6)`
-                  }}
-                  initial={{ x: 0, y: 0, scale: 0, opacity: 0.8 }}
-                  animate={{
-                    x: (Math.random() - 0.5) * 200,
-                    y: (Math.random() - 0.5) * 200,
-                    scale: [0, 0.5 + Math.random() * 0.5, 0],
-                    opacity: [0.8, 0.4, 0],
-                  }}
-                  transition={{
-                    duration: 1.2,
-                    delay: Math.random() * 0.2,
-                    ease: 'easeOut'
-                  }}
-                />
-              ))}
-            </div>
-          )}
-        </AnimatePresence>
-
-        {/* Revealed Crystal Cluster */}
-        <AnimatePresence>
-          {isRevealed && (
-            <motion.div
-              style={styles.crystalContainer}
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{
-                type: 'spring',
-                stiffness: 300,
-                damping: 20,
-                delay: 0.1
-              }}
-            >
-              <svg viewBox="0 0 160 150" style={styles.crystalSvg}>
-                <defs>
-                  {/* Crystal gradient */}
-                  <linearGradient id="crystalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor={crystal.highlight} />
-                    <stop offset="30%" stopColor={crystal.secondary} />
-                    <stop offset="70%" stopColor={crystal.primary} />
-                    <stop offset="100%" stopColor={crystal.deep} />
-                  </linearGradient>
-
-                  {/* Crystal facet highlights */}
-                  <linearGradient id="crystalHighlight" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="rgba(255,255,255,0.6)" />
-                    <stop offset="50%" stopColor="rgba(255,255,255,0.1)" />
-                    <stop offset="100%" stopColor="transparent" />
-                  </linearGradient>
-
-                  {/* Side facet gradient */}
-                  <linearGradient id="sideFacet" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor={crystal.deep} />
-                    <stop offset="100%" stopColor={crystal.primary} />
-                  </linearGradient>
-
-                  {/* Crystal glow filter */}
-                  <filter id="crystalGlow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="4" result="blur"/>
-                    <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-                  </filter>
-
-                  {/* Outer glow */}
-                  <filter id="outerGlow">
-                    <feGaussianBlur stdDeviation="8" result="blur"/>
-                    <feMerge>
-                      <feMergeNode in="blur"/>
-                      <feMergeNode in="SourceGraphic"/>
-                    </feMerge>
-                  </filter>
-
-                  {/* Geode cavity base gradient */}
-                  <radialGradient id="cavityGrad" cx="50%" cy="60%" r="50%">
-                    <stop offset="0%" stopColor="#1a1614" />
-                    <stop offset="60%" stopColor="#0d0b0a" />
-                    <stop offset="100%" stopColor="#000000" />
-                  </radialGradient>
-
-                  {/* Geode shell gradient */}
-                  <radialGradient id="shellGrad" cx="30%" cy="30%" r="80%">
-                    <stop offset="0%" stopColor="#4a4240" />
-                    <stop offset="50%" stopColor="#2d2826" />
-                    <stop offset="100%" stopColor="#1a1614" />
-                  </radialGradient>
-                </defs>
-
-                {/* Outer shell/rim of opened geode */}
-                <path
-                  d="M15,75
-                     C15,40 35,15 80,15
-                     C125,15 145,40 145,75
-                     C145,110 125,135 80,135
-                     C35,135 15,110 15,75Z"
-                  fill="url(#shellGrad)"
-                />
-
-                {/* Inner cavity shadow */}
-                <ellipse cx="80" cy="78" rx="52" ry="48" fill="url(#cavityGrad)"/>
-
-                {/* Ambient crystal glow in cavity */}
-                <motion.ellipse
-                  cx="80"
-                  cy="80"
-                  rx="40"
-                  ry="35"
-                  fill={crystal.glow}
-                  filter="url(#outerGlow)"
-                  animate={{
-                    opacity: [0.4, 0.6, 0.4],
-                    scale: [1, 1.05, 1]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                />
-
-                {/* Crystal cluster - multiple individual crystals */}
-                <g filter="url(#crystalGlow)">
-                  {/* Center large crystal */}
-                  <motion.g
-                    initial={{ scale: 0, y: 20 }}
-                    animate={{ scale: 1, y: 0 }}
-                    transition={{ delay: 0.15, type: 'spring', stiffness: 400 }}
-                  >
-                    <polygon
-                      points="80,25 95,50 95,95 80,115 65,95 65,50"
-                      fill="url(#crystalGrad)"
-                    />
-                    <polygon
-                      points="80,25 95,50 80,55 65,50"
-                      fill="url(#crystalHighlight)"
-                    />
-                    <polygon
-                      points="65,50 80,55 80,115 65,95"
-                      fill={crystal.deep}
-                      opacity="0.7"
-                    />
-                    <polygon
-                      points="95,50 80,55 80,115 95,95"
-                      fill="url(#sideFacet)"
-                      opacity="0.5"
-                    />
-                  </motion.g>
-
-                  {/* Left crystal */}
-                  <motion.g
-                    initial={{ scale: 0, y: 15 }}
-                    animate={{ scale: 1, y: 0 }}
-                    transition={{ delay: 0.25, type: 'spring', stiffness: 400 }}
-                  >
-                    <polygon
-                      points="50,50 60,65 60,100 50,110 40,100 40,65"
-                      fill="url(#crystalGrad)"
-                    />
-                    <polygon
-                      points="50,50 60,65 50,68 40,65"
-                      fill="url(#crystalHighlight)"
-                    />
-                    <polygon
-                      points="40,65 50,68 50,110 40,100"
-                      fill={crystal.deep}
-                      opacity="0.6"
-                    />
-                  </motion.g>
-
-                  {/* Right crystal */}
-                  <motion.g
-                    initial={{ scale: 0, y: 15 }}
-                    animate={{ scale: 1, y: 0 }}
-                    transition={{ delay: 0.3, type: 'spring', stiffness: 400 }}
-                  >
-                    <polygon
-                      points="110,48 122,62 122,98 110,112 98,98 98,62"
-                      fill="url(#crystalGrad)"
-                    />
-                    <polygon
-                      points="110,48 122,62 110,66 98,62"
-                      fill="url(#crystalHighlight)"
-                    />
-                    <polygon
-                      points="122,62 110,66 110,112 122,98"
-                      fill="url(#sideFacet)"
-                      opacity="0.5"
-                    />
-                  </motion.g>
-
-                  {/* Small crystal - left back */}
-                  <motion.g
-                    initial={{ scale: 0, y: 10 }}
-                    animate={{ scale: 1, y: 0 }}
-                    transition={{ delay: 0.35, type: 'spring', stiffness: 400 }}
-                  >
-                    <polygon
-                      points="35,68 42,78 42,95 35,102 28,95 28,78"
-                      fill="url(#crystalGrad)"
-                      opacity="0.8"
-                    />
-                    <polygon
-                      points="35,68 42,78 35,80 28,78"
-                      fill="url(#crystalHighlight)"
-                    />
-                  </motion.g>
-
-                  {/* Small crystal - right back */}
-                  <motion.g
-                    initial={{ scale: 0, y: 10 }}
-                    animate={{ scale: 1, y: 0 }}
-                    transition={{ delay: 0.38, type: 'spring', stiffness: 400 }}
-                  >
-                    <polygon
-                      points="128,65 134,74 134,92 128,100 122,92 122,74"
-                      fill="url(#crystalGrad)"
-                      opacity="0.75"
-                    />
-                    <polygon
-                      points="128,65 134,74 128,76 122,74"
-                      fill="url(#crystalHighlight)"
-                    />
-                  </motion.g>
-
-                  {/* Tiny accent crystals */}
-                  <motion.polygon
-                    points="70,55 74,62 74,75 70,80 66,75 66,62"
-                    fill={crystal.secondary}
-                    opacity="0.7"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.4, type: 'spring' }}
-                  />
-                  <motion.polygon
-                    points="92,58 96,66 96,78 92,84 88,78 88,66"
-                    fill={crystal.secondary}
-                    opacity="0.7"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.42, type: 'spring' }}
-                  />
-                </g>
-
-                {/* Shell rim detail */}
-                <path
-                  d="M15,75
-                     C15,40 35,15 80,15
-                     C125,15 145,40 145,75
-                     C145,110 125,135 80,135
-                     C35,135 15,110 15,75Z"
-                  fill="none"
-                  stroke="rgba(80,70,65,0.5)"
-                  strokeWidth="2"
-                />
-
-                {/* Inner rim edge */}
-                <ellipse
-                  cx="80" cy="78" rx="52" ry="48"
-                  fill="none"
-                  stroke="rgba(30,25,20,0.8)"
-                  strokeWidth="3"
-                />
-              </svg>
+              {/* The Gemstone */}
+              <motion.img
+                src="/images/gem-amethyst.png"
+                alt={`Revealed ${crystal.name}`}
+                initial={{ scale: 0, rotate: -180, opacity: 0 }}
+                animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 20,
+                  delay: 0.1
+                }}
+                style={{
+                  ...styles.gemImage,
+                  filter: `drop-shadow(0 0 60px ${crystal.glow})`
+                }}
+              />
 
               {/* Floating sparkles */}
               {[...Array(8)].map((_, i) => (
@@ -699,7 +323,7 @@ const GeodeCracker: React.FC<GeodeCrackerProps> = ({ onCheckIn }) => {
                     ...styles.sparkle,
                     top: `${25 + (i % 4) * 15}%`,
                     left: `${20 + (i % 5) * 15}%`,
-                    background: i % 2 === 0 ? crystal.highlight : '#ffffff',
+                    background: i % 2 === 0 ? crystal.primary : '#ffffff',
                   }}
                   animate={{
                     scale: [0, 1.2, 0],
@@ -717,37 +341,36 @@ const GeodeCracker: React.FC<GeodeCrackerProps> = ({ onCheckIn }) => {
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.div>
+      </div>
 
-      {/* Affirmation Message */}
+      {/* Crystal Name and Affirmation */}
       <AnimatePresence>
-        {isRevealed && (
+        {isCracked && (
           <motion.div
-            style={styles.messageContainer}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
+            transition={{ delay: 0.8, type: "spring" }}
+            style={styles.messageContainer}
           >
-            <motion.div
-              style={{
-                ...styles.crystalName,
-                color: crystal.primary,
-                textShadow: `0 0 20px ${crystal.glow}`
-              }}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.6 }}
-            >
-              {crystal.name}
-            </motion.div>
-            <motion.div
+            <h3 style={{
+              ...styles.crystalName,
+              color: crystal.primary,
+              textShadow: `0 0 20px ${crystal.glow}`
+            }}>
+              {crystal.name.toUpperCase()}
+            </h3>
+            <div style={styles.divider} />
+            <p style={styles.meaning}>
+              {crystal.meaning}
+            </p>
+            <motion.p
               style={styles.affirmation}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
+              transition={{ delay: 1.2 }}
             >
               "{affirmation}"
-            </motion.div>
+            </motion.p>
             {!hasCheckedIn && (
               <motion.div
                 style={{
@@ -757,7 +380,7 @@ const GeodeCracker: React.FC<GeodeCrackerProps> = ({ onCheckIn }) => {
                 }}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1, type: 'spring' }}
+                transition={{ delay: 1.4, type: 'spring' }}
               >
                 +25 Alignment Points
               </motion.div>
@@ -768,37 +391,38 @@ const GeodeCracker: React.FC<GeodeCrackerProps> = ({ onCheckIn }) => {
 
       {/* Tap Hint */}
       <AnimatePresence>
-        {!isRevealed && !hasCheckedIn && (
+        {!isCracked && !hasCheckedIn && (
           <motion.div
             style={styles.tapHint}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
           >
-            <motion.span
+            <motion.p
+              style={styles.tapText}
               animate={{ opacity: [0.4, 0.8, 0.4] }}
               transition={{ duration: 2.5, repeat: Infinity }}
             >
-              {tapCount === 0 ? 'Tap to crack' : `${3 - tapCount} more tap${3 - tapCount !== 1 ? 's' : ''}`}
-            </motion.span>
+              {taps === 0 ? "Tap to Reveal" : `${MAX_TAPS - taps} tap${MAX_TAPS - taps !== 1 ? 's' : ''} left`}
+            </motion.p>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Progress Dots */}
-      {!isRevealed && !hasCheckedIn && (
+      {!isCracked && !hasCheckedIn && (
         <div style={styles.progressDots}>
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}
               style={{
                 ...styles.dot,
-                background: i < tapCount
-                  ? `linear-gradient(135deg, ${crystal.primary}, ${crystal.secondary})`
+                background: i < taps
+                  ? `linear-gradient(135deg, ${crystal.primary}, #F5D547)`
                   : 'rgba(255,255,255,0.15)',
-                boxShadow: i < tapCount ? `0 0 8px ${crystal.glow}` : 'none'
+                boxShadow: i < taps ? `0 0 8px ${crystal.glow}` : 'none'
               }}
-              animate={i < tapCount ? { scale: [1, 1.4, 1] } : {}}
+              animate={i < taps ? { scale: [1, 1.4, 1] } : {}}
               transition={{ duration: 0.3 }}
             />
           ))}
@@ -815,6 +439,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     padding: '24px 16px',
     marginBottom: '16px',
+    minHeight: '420px',
   },
   title: {
     display: 'flex',
@@ -826,75 +451,102 @@ const styles: Record<string, React.CSSProperties> = {
     letterSpacing: '1.5px',
     marginBottom: '20px',
   },
-  geodeWrapper: {
+  geodeContainer: {
     position: 'relative',
-    width: '180px',
-    height: '180px',
+    width: '288px',
+    height: '288px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer',
+    overflow: 'visible',
   },
-  ambientGlow: {
+  closedGeode: {
+    position: 'relative',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+  },
+  progressRing: {
     position: 'absolute',
-    width: '200%',
-    height: '200%',
-    borderRadius: '50%',
-    pointerEvents: 'none',
+    width: 'calc(100% + 4rem)',
+    height: 'calc(100% + 4rem)',
+    transform: 'rotate(-90deg)',
+    opacity: 0.5,
+    left: '-2rem',
+    top: '-2rem',
   },
   rockContainer: {
-    position: 'absolute',
-    width: '180px',
-    height: '180px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    position: 'relative',
+    width: '288px',
+    height: '288px',
   },
   geodeImage: {
+    position: 'absolute',
+    inset: 0,
     width: '100%',
     height: '100%',
     objectFit: 'contain',
+    filter: 'drop-shadow(0 25px 25px rgba(0,0,0,0.5))',
+    zIndex: 10,
     userSelect: 'none',
-    pointerEvents: 'none',
   },
   crackOverlay: {
     position: 'absolute',
-    width: '160px',
-    height: '150px',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    inset: 0,
+    width: '100%',
+    height: '100%',
+    objectFit: 'contain',
+    mixBlendMode: 'lighten',
+    userSelect: 'none',
     pointerEvents: 'none',
+  },
+  internalGlow: {
+    position: 'absolute',
+    inset: 0,
+    borderRadius: '50%',
+    zIndex: 0,
   },
   particlesContainer: {
     position: 'absolute',
+    left: '50%',
+    top: '50%',
+    width: 0,
+    height: 0,
+    zIndex: 50,
+  },
+  debrisWrapper: {
+    position: 'absolute',
+    width: '16px',
+    height: '16px',
+  },
+  debrisImage: {
     width: '100%',
     height: '100%',
-    pointerEvents: 'none',
+    objectFit: 'contain',
+    opacity: 0.8,
+  },
+  openGeode: {
+    position: 'relative',
+    width: '320px',
+    height: '320px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  debris: {
+  radiantGlow: {
     position: 'absolute',
-  },
-  dust: {
-    position: 'absolute',
-    width: '4px',
-    height: '4px',
+    inset: 0,
     borderRadius: '50%',
   },
-  crystalContainer: {
+  gemImage: {
     position: 'relative',
-    width: '160px',
-    height: '150px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  crystalSvg: {
-    width: '100%',
-    height: '100%',
+    width: '256px',
+    height: '256px',
+    objectFit: 'contain',
+    zIndex: 20,
+    userSelect: 'none',
   },
   sparkle: {
     position: 'absolute',
@@ -906,14 +558,28 @@ const styles: Record<string, React.CSSProperties> = {
   messageContainer: {
     textAlign: 'center',
     marginTop: '20px',
-    maxWidth: '280px',
+    width: '100%',
+    zIndex: 30,
   },
   crystalName: {
-    fontSize: '13px',
+    fontSize: '24px',
     fontWeight: 700,
+    letterSpacing: '4px',
+    marginBottom: '8px',
+  },
+  divider: {
+    height: '1px',
+    width: '48px',
+    background: 'linear-gradient(to right, transparent, rgba(168,85,247,0.5), transparent)',
+    margin: '0 auto 8px',
+  },
+  meaning: {
+    fontSize: '12px',
+    color: 'rgba(216, 180, 254, 0.9)',
+    letterSpacing: '2px',
     textTransform: 'uppercase',
-    letterSpacing: '3px',
-    marginBottom: '10px',
+    fontWeight: 500,
+    marginBottom: '16px',
   },
   affirmation: {
     fontSize: '16px',
@@ -921,6 +587,8 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'rgba(255,255,255,0.95)',
     lineHeight: 1.6,
     fontStyle: 'italic',
+    maxWidth: '280px',
+    margin: '0 auto',
   },
   points: {
     marginTop: '14px',
@@ -933,10 +601,16 @@ const styles: Record<string, React.CSSProperties> = {
     border: '1px solid',
   },
   tapHint: {
-    marginTop: '18px',
-    fontSize: '13px',
+    marginTop: '16px',
+    textAlign: 'center',
+    width: '100%',
+  },
+  tapText: {
+    fontSize: '12px',
+    fontWeight: 500,
+    letterSpacing: '3px',
     color: 'rgba(255,255,255,0.5)',
-    letterSpacing: '0.5px',
+    textTransform: 'uppercase',
   },
   progressDots: {
     display: 'flex',
