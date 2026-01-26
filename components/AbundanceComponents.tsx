@@ -236,7 +236,7 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
     if (progress.activeGeodeId) {
       const index = CRYSTALS.findIndex(c => c.id === progress.activeGeodeId);
       if (index !== -1 && containerRef.current) {
-        const itemWidth = containerRef.current.offsetWidth * 0.5;
+        const itemWidth = containerRef.current.offsetWidth * 0.4;
         containerRef.current.scrollTo({ left: index * itemWidth, behavior: 'smooth' });
         setActiveIndex(index);
       }
@@ -247,7 +247,7 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
     if (containerRef.current) {
       const scrollLeft = containerRef.current.scrollLeft;
       const width = containerRef.current.offsetWidth;
-      const itemWidth = width * 0.5;
+      const itemWidth = width * 0.4;
       const index = Math.round(scrollLeft / itemWidth);
       setActiveIndex(Math.min(Math.max(index, 0), CRYSTALS.length - 1));
     }
@@ -295,7 +295,7 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
       <div
         ref={containerRef}
         onScroll={handleScroll}
-        className="flex overflow-x-auto snap-x snap-mandatory w-full py-12 px-[25%] gap-4"
+        className="flex overflow-x-auto snap-x snap-mandatory w-full py-12 px-[30%] gap-2"
         style={{ scrollBehavior: 'smooth', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {CRYSTALS.map((crystal, index) => {
@@ -317,7 +317,7 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
           return (
             <div
               key={crystal.id}
-              className="snap-center shrink-0 w-[50vw] max-w-[200px] flex flex-col items-center justify-center transition-all duration-500 relative cursor-pointer"
+              className="snap-center shrink-0 w-[40vw] max-w-[160px] flex flex-col items-center justify-center transition-all duration-500 relative cursor-pointer"
               style={{
                 transform: `scale(${scale}) translateY(${translateY}px)`,
                 opacity,
@@ -341,7 +341,7 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
                 </div>
               )}
 
-              <div className="relative w-32 h-32 mb-4">
+              <div className="relative w-24 h-24 sm:w-32 sm:h-32 mb-4">
                 {/* Glow Effect for Active/Mastered */}
                 {(slotState === 'ACTIVE' || slotState === 'MASTERED') && isActiveInCarousel && (
                   <div className={`absolute inset-0 ${crystal.glow} blur-2xl rounded-full animate-pulse`} />
