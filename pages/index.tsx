@@ -10,7 +10,9 @@ import paywallStyles from '../styles/Paywall.module.css';
 import { journalService, chatService, getAnonymousUserId, JournalEntry } from '../lib/supabase';
 import { aiMentorService } from '../lib/ai-mentor';
 import { revenueCatService, PLANS, PREMIUM_FEATURES, SubscriptionStatus } from '../lib/revenuecat';
-import { CRYSTALS, Crystal } from '../components/AbundanceComponents';
+import { CRYSTALS, Crystal, JourneyCarousel } from '../components/AbundanceComponents';
+import { GeodeCracker } from '../components/GeodeCracker';
+import { UserProgress, DEFAULT_USER_PROGRESS, MAX_CRACK_LEVEL, TOTAL_GEODES } from '../src/types/journey';
 
 // Types
 type Screen = 'welcome' | 'arrival' | 'onboarding' | 'rhythm' | 'dashboard' | 'meditations' | 'journal' | 'progress' | 'mentor' | 'settings' | 'profile' | 'player' | 'board' | 'gratitude' | 'quickshifts' | 'breathing' | 'learn' | 'article' | 'visualizations' | 'visualizationPlayer' | 'emotionalReset' | 'soundscapes' | 'audiobooks' | 'paywall' | 'pricing' | 'reminders' | 'notifications' | 'energyMode' | 'voiceSelector';
@@ -1128,7 +1130,11 @@ const DashboardScreen: React.FC<{
   user: UserState;
   onNavigate: (screen: Screen) => void;
   onCrackComplete?: () => void;
-}> = ({ user, onNavigate, onCrackComplete }) => {
+  userProgress: UserProgress;
+  onSelectGeode: (crystal: Crystal) => void;
+  onContinueJourney: (crystal: Crystal) => void;
+  onDeepenPractice?: (crystal: Crystal) => void;
+}> = ({ user, onNavigate, onCrackComplete, userProgress, onSelectGeode, onContinueJourney, onDeepenPractice }) => {
   const quickActions = [
     { title: 'Quick Shifts', subtitle: 'Instant reset exercises.', icon: Icons.heart, screen: 'quickshifts' as Screen },
     { title: 'Gratitude Journal', subtitle: 'Capture what you are grateful for.', icon: Icons.journal, screen: 'gratitude' as Screen },
@@ -1183,8 +1189,13 @@ const DashboardScreen: React.FC<{
         Shift Your State
       </button>
 
-      {/* Crystal Carousel */}
-      <CrystalCarousel />
+      {/* Journey Carousel (Hero's Path System) */}
+      <JourneyCarousel
+        progress={userProgress}
+        onSelectGeode={onSelectGeode}
+        onContinueJourney={onContinueJourney}
+        onDeepenPractice={onDeepenPractice}
+      />
 
       {/* Alignment Score */}
       <div className={styles.scoreSection}>
@@ -5968,6 +5979,11 @@ export default function Home() {
   const [currentAudioSession, setCurrentAudioSession] = useState<AudioSession | null>(null);
   const [showEnergyMode, setShowEnergyMode] = useState(false);
 
+  // Journey Progress State (Hero's Path System)
+  const [userProgress, setUserProgress] = useState<UserProgress>(DEFAULT_USER_PROGRESS);
+  const [showGeodeCracker, setShowGeodeCracker] = useState(false);
+  const [selectedJourneyCrystal, setSelectedJourneyCrystal] = useState<Crystal | null>(null);
+
   // Screen to URL path mapping
   const screenToPath: Record<Screen, string> = {
     'welcome': '/',
@@ -6014,6 +6030,70 @@ export default function Home() {
     localStorage.setItem('abundanceUser', JSON.stringify(updatedUser));
   };
 
+  // Journey Progress Functions
+  const updateProgress = (updates: Partial<UserProgress>) => {
+    const updatedProgress = { ...userProgress, ...updates };
+    setUserProgress(updatedProgress);
+    localStorage.setItem('abundanceJourneyProgress', JSON.stringify(updatedProgress));
+  };
+
+  // Handler: When user selects a geode to begin journey
+  const handleSelectGeode = (crystal: Crystal) => {
+    updateProgress({
+      journeyStatus: 'IN_PROGRESS',
+      activeGeodeId: crystal.id,
+      currentCrackLevel: 0,
+    });
+    // Open the GeodeCracker modal
+    setSelectedJourneyCrystal(crystal);
+    setShowGeodeCracker(true);
+  };
+
+  // Handler: When user taps to continue cracking active geode
+  const handleContinueJourney = (crystal: Crystal) => {
+    setSelectedJourneyCrystal(crystal);
+    setShowGeodeCracker(true);
+  };
+
+  // Handler: When the GeodeCracker completes a cracking session
+  const handleGeodeCrackComplete = () => {
+    const newCrackLevel = userProgress.currentCrackLevel + 1;
+
+    if (newCrackLevel >= MAX_CRACK_LEVEL) {
+      // Geode is fully cracked - mastery achieved!
+      const newMasteredIds = [...userProgress.masteredGeodeIds, userProgress.activeGeodeId!];
+      const allMastered = newMasteredIds.length >= TOTAL_GEODES;
+
+      updateProgress({
+        journeyStatus: allMastered ? 'ALL_MASTERED' : 'SELECTING',
+        activeGeodeId: null,
+        masteredGeodeIds: newMasteredIds,
+        currentCrackLevel: 0,
+      });
+
+      // Update alignment score bonus
+      updateUser({
+        alignmentScore: Math.min(100, user.alignmentScore + 10),
+      });
+    } else {
+      // Increment crack level
+      updateProgress({
+        currentCrackLevel: newCrackLevel,
+      });
+    }
+
+    setShowGeodeCracker(false);
+    setSelectedJourneyCrystal(null);
+  };
+
+  // Handler: Deepen practice for mastered crystals (Sage Mode)
+  const handleDeepenPractice = (crystal: Crystal) => {
+    setSelectedJourneyCrystal(crystal);
+    // For mastered crystals, go directly to a special practice mode
+    // For now, just navigate to meditations with that crystal's theme
+    navigateToScreen('meditations');
+  };
+
   useEffect(() => {
     // Check URL path for direct routing
     const path = window.location.pathname.replace('/', '');
@@ -6054,6 +6134,13 @@ export default function Home() {
     const initialScreen = sessionStorage.getItem('initialScreen');
     if (initialScreen) {
       sessionStorage.removeItem('initialScreen');
+    }
+
+    // Load journey progress
+    const savedProgress = localStorage.getItem('abundanceJourneyProgress');
+    if (savedProgress) {
+      const parsedProgress = JSON.parse(savedProgress);
+      setUserProgress(parsedProgress);
     }
 
     const savedUser = localStorage.getItem('abundanceUser');
@@ -6128,7 +6215,17 @@ export default function Home() {
       case 'rhythm':
         return <RhythmScreen onComplete={handleRhythmComplete} />;
       case 'dashboard':
-        return <DashboardScreen user={user} onNavigate={navigateToScreen} onCrackComplete={handleCrackComplete} />;
+        return (
+          <DashboardScreen
+            user={user}
+            onNavigate={navigateToScreen}
+            onCrackComplete={handleCrackComplete}
+            userProgress={userProgress}
+            onSelectGeode={handleSelectGeode}
+            onContinueJourney={handleContinueJourney}
+            onDeepenPractice={handleDeepenPractice}
+          />
+        );
       case 'meditations':
         return (
           <MeditationsScreen
@@ -6300,7 +6397,17 @@ export default function Home() {
       case 'energyMode':
         return null; // Handled as overlay
       default:
-        return <DashboardScreen user={user} onNavigate={navigateToScreen} onCrackComplete={handleCrackComplete} />;
+        return (
+          <DashboardScreen
+            user={user}
+            onNavigate={navigateToScreen}
+            onCrackComplete={handleCrackComplete}
+            userProgress={userProgress}
+            onSelectGeode={handleSelectGeode}
+            onContinueJourney={handleContinueJourney}
+            onDeepenPractice={handleDeepenPractice}
+          />
+        );
     }
   };
 
@@ -6334,6 +6441,24 @@ export default function Home() {
               onClose={() => setShowEnergyMode(false)}
               onSelect={(mode) => { setShowEnergyMode(false); /* Handle mode selection */ }}
             />
+          )}
+
+          {/* GeodeCracker Modal (Journey System) */}
+          {showGeodeCracker && selectedJourneyCrystal && (
+            <div className={styles.modalOverlay}>
+              <div className={styles.modalContent}>
+                <button
+                  className={styles.closeButton}
+                  onClick={() => {
+                    setShowGeodeCracker(false);
+                    setSelectedJourneyCrystal(null);
+                  }}
+                >
+                  ×
+                </button>
+                <GeodeCracker onCrackComplete={handleGeodeCrackComplete} />
+              </div>
+            </div>
           )}
         </div>
       </main>
