@@ -276,7 +276,7 @@ const GeodeCracker: React.FC<GeodeCrackerProps> = ({ onCheckIn }) => {
           transition={{ duration: 0.4 }}
         />
 
-        {/* Closed Geode Rock - High Quality */}
+        {/* Closed Geode Rock - High Quality Image */}
         <AnimatePresence>
           {!isRevealed && (
             <motion.div
@@ -288,37 +288,17 @@ const GeodeCracker: React.FC<GeodeCrackerProps> = ({ onCheckIn }) => {
                 transition: { duration: 0.4, ease: 'easeOut' }
               }}
             >
-              <svg viewBox="0 0 160 150" style={styles.geodeSvg}>
+              {/* Geode rock image */}
+              <img
+                src="/images/geode-closed.png"
+                alt="Closed geode"
+                style={styles.geodeImage}
+                draggable={false}
+              />
+
+              {/* SVG overlay for cracks and glow effects */}
+              <svg viewBox="0 0 160 150" style={styles.crackOverlay}>
                 <defs>
-                  {/* Complex rock texture gradient */}
-                  <radialGradient id="rockBase" cx="35%" cy="30%" r="70%">
-                    <stop offset="0%" stopColor="#5a524a" />
-                    <stop offset="40%" stopColor="#3d3632" />
-                    <stop offset="70%" stopColor="#2a2523" />
-                    <stop offset="100%" stopColor="#1a1614" />
-                  </radialGradient>
-
-                  {/* Secondary highlight gradient */}
-                  <radialGradient id="rockHighlight" cx="25%" cy="20%" r="50%">
-                    <stop offset="0%" stopColor="rgba(120,110,100,0.4)" />
-                    <stop offset="100%" stopColor="transparent" />
-                  </radialGradient>
-
-                  {/* Rock surface texture */}
-                  <filter id="rockTexture" x="-20%" y="-20%" width="140%" height="140%">
-                    <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="5" seed="15" result="noise1"/>
-                    <feTurbulence type="turbulence" baseFrequency="0.08" numOctaves="3" seed="25" result="noise2"/>
-                    <feBlend in="noise1" in2="noise2" mode="multiply" result="blendedNoise"/>
-                    <feColorMatrix type="saturate" values="0.1" result="desaturated"/>
-                    <feComponentTransfer result="contrast">
-                      <feFuncR type="linear" slope="1.5" intercept="-0.1"/>
-                      <feFuncG type="linear" slope="1.5" intercept="-0.1"/>
-                      <feFuncB type="linear" slope="1.5" intercept="-0.1"/>
-                    </feComponentTransfer>
-                    <feComposite in="SourceGraphic" in2="contrast" operator="in" result="textured"/>
-                    <feBlend in="textured" in2="contrast" mode="soft-light"/>
-                  </filter>
-
                   {/* Inner crystal glow filter */}
                   <filter id="innerGlow" x="-50%" y="-50%" width="200%" height="200%">
                     <feGaussianBlur stdDeviation="8" result="blur"/>
@@ -342,72 +322,19 @@ const GeodeCracker: React.FC<GeodeCrackerProps> = ({ onCheckIn }) => {
                     <stop offset="50%" stopColor={crystal.primary} />
                     <stop offset="100%" stopColor={crystal.secondary} />
                   </linearGradient>
-
-                  {/* Depth shadow */}
-                  <filter id="dropShadow" x="-30%" y="-30%" width="160%" height="160%">
-                    <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="rgba(0,0,0,0.5)"/>
-                  </filter>
                 </defs>
-
-                {/* Shadow under geode */}
-                <ellipse cx="80" cy="135" rx="50" ry="10" fill="rgba(0,0,0,0.3)" filter="url(#dropShadow)"/>
-
-                {/* Main geode body - organic rock shape */}
-                <path
-                  d="M80,15
-                     C105,15 130,30 138,55
-                     C145,75 142,100 130,115
-                     C118,130 95,135 80,135
-                     C65,135 42,130 30,115
-                     C18,100 15,75 22,55
-                     C30,30 55,15 80,15Z"
-                  fill="url(#rockBase)"
-                  filter="url(#rockTexture)"
-                />
-
-                {/* Rock surface highlights */}
-                <path
-                  d="M80,15
-                     C105,15 130,30 138,55
-                     C145,75 142,100 130,115
-                     C118,130 95,135 80,135
-                     C65,135 42,130 30,115
-                     C18,100 15,75 22,55
-                     C30,30 55,15 80,15Z"
-                  fill="url(#rockHighlight)"
-                />
-
-                {/* Surface detail bumps */}
-                <ellipse cx="45" cy="50" rx="12" ry="8" fill="rgba(70,60,55,0.5)" transform="rotate(-15 45 50)"/>
-                <ellipse cx="110" cy="60" rx="10" ry="7" fill="rgba(50,45,40,0.6)" transform="rotate(20 110 60)"/>
-                <ellipse cx="65" cy="100" rx="15" ry="9" fill="rgba(45,40,35,0.4)" transform="rotate(-5 65 100)"/>
-                <ellipse cx="100" cy="95" rx="11" ry="7" fill="rgba(55,50,45,0.5)" transform="rotate(10 100 95)"/>
-
-                {/* Rock edge definition */}
-                <path
-                  d="M80,15
-                     C105,15 130,30 138,55
-                     C145,75 142,100 130,115
-                     C118,130 95,135 80,135
-                     C65,135 42,130 30,115
-                     C18,100 15,75 22,55
-                     C30,30 55,15 80,15Z"
-                  fill="none"
-                  stroke="rgba(0,0,0,0.3)"
-                  strokeWidth="1"
-                />
 
                 {/* Inner crystal cavity hint - glows through cracks */}
                 {tapCount > 0 && (
                   <motion.ellipse
                     cx="80"
                     cy="75"
-                    rx="30"
-                    ry="35"
+                    rx="35"
+                    ry="40"
                     fill={crystal.glow}
                     filter="url(#innerGlow)"
                     initial={{ opacity: 0 }}
-                    animate={{ opacity: 0.2 + tapCount * 0.25 }}
+                    animate={{ opacity: 0.3 + tapCount * 0.25 }}
                     transition={{ duration: 0.3 }}
                   />
                 )}
@@ -917,15 +844,27 @@ const styles: Record<string, React.CSSProperties> = {
   },
   rockContainer: {
     position: 'absolute',
-    width: '160px',
-    height: '150px',
+    width: '180px',
+    height: '180px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  geodeSvg: {
+  geodeImage: {
     width: '100%',
     height: '100%',
+    objectFit: 'contain',
+    userSelect: 'none',
+    pointerEvents: 'none',
+  },
+  crackOverlay: {
+    position: 'absolute',
+    width: '160px',
+    height: '150px',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    pointerEvents: 'none',
   },
   particlesContainer: {
     position: 'absolute',
