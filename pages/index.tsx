@@ -10,6 +10,7 @@ import paywallStyles from '../styles/Paywall.module.css';
 import { journalService, chatService, getAnonymousUserId, JournalEntry } from '../lib/supabase';
 import { aiMentorService } from '../lib/ai-mentor';
 import { revenueCatService, PLANS, PREMIUM_FEATURES, SubscriptionStatus } from '../lib/revenuecat';
+import GeodeCracker from '../components/GeodeCracker';
 
 // Types
 type Screen = 'welcome' | 'arrival' | 'onboarding' | 'rhythm' | 'dashboard' | 'meditations' | 'journal' | 'progress' | 'mentor' | 'settings' | 'profile' | 'player' | 'board' | 'gratitude' | 'quickshifts' | 'breathing' | 'learn' | 'article' | 'visualizations' | 'visualizationPlayer' | 'emotionalReset' | 'soundscapes' | 'audiobooks' | 'paywall' | 'pricing' | 'reminders' | 'notifications' | 'energyMode' | 'voiceSelector';
@@ -1118,7 +1119,7 @@ const DashboardScreen: React.FC<{
 
       {/* Daily Geode Check-in */}
       {onGeodeCheckIn && (
-        <DailyGeode onCheckIn={onGeodeCheckIn} />
+        <GeodeCracker onCheckIn={onGeodeCheckIn} />
       )}
 
       {/* Alignment Score */}
