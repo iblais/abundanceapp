@@ -10,7 +10,7 @@ import paywallStyles from '../styles/Paywall.module.css';
 import { journalService, chatService, getAnonymousUserId, JournalEntry } from '../lib/supabase';
 import { aiMentorService } from '../lib/ai-mentor';
 import { revenueCatService, PLANS, PREMIUM_FEATURES, SubscriptionStatus } from '../lib/revenuecat';
-import { CRYSTALS, Crystal, JourneyCarousel } from '../components/AbundanceComponents';
+import { CRYSTALS, Crystal } from '../components/AbundanceComponents';
 import { GeodeCracker } from '../components/GeodeCracker';
 import { UserProgress, DEFAULT_USER_PROGRESS, MAX_CRACK_LEVEL, TOTAL_GEODES } from '../src/types/journey';
 
@@ -1129,12 +1129,7 @@ const RhythmScreen: React.FC<{ onComplete: (morning: string, evening: string) =>
 const DashboardScreen: React.FC<{
   user: UserState;
   onNavigate: (screen: Screen) => void;
-  onCrackComplete?: () => void;
-  userProgress: UserProgress;
-  onSelectGeode: (crystal: Crystal) => void;
-  onContinueJourney: (crystal: Crystal) => void;
-  onDeepenPractice?: (crystal: Crystal) => void;
-}> = ({ user, onNavigate, onCrackComplete, userProgress, onSelectGeode, onContinueJourney, onDeepenPractice }) => {
+}> = ({ user, onNavigate }) => {
   const quickActions = [
     { title: 'Quick Shifts', subtitle: 'Instant reset exercises.', icon: Icons.heart, screen: 'quickshifts' as Screen },
     { title: 'Gratitude Journal', subtitle: 'Capture what you are grateful for.', icon: Icons.journal, screen: 'gratitude' as Screen },
@@ -1189,13 +1184,6 @@ const DashboardScreen: React.FC<{
         Shift Your State
       </button>
 
-      {/* Journey Carousel (Hero's Path System) */}
-      <JourneyCarousel
-        progress={userProgress}
-        onSelectGeode={onSelectGeode}
-        onContinueJourney={onContinueJourney}
-        onDeepenPractice={onDeepenPractice}
-      />
 
       {/* Alignment Score */}
       <div className={styles.scoreSection}>
@@ -6219,11 +6207,6 @@ export default function Home() {
           <DashboardScreen
             user={user}
             onNavigate={navigateToScreen}
-            onCrackComplete={handleCrackComplete}
-            userProgress={userProgress}
-            onSelectGeode={handleSelectGeode}
-            onContinueJourney={handleContinueJourney}
-            onDeepenPractice={handleDeepenPractice}
           />
         );
       case 'meditations':
@@ -6401,11 +6384,6 @@ export default function Home() {
           <DashboardScreen
             user={user}
             onNavigate={navigateToScreen}
-            onCrackComplete={handleCrackComplete}
-            userProgress={userProgress}
-            onSelectGeode={handleSelectGeode}
-            onContinueJourney={handleContinueJourney}
-            onDeepenPractice={handleDeepenPractice}
           />
         );
     }
