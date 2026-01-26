@@ -10,7 +10,7 @@ import paywallStyles from '../styles/Paywall.module.css';
 import { journalService, chatService, getAnonymousUserId, JournalEntry } from '../lib/supabase';
 import { aiMentorService } from '../lib/ai-mentor';
 import { revenueCatService, PLANS, PREMIUM_FEATURES, SubscriptionStatus } from '../lib/revenuecat';
-import GeodeCracker from '../components/GeodeCracker';
+import { CRYSTALS, Crystal } from '../components/AbundanceComponents';
 
 // Types
 type Screen = 'welcome' | 'arrival' | 'onboarding' | 'rhythm' | 'dashboard' | 'meditations' | 'journal' | 'progress' | 'mentor' | 'settings' | 'profile' | 'player' | 'board' | 'gratitude' | 'quickshifts' | 'breathing' | 'learn' | 'article' | 'visualizations' | 'visualizationPlayer' | 'emotionalReset' | 'soundscapes' | 'audiobooks' | 'paywall' | 'pricing' | 'reminders' | 'notifications' | 'energyMode' | 'voiceSelector';
@@ -662,6 +662,72 @@ const DailyGeode: React.FC<{ onCheckIn: (affirmation: string, points: number) =>
   );
 };
 
+// ==== Crystal Carousel (Compact Horizontal Selector) ====
+const CrystalCarousel: React.FC<{
+  onSelect?: (crystal: Crystal) => void;
+  selectedId?: string;
+}> = ({ onSelect, selectedId }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const handleScroll = () => {
+    if (containerRef.current) {
+      const scrollLeft = containerRef.current.scrollLeft;
+      const itemWidth = 72; // w-16 (64px) + gap
+      const index = Math.round(scrollLeft / itemWidth);
+      setActiveIndex(Math.min(Math.max(index, 0), CRYSTALS.length - 1));
+    }
+  };
+
+  const handleSelect = (crystal: Crystal, index: number) => {
+    if (onSelect) onSelect(crystal);
+    if (containerRef.current) {
+      const itemWidth = 72;
+      containerRef.current.scrollTo({
+        left: index * itemWidth,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  return (
+    <div className={styles.crystalCarouselContainer}>
+      <div className={styles.crystalCarouselHeader}>
+        <span className={styles.crystalCarouselTitle}>Today's Focus</span>
+      </div>
+      <div
+        ref={containerRef}
+        onScroll={handleScroll}
+        className={styles.crystalCarouselScroll}
+      >
+        {CRYSTALS.map((crystal, index) => {
+          const isActive = index === activeIndex || crystal.id === selectedId;
+          return (
+            <div
+              key={crystal.id}
+              onClick={() => handleSelect(crystal, index)}
+              className={`${styles.crystalCarouselItem} ${isActive ? styles.crystalCarouselItemActive : ''}`}
+            >
+              <img
+                src={crystal.image}
+                alt={crystal.name}
+                className={styles.crystalCarouselImage}
+              />
+              {isActive && (
+                <span className={styles.crystalCarouselName}>{crystal.name}</span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {/* Active crystal meaning */}
+      <div className={styles.crystalCarouselMeaning}>
+        {CRYSTALS[activeIndex].meaning}
+      </div>
+    </div>
+  );
+};
+
 // Tab Bar Component - matches reference with 5 icons
 const TabBar: React.FC<{ activeTab: string; onTabChange: (tab: Screen) => void }> = ({ activeTab, onTabChange }) => {
   const tabs = [
@@ -1117,10 +1183,8 @@ const DashboardScreen: React.FC<{
         Shift Your State
       </button>
 
-      {/* Daily Geode Check-in */}
-      {onCrackComplete && (
-        <GeodeCracker onCrackComplete={onCrackComplete} />
-      )}
+      {/* Crystal Carousel */}
+      <CrystalCarousel />
 
       {/* Alignment Score */}
       <div className={styles.scoreSection}>
