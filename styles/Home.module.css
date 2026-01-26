@@ -8162,3 +8162,104 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
 }
+
+/* ==== Crystal Carousel ==== */
+.crystalCarouselContainer {
+  width: 100%;
+  margin: 24px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.crystalCarouselHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.crystalCarouselTitle {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.crystalCarouselScroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 16px;
+  width: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.crystalCarouselScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.crystalCarouselItem {
+  flex-shrink: 0;
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: transparent;
+}
+
+.crystalCarouselItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.crystalCarouselItemActive {
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.crystalCarouselImage {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.crystalCarouselItem:not(.crystalCarouselItemActive) .crystalCarouselImage {
+  opacity: 0.6;
+  filter: grayscale(0.4) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.crystalCarouselItemActive .crystalCarouselImage {
+  transform: scale(1.15);
+  filter: drop-shadow(0 4px 12px rgba(212, 175, 55, 0.4));
+}
+
+.crystalCarouselName {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.9);
+  white-space: nowrap;
+  max-width: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.crystalCarouselMeaning {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 8px;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
