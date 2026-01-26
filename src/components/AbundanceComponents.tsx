@@ -169,7 +169,7 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
     if (containerRef.current) {
       const scrollLeft = containerRef.current.scrollLeft;
       const width = containerRef.current.offsetWidth;
-      const itemWidth = width * 0.5;
+      const itemWidth = width * 0.25;
       const index = Math.round(scrollLeft / itemWidth);
       setActiveIndex(Math.min(Math.max(index, 0), CRYSTALS.length - 1));
     }
@@ -188,7 +188,7 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
       <div
         ref={containerRef}
         onScroll={handleScroll}
-        className="flex overflow-x-auto snap-x snap-mandatory w-full py-12 px-[25%] no-scrollbar gap-4"
+        className="flex overflow-x-auto snap-x snap-mandatory w-full py-6 px-[37%] no-scrollbar gap-1"
         style={{ scrollBehavior: 'smooth' }}
       >
         {CRYSTALS.map((crystal, index) => {
@@ -209,7 +209,7 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
           return (
             <div
               key={crystal.id}
-              className="snap-center shrink-0 w-[50vw] max-w-[200px] flex flex-col items-center justify-center transition-all duration-500 relative"
+              className="snap-center shrink-0 w-[25vw] max-w-[80px] flex flex-col items-center justify-center transition-all duration-500 relative"
               style={{
                 transform: `scale(${scale}) translateY(${isActiveInCarousel ? '0' : '10px'})`,
                 opacity,
@@ -237,7 +237,7 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
               )}
 
               {/* Main Image Container - CONSTRAINED SIZE */}
-              <div className="relative w-32 h-32 mb-4">
+              <div className="relative w-14 h-14 sm:w-16 sm:h-16 mb-2">
                 {/* Glow Effect */}
                 {(slotState === 'ACTIVE' || slotState === 'MASTERED') && isActiveInCarousel && (
                   <div className={`absolute inset-0 ${crystal.glow} blur-2xl rounded-full animate-pulse`} />
