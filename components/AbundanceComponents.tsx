@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useRef, useState, useEffect } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Check, Lock } from 'lucide-react';
 
 // --- Types ---
@@ -119,13 +119,18 @@ export const CRYSTALS: Crystal[] = [
 
 export const CrownOfAbundance: React.FC<{ collectedIds: string[] }> = ({ collectedIds }) => {
   return (
-    <div className="flex items-center justify-center gap-2 py-4 px-6 bg-black/40 backdrop-blur-md border-b border-white/5 w-full overflow-x-auto">
+    <div className="flex items-center justify-center gap-3 py-4 px-6 bg-black/40 backdrop-blur-md border-b border-white/5 w-full overflow-x-auto">
       {CRYSTALS.map((crystal) => {
         const isCollected = collectedIds.includes(crystal.id);
         return (
           <div key={crystal.id} className="relative group flex-shrink-0">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500 ${isCollected ? 'opacity-100 scale-100' : 'opacity-30 scale-90 grayscale'}`}>
-              <img src={crystal.image} alt={crystal.name} className="w-full h-full object-contain drop-shadow-md" />
+              <img
+                src={crystal.image}
+                alt={crystal.name}
+                className="w-8 h-8 object-contain drop-shadow-md"
+                style={{ maxWidth: '32px', maxHeight: '32px' }}
+              />
             </div>
             {!isCollected && (
               <div className="absolute inset-0 flex items-center justify-center">
@@ -140,159 +145,69 @@ export const CrownOfAbundance: React.FC<{ collectedIds: string[] }> = ({ collect
 };
 
 export const FocusSelector: React.FC<{ onSelect: (crystal: Crystal) => void }> = ({ onSelect }) => {
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
-  const [isDragging, setIsDragging] = React.useState(false);
-  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const selectedCrystal = CRYSTALS[selectedIndex];
-
-  const handleDragEnd = (event: any, info: any) => {
-    setIsDragging(false);
-    const swipeThreshold = 50;
-    if (info.offset.x < -swipeThreshold && selectedIndex < CRYSTALS.length - 1) {
-      setSelectedIndex(selectedIndex + 1);
-    } else if (info.offset.x > swipeThreshold && selectedIndex > 0) {
-      setSelectedIndex(selectedIndex - 1);
+  const handleScroll = () => {
+    if (containerRef.current) {
+      const scrollLeft = containerRef.current.scrollLeft;
+      const width = containerRef.current.offsetWidth;
+      const itemWidth = width * 0.5; // Each item is 50% of screen width
+      const index = Math.round(scrollLeft / itemWidth);
+      setActiveIndex(Math.min(Math.max(index, 0), CRYSTALS.length - 1));
     }
   };
-
-  const handleCrystalClick = (index: number) => {
-    if (!isDragging) {
-      if (index === selectedIndex) {
-        onSelect(CRYSTALS[index]);
-      } else {
-        setSelectedIndex(index);
-      }
-    }
-  };
-
-  // Get visible crystals (prev, current, next)
-  const getVisibleCrystals = () => {
-    const prev = selectedIndex > 0 ? selectedIndex - 1 : null;
-    const next = selectedIndex < CRYSTALS.length - 1 ? selectedIndex + 1 : null;
-    return { prev, current: selectedIndex, next };
-  };
-
-  const { prev, current, next } = getVisibleCrystals();
 
   return (
     <div className="w-full flex flex-col items-center">
-      {/* Achievement Badge - above the carousel */}
-      <motion.div
-        key={selectedCrystal.id + '-badge'}
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-4 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm"
-      >
-        <p className="text-[10px] text-white/50 uppercase tracking-widest">{selectedCrystal.meaning.split('•')[0].trim()}</p>
-        <p className={`text-xs ${selectedCrystal.color} text-center`}>{selectedCrystal.meaning.split('•')[1]?.trim() || ''}</p>
-      </motion.div>
-
-      {/* Crystal Carousel */}
-      <motion.div
+      {/* 3D Carousel Container */}
+      <div
         ref={containerRef}
-        className="relative w-full h-40 flex items-center justify-center overflow-hidden"
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={0.2}
-        onDragStart={() => setIsDragging(true)}
-        onDragEnd={handleDragEnd}
+        onScroll={handleScroll}
+        className="flex overflow-x-auto snap-x snap-mandatory w-full py-12 px-[25%] no-scrollbar gap-4"
+        style={{ scrollBehavior: 'smooth' }}
       >
-        {/* Left crystal (previous) */}
-        <AnimatePresence mode="popLayout">
-          {prev !== null && (
-            <motion.div
-              key={CRYSTALS[prev].id}
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 0.4, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              transition={{ duration: 0.3 }}
-              className="absolute left-4 cursor-pointer"
-              onClick={() => handleCrystalClick(prev)}
+        {CRYSTALS.map((crystal, index) => {
+          const isActive = index === activeIndex;
+          return (
+            <div
+              key={crystal.id}
+              className="snap-center shrink-0 w-[50vw] max-w-[200px] flex flex-col items-center justify-center transition-all duration-500"
+              style={{
+                transform: isActive ? 'scale(1.2)' : 'scale(0.8) translateY(10px)',
+                opacity: isActive ? 1 : 0.5,
+                filter: isActive ? 'none' : 'grayscale(0.5) blur(1px)'
+              }}
             >
-              <img
-                src={CRYSTALS[prev].image}
-                alt={CRYSTALS[prev].name}
-                className="w-16 h-16 object-contain grayscale-[30%] blur-[0.5px]"
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+              <div className="relative w-32 h-32 mb-4">
+                {isActive && (
+                  <div className={`absolute inset-0 ${crystal.glow} blur-2xl rounded-full animate-pulse`} />
+                )}
+                <img
+                  src={crystal.image}
+                  alt={crystal.name}
+                  className="relative w-full h-full object-contain drop-shadow-2xl"
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
-        {/* Center crystal (selected) */}
-        <motion.div
-          key={selectedCrystal.id + '-center'}
-          className="relative flex flex-col items-center cursor-pointer z-10"
-          onClick={() => handleCrystalClick(current)}
-          whileTap={{ scale: 0.95 }}
-          layoutId="selected-crystal"
+      {/* Active Crystal Info */}
+      <div className="text-center mt-4 h-24">
+        <h3 className="text-xl font-heading tracking-[0.2em] text-white uppercase mb-1">
+          {CRYSTALS[activeIndex].name}
+        </h3>
+        <p className={`text-xs font-medium tracking-widest uppercase mb-4 ${CRYSTALS[activeIndex].color}`}>
+          {CRYSTALS[activeIndex].meaning}
+        </p>
+        <button
+          onClick={() => onSelect(CRYSTALS[activeIndex])}
+          className="px-8 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-xs uppercase tracking-widest text-white transition-all active:scale-95"
         >
-          {/* Glow effect */}
-          <motion.div
-            className={`absolute inset-0 ${selectedCrystal.glow.replace('/20', '/40')} blur-3xl rounded-full scale-150`}
-            animate={{ opacity: [0.4, 0.7, 0.4] }}
-            transition={{ duration: 3, repeat: Infinity }}
-          />
-
-          {/* Crystal image */}
-          <motion.img
-            src={selectedCrystal.image}
-            alt={selectedCrystal.name}
-            className={`w-24 h-24 object-contain relative z-10 ${selectedCrystal.shadow}`}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          />
-
-          {/* Pedestal */}
-          <div className="w-12 h-3 bg-gradient-to-b from-gray-700 to-gray-900 rounded-full mt-1 shadow-lg" />
-        </motion.div>
-
-        {/* Right crystal (next) */}
-        <AnimatePresence mode="popLayout">
-          {next !== null && (
-            <motion.div
-              key={CRYSTALS[next].id}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 0.4, x: 0 }}
-              exit={{ opacity: 0, x: 50 }}
-              transition={{ duration: 0.3 }}
-              className="absolute right-4 cursor-pointer"
-              onClick={() => handleCrystalClick(next)}
-            >
-              <img
-                src={CRYSTALS[next].image}
-                alt={CRYSTALS[next].name}
-                className="w-16 h-16 object-contain grayscale-[30%] blur-[0.5px]"
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
-
-      {/* Crystal name and tap instruction */}
-      <motion.div
-        key={selectedCrystal.id + '-info'}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="text-center mt-4"
-      >
-        <p className="text-white/40 text-xs">Tap crystal to select</p>
-      </motion.div>
-
-      {/* Dot indicators */}
-      <div className="flex gap-1.5 mt-4">
-        {CRYSTALS.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setSelectedIndex(index)}
-            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-              index === selectedIndex
-                ? 'bg-white w-4'
-                : 'bg-white/30 hover:bg-white/50'
-            }`}
-          />
-        ))}
+          Set Focus
+        </button>
       </div>
     </div>
   );
