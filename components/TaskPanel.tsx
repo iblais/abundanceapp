@@ -3,11 +3,28 @@
  *
  * Displays the current task for an active journey and allows
  * the user to mark it as complete, advancing the progression.
+ *
+ * ANIMATION: Panel slides up from below when entering active mode.
+ * This creates spatial continuity with the selected geode above.
  */
 
 import React from 'react';
 import { JourneyStatus } from '../src/types/journey';
 import { CRYSTALS, getCrystalById, getCurrentTask } from './AbundanceComponents';
+
+// Slide-up animation CSS (injected inline for component encapsulation)
+const slideUpKeyframes = `
+  @keyframes slideUpFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
 
 // Checkmark icon
 const CheckIcon: React.FC<{ className?: string }> = ({ className = '' }) => (
@@ -58,14 +75,21 @@ export const TaskPanel: React.FC<TaskPanelProps> = ({
       if (!crystal) return null;
 
       return (
-        <div className="w-full px-4 py-6">
+        <>
+          <style>{slideUpKeyframes}</style>
           <div
-            className="rounded-2xl p-6 text-center"
+            className="w-full px-4 py-6"
             style={{
-              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
+              animation: 'slideUpFadeIn 0.3s ease-out forwards',
             }}
           >
+            <div
+              className="rounded-2xl p-6 text-center"
+              style={{
+                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+              }}
+            >
             <div className="flex justify-center mb-4">
               <div
                 className="w-16 h-16 rounded-full flex items-center justify-center"
@@ -96,8 +120,9 @@ export const TaskPanel: React.FC<TaskPanelProps> = ({
             >
               Choose Next Path
             </button>
+            </div>
           </div>
-        </div>
+        </>
       );
     }
 
@@ -111,14 +136,21 @@ export const TaskPanel: React.FC<TaskPanelProps> = ({
   const currentStage = journeyStatus.stageCompleted + 1;
 
   return (
-    <div className="w-full px-4 py-4">
+    <>
+      <style>{slideUpKeyframes}</style>
       <div
-        className="rounded-2xl p-5"
+        className="w-full px-4 py-4"
         style={{
-          background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          animation: 'slideUpFadeIn 0.3s ease-out forwards',
         }}
       >
+        <div
+          className="rounded-2xl p-5"
+          style={{
+            background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+          }}
+        >
         {/* Header with crystal info and stage progress */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -185,8 +217,9 @@ export const TaskPanel: React.FC<TaskPanelProps> = ({
           <CheckIcon className="text-black" />
           Mark Complete
         </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
