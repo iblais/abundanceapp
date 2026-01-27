@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Check, Lock, Sparkles, Hammer } from 'lucide-react';
-import { UserProgress, GeodeState } from '../src/types/journey';
+import { UserProgress, GeodeState, StageTask } from '../src/types/journey';
 
 // --- Types ---
 export interface Crystal {
@@ -15,6 +15,7 @@ export interface Crystal {
   crackColor: string;
   recodeTitle: string;
   recodeTask: string;
+  tasks: StageTask[];
 }
 
 export const CRYSTALS: Crystal[] = [
@@ -28,7 +29,12 @@ export const CRYSTALS: Crystal[] = [
     shadow: 'drop-shadow-[0_0_60px_rgba(234,179,8,0.6)]',
     crackColor: 'mix-blend-color-dodge brightness-150 sepia-100 hue-rotate-[40deg] saturate-200',
     recodeTitle: 'The Recode: Release Guilt',
-    recodeTask: "Today, make one purchase solely for your own joy. Notice if guilt arises, and consciously replace it with gratitude. You cannot receive what you feel guilty for holding."
+    recodeTask: "Today, make one purchase solely for your own joy. Notice if guilt arises, and consciously replace it with gratitude. You cannot receive what you feel guilty for holding.",
+    tasks: [
+      { stage: 1, text: "The Audit: Check your bank balance without judgment. Just observe." },
+      { stage: 2, text: "The Release: Buy one small item purely for joy, with zero guilt." },
+      { stage: 3, text: "The Vision: Write a check to yourself for the amount you wish to earn this year." }
+    ]
   },
   {
     id: 'rose-quartz',
@@ -40,7 +46,12 @@ export const CRYSTALS: Crystal[] = [
     shadow: 'drop-shadow-[0_0_60px_rgba(244,114,182,0.6)]',
     crackColor: 'mix-blend-color-dodge brightness-125 sepia-0 hue-rotate-[320deg] saturate-150',
     recodeTitle: 'The Recode: Dissolve Defense',
-    recodeTask: "Identify one moment today where you feel the urge to withdraw. Instead, lean in. Share the vulnerable truth you are afraid to speak."
+    recodeTask: "Identify one moment today where you feel the urge to withdraw. Instead, lean in. Share the vulnerable truth you are afraid to speak.",
+    tasks: [
+      { stage: 1, text: "The Mirror: Look in the mirror and say 'I love you' three times." },
+      { stage: 2, text: "The Reach: Send a text of genuine appreciation to someone you haven't spoken to in a while." },
+      { stage: 3, text: "The Boundary: Say 'No' to one request today that drains your energy." }
+    ]
   },
   {
     id: 'emerald',
@@ -52,7 +63,12 @@ export const CRYSTALS: Crystal[] = [
     shadow: 'drop-shadow-[0_0_60px_rgba(16,185,129,0.6)]',
     crackColor: 'mix-blend-color-dodge brightness-150 sepia-0 hue-rotate-[120deg] saturate-200',
     recodeTitle: 'The Recode: Honor the Vessel',
-    recodeTask: "Treat your body with radical reverence today. Choose one meal to eat in complete silence. Taste every bite. Listen to your satiety signals."
+    recodeTask: "Treat your body with radical reverence today. Choose one meal to eat in complete silence. Taste every bite. Listen to your satiety signals.",
+    tasks: [
+      { stage: 1, text: "The Breath: Take 10 deep, conscious breaths before your next meal." },
+      { stage: 2, text: "The Nourishment: Eat one meal in complete silence, tasting every bite." },
+      { stage: 3, text: "The Movement: Walk for 15 minutes without your phone." }
+    ]
   },
   {
     id: 'amethyst',
@@ -64,7 +80,12 @@ export const CRYSTALS: Crystal[] = [
     shadow: 'drop-shadow-[0_0_60px_rgba(168,85,247,0.6)]',
     crackColor: 'mix-blend-color-dodge brightness-150 sepia-0 hue-rotate-[260deg] saturate-200',
     recodeTitle: 'The Recode: Silence the Noise',
-    recodeTask: "Commit to a 'Input Fast' for the next hour. No phone, no music. Just you and the raw data of your immediate reality."
+    recodeTask: "Commit to a 'Input Fast' for the next hour. No phone, no music. Just you and the raw data of your immediate reality.",
+    tasks: [
+      { stage: 1, text: "The Pause: Stop what you are doing for 1 minute. Just be." },
+      { stage: 2, text: "The Fast: Turn off all notifications for 1 hour." },
+      { stage: 3, text: "The Silence: Sit in a dark room for 5 minutes and listen to the silence." }
+    ]
   },
   {
     id: 'ruby',
@@ -76,7 +97,12 @@ export const CRYSTALS: Crystal[] = [
     shadow: 'drop-shadow-[0_0_60px_rgba(220,38,38,0.6)]',
     crackColor: 'mix-blend-color-dodge brightness-150 sepia-0 hue-rotate-[340deg] saturate-200',
     recodeTitle: 'The Recode: Ignite Action',
-    recodeTask: "Do the thing you have been procrastinating within the next 10 minutes. Do not plan it. Do it badly if you must, but do it now."
+    recodeTask: "Do the thing you have been procrastinating within the next 10 minutes. Do not plan it. Do it badly if you must, but do it now.",
+    tasks: [
+      { stage: 1, text: "The Spark: Identify one thing that excites you, no matter how small." },
+      { stage: 2, text: "The Action: Do that thing for 10 minutes today." },
+      { stage: 3, text: "The Fire: Share your passion with one other person." }
+    ]
   },
   {
     id: 'sapphire',
@@ -88,7 +114,12 @@ export const CRYSTALS: Crystal[] = [
     shadow: 'drop-shadow-[0_0_60px_rgba(37,99,235,0.6)]',
     crackColor: 'mix-blend-color-dodge brightness-150 sepia-0 hue-rotate-[220deg] saturate-200',
     recodeTitle: 'The Recode: Radical Honesty',
-    recodeTask: "Catch yourself in a 'white lie' today. Stop. Correct the record immediately. Reclaim the energy you were about to spend on maintaining a facade."
+    recodeTask: "Catch yourself in a 'white lie' today. Stop. Correct the record immediately. Reclaim the energy you were about to spend on maintaining a facade.",
+    tasks: [
+      { stage: 1, text: "The Question: Ask 'Why?' to a belief you hold true." },
+      { stage: 2, text: "The Study: Read one page of a book that challenges your thinking." },
+      { stage: 3, text: "The Truth: Speak your truth in a situation where you usually stay silent." }
+    ]
   },
   {
     id: 'obsidian',
@@ -100,7 +131,12 @@ export const CRYSTALS: Crystal[] = [
     shadow: 'drop-shadow-[0_0_60px_rgba(75,85,99,0.6)]',
     crackColor: 'mix-blend-overlay brightness-50',
     recodeTitle: 'The Recode: Sovereign Boundaries',
-    recodeTask: "Identify one drain on your energy that you have been tolerating. Say 'No' to it today. Do not explain. Do not apologize."
+    recodeTask: "Identify one drain on your energy that you have been tolerating. Say 'No' to it today. Do not explain. Do not apologize.",
+    tasks: [
+      { stage: 1, text: "The Shield: Visualize a white light surrounding you for 1 minute." },
+      { stage: 2, text: "The Cleanse: Declutter one small area of your physical space." },
+      { stage: 3, text: "The Cord: Visualize cutting the cord with a person or situation that drains you." }
+    ]
   },
   {
     id: 'clear-quartz',
@@ -112,9 +148,48 @@ export const CRYSTALS: Crystal[] = [
     shadow: 'drop-shadow-[0_0_60px_rgba(147,197,253,0.6)]',
     crackColor: 'mix-blend-overlay brightness-200',
     recodeTitle: 'The Recode: The Single Point',
-    recodeTask: "Multitasking is the enemy. Choose your 'One Thing' for today. Pour 100% of your focus into it until it is complete."
+    recodeTask: "Multitasking is the enemy. Choose your 'One Thing' for today. Pour 100% of your focus into it until it is complete.",
+    tasks: [
+      { stage: 1, text: "The One Thing: Identify the single most important task for today." },
+      { stage: 2, text: "The Deep Work: Work on that task for 25 minutes without distraction." },
+      { stage: 3, text: "The Clarity: Write down your top 3 goals for the week." }
+    ]
   }
 ];
+
+// --- Helper Functions ---
+
+/**
+ * Get a crystal by its ID
+ */
+export function getCrystalById(crystalId: string): Crystal | undefined {
+  return CRYSTALS.find(c => c.id === crystalId);
+}
+
+/**
+ * Get the task text for a specific crystal and stage
+ * @param crystalId - The crystal ID
+ * @param stage - Stage number (1, 2, or 3)
+ * @returns The task text or undefined if not found
+ */
+export function getTaskForStage(crystalId: string, stage: 1 | 2 | 3): string | undefined {
+  const crystal = getCrystalById(crystalId);
+  if (!crystal) return undefined;
+  const task = crystal.tasks.find(t => t.stage === stage);
+  return task?.text;
+}
+
+/**
+ * Get the current task for an active journey
+ * @param crystalId - The selected crystal ID
+ * @param stageCompleted - Number of stages completed (0, 1, or 2)
+ * @returns The current task text or undefined
+ */
+export function getCurrentTask(crystalId: string, stageCompleted: 0 | 1 | 2 | 3): string | undefined {
+  if (stageCompleted >= 3) return undefined; // All stages complete
+  const nextStage = (stageCompleted + 1) as 1 | 2 | 3;
+  return getTaskForStage(crystalId, nextStage);
+}
 
 // --- Components ---
 
