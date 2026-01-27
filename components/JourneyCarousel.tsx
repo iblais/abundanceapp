@@ -1,10 +1,10 @@
 /**
  * JourneyCarousel - Hero's Journey Crystal Selection Carousel
  *
- * Visual specifications (NON-NEGOTIABLE):
- * - Hero/center item: w-52 h-52 max-w-[208px] max-h-[208px], scale-100, opacity-100, z-20
- * - Side items: w-24 h-24 max-w-[96px] max-h-[96px], scale-75, opacity-50, z-10
- * - Images: w-full h-full object-contain (never exceed container)
+ * Visual specifications (Opal-style, mobile-first):
+ * - Active/center geode: w-32 h-32 (128px)
+ * - Side geodes: w-16 h-16 (64px)
+ * - Container: max-h-[220px], vertically centered
  * - Snap: scroll-snap-type: x mandatory, items use snap-center
  */
 
@@ -16,8 +16,8 @@ import { JourneyStatus, CrystalSlotState, getCrystalSlotState } from '../src/typ
 const LockIcon: React.FC<{ className?: string }> = ({ className = '' }) => (
   <svg
     className={className}
-    width="16"
-    height="16"
+    width="14"
+    height="14"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -117,7 +117,6 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
     const container = containerRef.current;
     if (container) {
       container.addEventListener('scroll', handleScroll, { passive: true });
-      // Initial calculation after layout settles
       setTimeout(handleScroll, 50);
       return () => container.removeEventListener('scroll', handleScroll);
     }
@@ -131,9 +130,9 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
   };
 
   return (
-    <div className="relative w-full overflow-hidden py-4">
+    <div className="relative w-full overflow-hidden max-h-[220px] py-3">
       {/* Status Header */}
-      <div className="text-center mb-4 px-6">
+      <div className="text-center mb-2 px-6">
         {journeyStatus.mode === 'selection' && journeyStatus.completedCrystalIds.length === 0 && (
           <p className="text-xs text-white/50 uppercase tracking-widest">Choose your path</p>
         )}
@@ -154,10 +153,10 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
         )}
       </div>
 
-      {/* Carousel Container */}
+      {/* Carousel Container - fixed height, horizontal scroll */}
       <div
         ref={containerRef}
-        className="flex items-center gap-4 overflow-x-auto px-[50%]"
+        className="flex items-center justify-start gap-2 overflow-x-auto px-[50%] h-[150px]"
         style={{
           scrollSnapType: 'x mandatory',
           scrollbarWidth: 'none',
@@ -182,70 +181,66 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
             <div
               key={crystal.id}
               ref={(el) => { itemRefs.current[index] = el; }}
-              className="snap-center flex-shrink-0 flex flex-col items-center"
+              className="snap-center flex-shrink-0 flex flex-col items-center justify-center"
               onClick={() => handleItemClick(crystal.id, slotState)}
             >
-              {/* Geode Container - HARD SIZE CONSTRAINTS */}
+              {/* Geode Container - EXACT SIZE CONSTRAINTS */}
               <div
                 className={`
                   relative flex items-center justify-center
                   transition-all duration-300 ease-out
                   ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}
                   ${isCenter
-                    ? 'w-52 h-52 max-w-[208px] max-h-[208px] scale-100 opacity-100 z-20'
-                    : 'w-24 h-24 max-w-[96px] max-h-[96px] scale-75 opacity-50 z-10'
+                    ? 'w-32 h-32 max-w-[128px] max-h-[128px] opacity-100 z-20'
+                    : 'w-16 h-16 max-w-[64px] max-h-[64px] opacity-50 z-10'
                   }
                 `}
               >
-                {/* Geode Image - contained within parent */}
+                {/* Geode Image */}
                 <img
                   src={geodeImage}
                   alt={`${crystal.name} Geode`}
                   className={`
                     w-full h-full object-contain
-                    transition-opacity duration-300
+                    transition-all duration-300
                     ${isLocked ? 'opacity-40' : ''}
                     ${isMastered && !isCenter ? 'opacity-30' : ''}
                   `}
-                  style={{
-                    maxWidth: '100%',
-                    maxHeight: '100%',
-                  }}
                   draggable={false}
                 />
 
-                {/* Lock Overlay for locked items */}
+                {/* Lock Overlay */}
                 {isLocked && (
                   <div className="absolute inset-0 flex items-center justify-center z-30">
-                    <div className="bg-black/60 rounded-full p-1.5">
+                    <div className="bg-black/60 rounded-full p-1">
                       <LockIcon className="text-white/70" />
                     </div>
                   </div>
                 )}
 
-                {/* Mastered indicator - only on center */}
+                {/* Mastered indicator */}
                 {isMastered && isCenter && (
-                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 z-30 bg-emerald-500/80 text-white text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full whitespace-nowrap">
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 z-30 bg-emerald-500/80 text-white text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-full whitespace-nowrap">
                     Mastered
                   </div>
                 )}
 
-                {/* Active indicator - only on center */}
+                {/* Active indicator */}
                 {isSelected && journeyStatus.mode === 'active' && isCenter && (
-                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 z-30 bg-yellow-500/90 text-black text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
+                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-30 bg-yellow-500/90 text-black text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
                     Active
                   </div>
                 )}
               </div>
 
-              {/* Theme Label - only show for center item */}
+              {/* Theme Label - only for center item */}
               {isCenter && (
                 <div className={`
-                  mt-3 text-center transition-opacity duration-300 whitespace-nowrap
+                  mt-2 text-center transition-opacity duration-300 whitespace-nowrap
                   ${isLocked ? 'opacity-40' : 'opacity-100'}
                 `}>
                   <p className={`
-                    text-sm font-medium uppercase tracking-wider
+                    text-xs font-medium uppercase tracking-wider
                     ${isMastered ? 'text-emerald-400' : 'text-white/80'}
                   `}>
                     {CRYSTAL_THEMES[crystal.id] || crystal.meaning.split('•')[0].trim()}
@@ -259,8 +254,8 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
 
       {/* Selection hint */}
       {journeyStatus.mode === 'selection' && (
-        <div className="text-center mt-4">
-          <p className="text-xs text-white/40">Scroll to browse • Tap to begin</p>
+        <div className="text-center mt-1">
+          <p className="text-[10px] text-white/30">Scroll to browse • Tap to begin</p>
         </div>
       )}
     </div>
