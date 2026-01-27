@@ -137,7 +137,7 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
       style={{
         position: 'relative',
         width: '100%',
-        height: '240px',
+        height: '320px',
         overflow: 'hidden',
       }}
     >
@@ -177,22 +177,22 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
         ref={containerRef}
         style={{
           position: 'absolute',
-          top: '50px',
+          top: '40px',
           left: 0,
           right: 0,
-          height: '140px',
+          height: '220px',
           display: 'flex',
           flexDirection: 'row', // HORIZONTAL ONLY
           alignItems: 'center', // All geodes on same Y centerline
-          gap: '8px',
+          gap: '12px',
           overflowX: 'auto',
           overflowY: 'hidden',
           scrollSnapType: 'x mandatory',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
           WebkitOverflowScrolling: 'touch',
-          paddingLeft: 'calc(50% - 64px)',
-          paddingRight: 'calc(50% - 64px)',
+          paddingLeft: 'calc(50% - 104px)',
+          paddingRight: 'calc(50% - 104px)',
         }}
       >
         {CRYSTALS.map((crystal, index) => {
@@ -217,8 +217,8 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
           // Show glow for active geodes with cracks
           const showGlow = isActive && journeyStatus.stageCompleted > 0 && isCenter;
 
-          // Size: center = 128px, side = 64px
-          const size = isCenter ? 128 : 64;
+          // Size: center = 208px (w-52), side = 96px (w-24)
+          const size = isCenter ? 208 : 96;
 
           return (
             <div
