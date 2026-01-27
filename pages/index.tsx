@@ -1160,13 +1160,18 @@ const DashboardScreen: React.FC<{
         </div>
       </div>
 
-      {/* Journey Carousel - ABOVE Morning Visioneering in selection/complete mode */}
-      {(journeyStatus.mode === 'selection' || journeyStatus.mode === 'complete') && (
-        <JourneyCarousel
-          journeyStatus={journeyStatus}
-          onSelectCrystal={onSelectCrystal}
-        />
-      )}
+      {/* Journey Carousel - ALWAYS in same DOM position to prevent layout jumps */}
+      <JourneyCarousel
+        journeyStatus={journeyStatus}
+        onSelectCrystal={onSelectCrystal}
+      />
+
+      {/* Task Panel - Shows current task during active journey (appears below carousel) */}
+      <TaskPanel
+        journeyStatus={journeyStatus}
+        onCompleteTask={onCompleteTask}
+        onStartNewJourney={onStartNewJourney}
+      />
 
       {/* Featured: Morning Visioneering Card */}
       <div
@@ -1187,21 +1192,6 @@ const DashboardScreen: React.FC<{
           </div>
         </div>
       </div>
-
-      {/* Journey Carousel - BELOW Morning Visioneering in active mode */}
-      {journeyStatus.mode === 'active' && (
-        <JourneyCarousel
-          journeyStatus={journeyStatus}
-          onSelectCrystal={onSelectCrystal}
-        />
-      )}
-
-      {/* Task Panel - Shows current task during active journey */}
-      <TaskPanel
-        journeyStatus={journeyStatus}
-        onCompleteTask={onCompleteTask}
-        onStartNewJourney={onStartNewJourney}
-      />
 
       {/* Shift Your State Button */}
       <button

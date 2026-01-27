@@ -71,20 +71,13 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
     itemRefs.current = itemRefs.current.slice(0, CRYSTALS.length);
   }, []);
 
-  // Scroll to selected crystal when in active mode
+  // Set active index to selected crystal when in active mode (no scroll)
+  // We only update the activeIndex state - NO scrollTo to prevent page jumps
   useEffect(() => {
     if (journeyStatus.mode === 'active' && journeyStatus.selectedCrystalId) {
       const selectedIndex = CRYSTALS.findIndex(c => c.id === journeyStatus.selectedCrystalId);
-      if (selectedIndex !== -1 && containerRef.current) {
-        const container = containerRef.current;
-        const item = itemRefs.current[selectedIndex];
-        if (item) {
-          const containerCenter = container.offsetWidth / 2;
-          const itemCenter = item.offsetLeft + item.offsetWidth / 2;
-          const scrollTo = itemCenter - containerCenter;
-          container.scrollTo({ left: scrollTo, behavior: 'smooth' });
-          setActiveIndex(selectedIndex);
-        }
+      if (selectedIndex !== -1) {
+        setActiveIndex(selectedIndex);
       }
     }
   }, [journeyStatus.mode, journeyStatus.selectedCrystalId]);
@@ -231,6 +224,7 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
             <div
               key={crystal.id}
               ref={(el) => { itemRefs.current[index] = el; }}
+              tabIndex={-1}
               style={{
                 scrollSnapAlign: 'center',
                 flexShrink: 0,
@@ -243,6 +237,7 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
                 cursor: isLocked ? 'not-allowed' : 'pointer',
                 opacity: isCenter ? 1 : 0.5,
                 transition: 'all 300ms ease-out',
+                outline: 'none',
               }}
               onClick={() => handleItemClick(crystal.id, slotState)}
             >
