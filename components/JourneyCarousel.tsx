@@ -2,16 +2,37 @@
  * JourneyCarousel - Hero's Journey Crystal Selection Carousel
  *
  * POSITIONING RULES (NON-NEGOTIABLE):
- * - Hero section: position: relative, height: 280px, overflow: hidden
- * - Carousel: position: absolute, does NOT occupy document flow
+ * - Hero section: position: relative, height: 320px (selection) or auto (active), overflow: hidden
+ * - Carousel: HORIZONTAL ONLY, flex-direction: row
  * - All geodes on SAME Y centerline (horizontal only)
  * - NO vertical stacking, NO flex-col, NO translateY
+ * - Selected geode becomes hero (140-160px), others shrink to 72-88px
  * - Geodes MUST disappear at hero boundary
+ *
+ * SELECTION BEHAVIOR:
+ * - On selection: selected geode animates to hero size (156px)
+ * - Other geodes shrink to unselected size (80px)
+ * - TaskPanel appears below - NO route navigation
+ * - Selected geode stays visible as anchor
  */
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { CRYSTALS } from './AbundanceComponents';
 import { JourneyStatus, CrystalSlotState, getCrystalSlotState } from '../src/types/journey';
+
+// Sizing constants - responsive
+const GEODE_SIZE = {
+  // Unselected geode size: 72-88px range, using 80px as default
+  UNSELECTED: 80,
+  UNSELECTED_MIN: 72,
+  UNSELECTED_MAX: 88,
+  // Selected hero geode size: 140-160px range, using 156px as default
+  SELECTED: 156,
+  SELECTED_MIN: 140,
+  SELECTED_MAX: 160,
+  // Center geode in selection mode (slightly larger for focus)
+  CENTER_SELECTION: 120,
+};
 
 // Lock icon SVG component
 const LockIcon: React.FC<{ className?: string }> = ({ className = '' }) => (
@@ -71,13 +92,25 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
     itemRefs.current = itemRefs.current.slice(0, CRYSTALS.length);
   }, []);
 
-  // Set active index to selected crystal when in active mode (no scroll)
-  // We only update the activeIndex state - NO scrollTo to prevent page jumps
+  // When a crystal is selected, smoothly scroll to center it and update activeIndex
+  // Uses scrollIntoView with inline: 'center' to avoid vertical page jumps
   useEffect(() => {
-    if (journeyStatus.mode === 'active' && journeyStatus.selectedCrystalId) {
+    if ((journeyStatus.mode === 'active' || journeyStatus.mode === 'complete') && journeyStatus.selectedCrystalId) {
       const selectedIndex = CRYSTALS.findIndex(c => c.id === journeyStatus.selectedCrystalId);
       if (selectedIndex !== -1) {
         setActiveIndex(selectedIndex);
+        // Smooth scroll to center the selected geode within the carousel
+        const selectedItem = itemRefs.current[selectedIndex];
+        if (selectedItem && containerRef.current) {
+          // Use setTimeout to ensure DOM has updated with new sizes first
+          setTimeout(() => {
+            selectedItem.scrollIntoView({
+              behavior: 'smooth',
+              inline: 'center',
+              block: 'nearest', // Prevents vertical page jump
+            });
+          }, 50);
+        }
       }
     }
   }, [journeyStatus.mode, journeyStatus.selectedCrystalId]);
@@ -191,8 +224,9 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
           WebkitOverflowScrolling: 'touch',
-          paddingLeft: 'calc(50% - 104px)',
-          paddingRight: 'calc(50% - 104px)',
+          // Padding centers the hero geode (half of max hero size 156px = 78px)
+          paddingLeft: 'calc(50% - 78px)',
+          paddingRight: 'calc(50% - 78px)',
         }}
       >
         {CRYSTALS.map((crystal, index) => {
@@ -214,11 +248,20 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
             displayImage = getGeodeImage(journeyStatus.stageCompleted);
           }
 
-          // Show glow for active geodes with cracks
-          const showGlow = isActive && journeyStatus.stageCompleted > 0 && isCenter;
+          // Show glow for active geodes with cracks (always show when selected, not just when centered)
+          const showGlow = isActive && journeyStatus.stageCompleted > 0;
 
-          // Size: center = 208px (w-52), side = 96px (w-24)
-          const size = isCenter ? 208 : 96;
+          // Size logic:
+          // - In selection mode: center geode is larger (120px), others are 80px
+          // - In active/complete mode: selected geode is hero (156px), others are 80px
+          let size: number;
+          if (journeyStatus.mode === 'selection') {
+            // Selection mode: center scroll position determines larger size
+            size = isCenter ? GEODE_SIZE.CENTER_SELECTION : GEODE_SIZE.UNSELECTED;
+          } else {
+            // Active/complete mode: selected crystal is the hero
+            size = isSelected ? GEODE_SIZE.SELECTED : GEODE_SIZE.UNSELECTED;
+          }
 
           return (
             <div
@@ -235,8 +278,13 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: isLocked ? 'not-allowed' : 'pointer',
-                opacity: isCenter ? 1 : 0.5,
-                transition: 'all 300ms ease-out',
+                // Opacity logic:
+                // - Selection mode: center is bright, others dimmed
+                // - Active mode: selected is bright, locked are very dimmed, mastered slightly dimmed
+                opacity: journeyStatus.mode === 'selection'
+                  ? (isCenter ? 1 : 0.5)
+                  : (isSelected ? 1 : (isMastered ? 0.7 : (isLocked ? 0.35 : 0.6))),
+                transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1)',
                 outline: 'none',
               }}
               onClick={() => handleItemClick(crystal.id, slotState)}
@@ -268,8 +316,8 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
                   />
                 )}
 
-                {/* Mastered glow effect */}
-                {isMastered && isCenter && (
+                {/* Mastered glow effect - show when mastered and either centered (selection) or selected (active/complete) */}
+                {isMastered && (isCenter || isSelected) && (
                   <div
                     style={{
                       position: 'absolute',
@@ -293,7 +341,12 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
                     width: '100%',
                     height: '100%',
                     objectFit: 'contain',
-                    opacity: isLocked ? 0.4 : (isMastered && !isCenter ? 0.5 : 1),
+                    // Image opacity: locked is dim, mastered not focused is slightly dim, otherwise full
+                    opacity: isLocked
+                      ? 0.4
+                      : (isMastered && !isCenter && !isSelected)
+                        ? 0.6
+                        : 1,
                     zIndex: 1,
                   }}
                   draggable={false}
@@ -320,8 +373,8 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
                   </div>
                 )}
 
-                {/* Mastered checkmark */}
-                {isMastered && isCenter && (
+                {/* Mastered checkmark - show when mastered and either centered or selected */}
+                {isMastered && (isCenter || isSelected) && (
                   <div
                     style={{
                       position: 'absolute',
@@ -349,6 +402,8 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
       </div>
 
       {/* Theme Label - absolute, below carousel */}
+      {/* In selection mode: show theme of centered geode
+          In active/complete mode: show theme of selected geode */}
       <div
         style={{
           position: 'absolute',
@@ -359,14 +414,28 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
           zIndex: 10,
         }}
       >
-        <p className={`
-          text-xs font-medium uppercase tracking-wider
-          ${getCrystalSlotState(CRYSTALS[activeIndex]?.id, journeyStatus) === 'mastered'
-            ? 'text-emerald-400'
-            : 'text-white/80'}
-        `}>
-          {CRYSTAL_THEMES[CRYSTALS[activeIndex]?.id] || ''}
-        </p>
+        {(() => {
+          // Determine which crystal's theme to display
+          const displayCrystalId = journeyStatus.mode === 'selection'
+            ? CRYSTALS[activeIndex]?.id
+            : journeyStatus.selectedCrystalId;
+          const displayCrystalState = displayCrystalId
+            ? getCrystalSlotState(displayCrystalId, journeyStatus)
+            : null;
+
+          return (
+            <p className={`
+              text-xs font-medium uppercase tracking-wider
+              ${displayCrystalState === 'mastered'
+                ? 'text-emerald-400'
+                : displayCrystalState === 'active'
+                  ? 'text-yellow-400/90'
+                  : 'text-white/80'}
+            `}>
+              {displayCrystalId ? CRYSTAL_THEMES[displayCrystalId] : ''}
+            </p>
+          );
+        })()}
       </div>
 
       {/* Selection hint - absolute, bottom of hero */}
