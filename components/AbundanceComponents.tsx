@@ -13,6 +13,7 @@ export interface Crystal {
   glow: string;
   shadow: string;
   crackColor: string;
+  glowColor: string; // Hex color for crack glow effect
   recodeTitle: string;
   recodeTask: string;
   tasks: StageTask[];
@@ -28,6 +29,7 @@ export const CRYSTALS: Crystal[] = [
     glow: 'bg-yellow-500/20',
     shadow: 'drop-shadow-[0_0_60px_rgba(234,179,8,0.6)]',
     crackColor: 'mix-blend-color-dodge brightness-150 sepia-100 hue-rotate-[40deg] saturate-200',
+    glowColor: '#EAB308',
     recodeTitle: 'The Recode: Release Guilt',
     recodeTask: "Today, make one purchase solely for your own joy. Notice if guilt arises, and consciously replace it with gratitude. You cannot receive what you feel guilty for holding.",
     tasks: [
@@ -45,6 +47,7 @@ export const CRYSTALS: Crystal[] = [
     glow: 'bg-pink-500/20',
     shadow: 'drop-shadow-[0_0_60px_rgba(244,114,182,0.6)]',
     crackColor: 'mix-blend-color-dodge brightness-125 sepia-0 hue-rotate-[320deg] saturate-150',
+    glowColor: '#F472B6',
     recodeTitle: 'The Recode: Dissolve Defense',
     recodeTask: "Identify one moment today where you feel the urge to withdraw. Instead, lean in. Share the vulnerable truth you are afraid to speak.",
     tasks: [
@@ -62,6 +65,7 @@ export const CRYSTALS: Crystal[] = [
     glow: 'bg-emerald-500/20',
     shadow: 'drop-shadow-[0_0_60px_rgba(16,185,129,0.6)]',
     crackColor: 'mix-blend-color-dodge brightness-150 sepia-0 hue-rotate-[120deg] saturate-200',
+    glowColor: '#22C55E',
     recodeTitle: 'The Recode: Honor the Vessel',
     recodeTask: "Treat your body with radical reverence today. Choose one meal to eat in complete silence. Taste every bite. Listen to your satiety signals.",
     tasks: [
@@ -79,6 +83,7 @@ export const CRYSTALS: Crystal[] = [
     glow: 'bg-purple-600/20',
     shadow: 'drop-shadow-[0_0_60px_rgba(168,85,247,0.6)]',
     crackColor: 'mix-blend-color-dodge brightness-150 sepia-0 hue-rotate-[260deg] saturate-200',
+    glowColor: '#A855F7',
     recodeTitle: 'The Recode: Silence the Noise',
     recodeTask: "Commit to a 'Input Fast' for the next hour. No phone, no music. Just you and the raw data of your immediate reality.",
     tasks: [
@@ -96,6 +101,7 @@ export const CRYSTALS: Crystal[] = [
     glow: 'bg-red-600/20',
     shadow: 'drop-shadow-[0_0_60px_rgba(220,38,38,0.6)]',
     crackColor: 'mix-blend-color-dodge brightness-150 sepia-0 hue-rotate-[340deg] saturate-200',
+    glowColor: '#EF4444',
     recodeTitle: 'The Recode: Ignite Action',
     recodeTask: "Do the thing you have been procrastinating within the next 10 minutes. Do not plan it. Do it badly if you must, but do it now.",
     tasks: [
@@ -113,6 +119,7 @@ export const CRYSTALS: Crystal[] = [
     glow: 'bg-blue-600/20',
     shadow: 'drop-shadow-[0_0_60px_rgba(37,99,235,0.6)]',
     crackColor: 'mix-blend-color-dodge brightness-150 sepia-0 hue-rotate-[220deg] saturate-200',
+    glowColor: '#3B82F6',
     recodeTitle: 'The Recode: Radical Honesty',
     recodeTask: "Catch yourself in a 'white lie' today. Stop. Correct the record immediately. Reclaim the energy you were about to spend on maintaining a facade.",
     tasks: [
@@ -130,6 +137,7 @@ export const CRYSTALS: Crystal[] = [
     glow: 'bg-gray-600/20',
     shadow: 'drop-shadow-[0_0_60px_rgba(75,85,99,0.6)]',
     crackColor: 'mix-blend-overlay brightness-50',
+    glowColor: '#6B7280',
     recodeTitle: 'The Recode: Sovereign Boundaries',
     recodeTask: "Identify one drain on your energy that you have been tolerating. Say 'No' to it today. Do not explain. Do not apologize.",
     tasks: [
@@ -147,6 +155,7 @@ export const CRYSTALS: Crystal[] = [
     glow: 'bg-blue-400/20',
     shadow: 'drop-shadow-[0_0_60px_rgba(147,197,253,0.6)]',
     crackColor: 'mix-blend-overlay brightness-200',
+    glowColor: '#93C5FD',
     recodeTitle: 'The Recode: The Single Point',
     recodeTask: "Multitasking is the enemy. Choose your 'One Thing' for today. Pour 100% of your focus into it until it is complete.",
     tasks: [

@@ -133,6 +133,13 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
   return (
     // HERO SECTION - Positioning context with fixed height
     // This is the ONLY element that occupies document flow
+    <>
+      <style>{`
+        @keyframes glow-pulse {
+          0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+          50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        }
+      `}</style>
     <section
       style={{
         position: 'relative',
@@ -201,12 +208,21 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
           const isSelected = journeyStatus.selectedCrystalId === crystal.id;
           const isLocked = slotState === 'locked';
           const isMastered = slotState === 'mastered';
+          const isActive = slotState === 'active';
 
-          // Determine geode image
-          let geodeImage = '/images/geode-closed.png';
-          if (isSelected && journeyStatus.mode === 'active') {
-            geodeImage = getGeodeImage(journeyStatus.stageCompleted);
+          // Determine display image
+          // - Mastered: show revealed crystal
+          // - Active with cracks: show cracked geode
+          // - Default: closed geode
+          let displayImage = '/images/geode-closed.png';
+          if (isMastered) {
+            displayImage = crystal.image; // Revealed crystal
+          } else if (isActive && journeyStatus.stageCompleted > 0) {
+            displayImage = getGeodeImage(journeyStatus.stageCompleted);
           }
+
+          // Show glow for active geodes with cracks
+          const showGlow = isActive && journeyStatus.stageCompleted > 0 && isCenter;
 
           // Size: center = 128px, side = 64px
           const size = isCenter ? 128 : 64;
@@ -230,7 +246,7 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
               }}
               onClick={() => handleItemClick(crystal.id, slotState)}
             >
-              {/* Geode Image - contained within fixed-size box */}
+              {/* Geode/Crystal Image - contained within fixed-size box */}
               <div
                 style={{
                   position: 'relative',
@@ -239,14 +255,51 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
                   overflow: 'hidden',
                 }}
               >
+                {/* Inner glow effect for cracked geodes */}
+                {showGlow && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      width: '60%',
+                      height: '60%',
+                      borderRadius: '50%',
+                      background: `radial-gradient(circle, ${crystal.glowColor}80 0%, ${crystal.glowColor}40 40%, transparent 70%)`,
+                      filter: 'blur(8px)',
+                      animation: 'glow-pulse 2s ease-in-out infinite',
+                    }}
+                  />
+                )}
+
+                {/* Mastered glow effect */}
+                {isMastered && isCenter && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      width: '80%',
+                      height: '80%',
+                      borderRadius: '50%',
+                      background: `radial-gradient(circle, ${crystal.glowColor}60 0%, ${crystal.glowColor}20 50%, transparent 70%)`,
+                      filter: 'blur(12px)',
+                    }}
+                  />
+                )}
+
                 <img
-                  src={geodeImage}
-                  alt={`${crystal.name} Geode`}
+                  src={displayImage}
+                  alt={isMastered ? crystal.name : `${crystal.name} Geode`}
                   style={{
+                    position: 'relative',
                     width: '100%',
                     height: '100%',
                     objectFit: 'contain',
-                    opacity: isLocked ? 0.4 : (isMastered && !isCenter ? 0.3 : 1),
+                    opacity: isLocked ? 0.4 : (isMastered && !isCenter ? 0.5 : 1),
+                    zIndex: 1,
                   }}
                   draggable={false}
                 />
@@ -263,11 +316,35 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      zIndex: 2,
                     }}
                   >
                     <div className="bg-black/60 rounded-full p-1">
                       <LockIcon className="text-white/70" />
                     </div>
+                  </div>
+                )}
+
+                {/* Mastered checkmark */}
+                {isMastered && isCenter && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      bottom: '4px',
+                      right: '4px',
+                      width: '20px',
+                      height: '20px',
+                      borderRadius: '50%',
+                      backgroundColor: '#10B981',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      zIndex: 2,
+                    }}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
                   </div>
                 )}
               </div>
@@ -312,6 +389,7 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
         </div>
       )}
     </section>
+    </>
   );
 };
 

@@ -13,6 +13,7 @@ import { revenueCatService, PLANS, PREMIUM_FEATURES, SubscriptionStatus } from '
 import { CRYSTALS, Crystal } from '../components/AbundanceComponents';
 import { GeodeCracker } from '../components/GeodeCracker';
 import { JourneyCarousel } from '../components/JourneyCarousel';
+import { TaskPanel } from '../components/TaskPanel';
 import { UserProgress, DEFAULT_USER_PROGRESS, MAX_CRACK_LEVEL, TOTAL_GEODES, JourneyStatus, DEFAULT_JOURNEY_STATUS } from '../src/types/journey';
 import { useJourneyState } from '../src/hooks/useJourneyState';
 
@@ -1133,7 +1134,9 @@ const DashboardScreen: React.FC<{
   onNavigate: (screen: Screen) => void;
   journeyStatus: JourneyStatus;
   onSelectCrystal: (crystalId: string) => void;
-}> = ({ user, onNavigate, journeyStatus, onSelectCrystal }) => {
+  onCompleteTask: () => void;
+  onStartNewJourney: () => void;
+}> = ({ user, onNavigate, journeyStatus, onSelectCrystal, onCompleteTask, onStartNewJourney }) => {
   const quickActions = [
     { title: 'Quick Shifts', subtitle: 'Instant reset exercises.', icon: Icons.heart, screen: 'quickshifts' as Screen },
     { title: 'Gratitude Journal', subtitle: 'Capture what you are grateful for.', icon: Icons.journal, screen: 'gratitude' as Screen },
@@ -1192,6 +1195,13 @@ const DashboardScreen: React.FC<{
           onSelectCrystal={onSelectCrystal}
         />
       )}
+
+      {/* Task Panel - Shows current task during active journey */}
+      <TaskPanel
+        journeyStatus={journeyStatus}
+        onCompleteTask={onCompleteTask}
+        onStartNewJourney={onStartNewJourney}
+      />
 
       {/* Shift Your State Button */}
       <button
@@ -6237,6 +6247,8 @@ export default function Home() {
             onNavigate={navigateToScreen}
             journeyStatus={journeyStatus}
             onSelectCrystal={selectCrystal}
+            onCompleteTask={completeStage}
+            onStartNewJourney={resetJourney}
           />
         );
       case 'meditations':
@@ -6416,6 +6428,8 @@ export default function Home() {
             onNavigate={navigateToScreen}
             journeyStatus={journeyStatus}
             onSelectCrystal={selectCrystal}
+            onCompleteTask={completeStage}
+            onStartNewJourney={resetJourney}
           />
         );
     }
