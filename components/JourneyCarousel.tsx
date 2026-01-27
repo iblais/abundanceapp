@@ -2,8 +2,9 @@
  * JourneyCarousel - Hero's Journey Crystal Selection Carousel
  *
  * A horizontal snap-scrolling carousel displaying 8 geodes.
- * - Hero/center item: w-52 h-52 (208px)
- * - Side items: w-24 h-24 (96px)
+ * - Hero/center item: w-52 h-52 (208px) via transform scale
+ * - Side items: w-24 h-24 (96px) base size
+ * - Uses fixed snap wrappers for stable scroll calculations
  * - Geode-first visuals (no crystal reveal in this step)
  */
 
@@ -15,8 +16,8 @@ import { JourneyStatus, CrystalSlotState, getCrystalSlotState } from '../src/typ
 const LockIcon: React.FC<{ className?: string }> = ({ className = '' }) => (
   <svg
     className={className}
-    width="20"
-    height="20"
+    width="16"
+    height="16"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -50,6 +51,12 @@ function getGeodeImage(stageCompleted: number): string {
     default: return '/images/geode-closed.png';
   }
 }
+
+// Constants for sizing
+// Side item: 96px (w-24 h-24)
+// Hero item: 208px (w-52 h-52) = 96px * 2.167
+const SIDE_SIZE = 96;
+const HERO_SCALE = 2.167; // 208/96 ≈ 2.167
 
 interface JourneyCarouselProps {
   journeyStatus: JourneyStatus;
@@ -116,15 +123,14 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
     const container = containerRef.current;
     if (container) {
       container.addEventListener('scroll', handleScroll, { passive: true });
-      // Initial calculation
-      handleScroll();
+      // Initial calculation after a brief delay to let layout settle
+      setTimeout(handleScroll, 50);
       return () => container.removeEventListener('scroll', handleScroll);
     }
   }, [handleScroll]);
 
   // Handle item click
   const handleItemClick = (crystalId: string, slotState: CrystalSlotState) => {
-    // Only allow selection in selection or complete mode, and only for available items
     if (slotState === 'available') {
       onSelectCrystal(crystalId);
     }
@@ -154,16 +160,17 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
         )}
       </div>
 
-      {/* Carousel Container */}
+      {/* Carousel Container - fixed height to accommodate hero scale */}
       <div
         ref={containerRef}
-        className="flex items-center gap-6 px-6 overflow-x-auto snap-x snap-mandatory"
+        className="flex items-center gap-4 overflow-x-auto snap-x snap-mandatory"
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
           WebkitOverflowScrolling: 'touch',
-          paddingLeft: 'calc(50% - 104px)', // Center first item (half container - half hero size)
-          paddingRight: 'calc(50% - 104px)', // Center last item
+          paddingLeft: 'calc(50% - 48px)', // Center first item (half container - half side size)
+          paddingRight: 'calc(50% - 48px)',
+          minHeight: '240px', // Accommodate hero size + label
         }}
       >
         {CRYSTALS.map((crystal, index) => {
@@ -179,34 +186,37 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
             geodeImage = getGeodeImage(journeyStatus.stageCompleted);
           }
 
-          // Size classes based on hero state
-          const sizeClasses = isHero
-            ? 'w-52 h-52' // 208px - hero size
-            : 'w-24 h-24'; // 96px - side size
-
           return (
             <div
               key={crystal.id}
               ref={(el) => { itemRefs.current[index] = el; }}
-              className={`
-                snap-center flex-shrink-0 flex flex-col items-center
-                transition-all duration-300 ease-out
-                ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}
-              `}
+              className="snap-center flex-shrink-0 flex flex-col items-center justify-center"
+              style={{
+                width: `${SIDE_SIZE}px`,
+                minWidth: `${SIDE_SIZE}px`,
+              }}
               onClick={() => handleItemClick(crystal.id, slotState)}
             >
-              {/* Geode Container */}
-              <div className={`
-                relative ${sizeClasses}
-                transition-all duration-300 ease-out
-              `}>
+              {/* Geode Container - fixed base size, scales via transform */}
+              <div
+                className={`
+                  relative flex items-center justify-center
+                  transition-transform duration-300 ease-out
+                  ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}
+                `}
+                style={{
+                  width: `${SIDE_SIZE}px`,
+                  height: `${SIDE_SIZE}px`,
+                  transform: isHero ? `scale(${HERO_SCALE})` : 'scale(1)',
+                }}
+              >
                 {/* Geode Image */}
                 <img
                   src={geodeImage}
                   alt={`${crystal.name} Geode`}
                   className={`
                     w-full h-full object-contain
-                    transition-all duration-300
+                    transition-opacity duration-300
                     ${isLocked ? 'opacity-40' : 'opacity-100'}
                     ${isMastered ? 'opacity-60' : ''}
                   `}
@@ -216,22 +226,36 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
                 {/* Lock Overlay for locked items */}
                 {isLocked && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="bg-black/60 rounded-full p-2">
+                    <div className="bg-black/60 rounded-full p-1.5">
                       <LockIcon className="text-white/70" />
                     </div>
                   </div>
                 )}
 
-                {/* Mastered indicator */}
+                {/* Mastered indicator - only on hero */}
                 {isMastered && isHero && (
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-emerald-500/80 text-white text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full">
+                  <div
+                    className="absolute left-1/2 -translate-x-1/2 bg-emerald-500/80 text-white uppercase tracking-wider px-2 py-0.5 rounded-full whitespace-nowrap"
+                    style={{
+                      bottom: '-8px',
+                      fontSize: '8px',
+                      transform: `translateX(-50%) scale(${1/HERO_SCALE})`,
+                    }}
+                  >
                     Mastered
                   </div>
                 )}
 
-                {/* Active/Selected indicator */}
+                {/* Active indicator - only on hero */}
                 {isSelected && journeyStatus.mode === 'active' && isHero && (
-                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-yellow-500/90 text-black text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full">
+                  <div
+                    className="absolute left-1/2 -translate-x-1/2 bg-yellow-500/90 text-black uppercase tracking-wider font-bold px-2 py-0.5 rounded-full whitespace-nowrap"
+                    style={{
+                      top: '-8px',
+                      fontSize: '8px',
+                      transform: `translateX(-50%) scale(${1/HERO_SCALE})`,
+                    }}
+                  >
                     Active
                   </div>
                 )}
@@ -239,10 +263,15 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
 
               {/* Theme Label - only show for hero item */}
               {isHero && (
-                <div className={`
-                  mt-3 text-center transition-opacity duration-300
-                  ${isLocked ? 'opacity-40' : 'opacity-100'}
-                `}>
+                <div
+                  className={`
+                    text-center transition-opacity duration-300 whitespace-nowrap
+                    ${isLocked ? 'opacity-40' : 'opacity-100'}
+                  `}
+                  style={{
+                    marginTop: `${(SIDE_SIZE * HERO_SCALE - SIDE_SIZE) / 2 + 12}px`,
+                  }}
+                >
                   <p className={`
                     text-sm font-medium uppercase tracking-wider
                     ${isMastered ? 'text-emerald-400' : 'text-white/80'}
@@ -256,7 +285,7 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
         })}
       </div>
 
-      {/* Selection hint for hero item */}
+      {/* Selection hint */}
       {journeyStatus.mode === 'selection' && (
         <div className="text-center mt-4">
           <p className="text-xs text-white/40">Scroll to browse • Tap to begin</p>
