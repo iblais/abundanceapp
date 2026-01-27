@@ -100,17 +100,19 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
       if (selectedIndex !== -1) {
         setActiveIndex(selectedIndex);
         // Smooth scroll to center the selected geode within the carousel
-        const selectedItem = itemRefs.current[selectedIndex];
-        if (selectedItem && containerRef.current) {
-          // Use setTimeout to ensure DOM has updated with new sizes first
+        // Use requestAnimationFrame + setTimeout to ensure DOM has rendered with new sizes
+        requestAnimationFrame(() => {
           setTimeout(() => {
-            selectedItem.scrollIntoView({
-              behavior: 'smooth',
-              inline: 'center',
-              block: 'nearest', // Prevents vertical page jump
-            });
-          }, 50);
-        }
+            const selectedItem = itemRefs.current[selectedIndex];
+            if (selectedItem && containerRef.current) {
+              selectedItem.scrollIntoView({
+                behavior: 'smooth',
+                inline: 'center',
+                block: 'nearest', // Prevents vertical page jump
+              });
+            }
+          }, 100); // Wait for CSS transitions to start
+        });
       }
     }
   }, [journeyStatus.mode, journeyStatus.selectedCrystalId]);
