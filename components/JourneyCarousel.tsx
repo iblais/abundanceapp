@@ -1,12 +1,12 @@
 /**
  * JourneyCarousel - Hero's Journey Crystal Selection Carousel
  *
- * CONTAINMENT RULES:
- * - Self-contained hero section with fixed height (280px mobile)
- * - position: relative with overflow: hidden
- * - Carousel lives ENTIRELY inside hero section
- * - Nothing leaks below the hero boundary
- * - Proper z-index layering
+ * POSITIONING RULES (NON-NEGOTIABLE):
+ * - Hero section: position: relative, height: 280px, overflow: hidden
+ * - Carousel: position: absolute, does NOT occupy document flow
+ * - All geodes on SAME Y centerline (horizontal only)
+ * - NO vertical stacking, NO flex-col, NO translateY
+ * - Geodes MUST disappear at hero boundary
  */
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
@@ -131,17 +131,27 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
   };
 
   return (
-    // HERO SECTION - Self-contained with fixed height and overflow hidden
+    // HERO SECTION - Positioning context with fixed height
+    // This is the ONLY element that occupies document flow
     <section
-      className="relative w-full overflow-hidden"
       style={{
-        height: '220px',
-        minHeight: '220px',
-        maxHeight: '220px',
+        position: 'relative',
+        width: '100%',
+        height: '240px',
+        overflow: 'hidden',
       }}
     >
-      {/* Status Header - positioned at top of hero */}
-      <div className="absolute top-0 left-0 right-0 text-center py-3 px-6 z-10">
+      {/* Status Header - absolute, top of hero */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '12px',
+          left: 0,
+          right: 0,
+          textAlign: 'center',
+          zIndex: 10,
+        }}
+      >
         {journeyStatus.mode === 'selection' && journeyStatus.completedCrystalIds.length === 0 && (
           <p className="text-xs text-white/50 uppercase tracking-widest">Choose your path</p>
         )}
@@ -162,13 +172,21 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
         )}
       </div>
 
-      {/* Carousel Container - centered vertically in hero */}
+      {/* Carousel Container - ABSOLUTE, does NOT occupy document flow */}
       <div
         ref={containerRef}
-        className="absolute left-0 right-0 flex flex-row items-center gap-2 overflow-x-scroll overflow-y-hidden"
         style={{
-          top: '40px',
-          height: '150px',
+          position: 'absolute',
+          top: '50px',
+          left: 0,
+          right: 0,
+          height: '140px',
+          display: 'flex',
+          flexDirection: 'row', // HORIZONTAL ONLY
+          alignItems: 'center', // All geodes on same Y centerline
+          gap: '8px',
+          overflowX: 'auto',
+          overflowY: 'hidden',
           scrollSnapType: 'x mandatory',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
@@ -190,40 +208,44 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
             geodeImage = getGeodeImage(journeyStatus.stageCompleted);
           }
 
+          // Size: center = 128px, side = 64px
+          const size = isCenter ? 128 : 64;
+
           return (
             <div
               key={crystal.id}
               ref={(el) => { itemRefs.current[index] = el; }}
-              className="snap-center flex-shrink-0 flex flex-col items-center"
               style={{
-                width: isCenter ? '128px' : '64px',
-                minWidth: isCenter ? '128px' : '64px',
+                scrollSnapAlign: 'center',
+                flexShrink: 0,
+                width: `${size}px`,
+                minWidth: `${size}px`,
+                height: `${size}px`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: isLocked ? 'not-allowed' : 'pointer',
+                opacity: isCenter ? 1 : 0.5,
+                transition: 'all 300ms ease-out',
               }}
               onClick={() => handleItemClick(crystal.id, slotState)}
             >
-              {/* Geode Container - FIXED SIZE with overflow-hidden */}
+              {/* Geode Image - contained within fixed-size box */}
               <div
-                className={`
-                  relative overflow-hidden
-                  transition-all duration-300 ease-out
-                  ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}
-                `}
                 style={{
-                  width: isCenter ? '128px' : '64px',
-                  height: isCenter ? '128px' : '64px',
-                  maxWidth: isCenter ? '128px' : '64px',
-                  maxHeight: isCenter ? '128px' : '64px',
-                  opacity: isCenter ? 1 : 0.5,
+                  position: 'relative',
+                  width: '100%',
+                  height: '100%',
+                  overflow: 'hidden',
                 }}
               >
-                {/* Geode Image */}
                 <img
                   src={geodeImage}
                   alt={`${crystal.name} Geode`}
-                  className="w-full h-full object-contain"
                   style={{
-                    maxWidth: '100%',
-                    maxHeight: '100%',
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
                     opacity: isLocked ? 0.4 : (isMastered && !isCenter ? 0.3 : 1),
                   }}
                   draggable={false}
@@ -231,36 +253,61 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
 
                 {/* Lock Overlay */}
                 {isLocked && (
-                  <div className="absolute inset-0 flex items-center justify-center">
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
                     <div className="bg-black/60 rounded-full p-1">
                       <LockIcon className="text-white/70" />
                     </div>
                   </div>
                 )}
               </div>
-
-              {/* Theme Label - only for center item */}
-              {isCenter && (
-                <div className={`
-                  mt-1 text-center whitespace-nowrap
-                  ${isLocked ? 'opacity-40' : 'opacity-100'}
-                `}>
-                  <p className={`
-                    text-xs font-medium uppercase tracking-wider
-                    ${isMastered ? 'text-emerald-400' : 'text-white/80'}
-                  `}>
-                    {CRYSTAL_THEMES[crystal.id] || crystal.meaning.split('•')[0].trim()}
-                  </p>
-                </div>
-              )}
             </div>
           );
         })}
       </div>
 
-      {/* Selection hint - positioned at bottom of hero */}
+      {/* Theme Label - absolute, below carousel */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '35px',
+          left: 0,
+          right: 0,
+          textAlign: 'center',
+          zIndex: 10,
+        }}
+      >
+        <p className={`
+          text-xs font-medium uppercase tracking-wider
+          ${getCrystalSlotState(CRYSTALS[activeIndex]?.id, journeyStatus) === 'mastered'
+            ? 'text-emerald-400'
+            : 'text-white/80'}
+        `}>
+          {CRYSTAL_THEMES[CRYSTALS[activeIndex]?.id] || ''}
+        </p>
+      </div>
+
+      {/* Selection hint - absolute, bottom of hero */}
       {journeyStatus.mode === 'selection' && (
-        <div className="absolute bottom-2 left-0 right-0 text-center">
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '12px',
+            left: 0,
+            right: 0,
+            textAlign: 'center',
+          }}
+        >
           <p className="text-[10px] text-white/30">Scroll to browse • Tap to begin</p>
         </div>
       )}
