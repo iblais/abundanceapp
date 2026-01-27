@@ -12,7 +12,9 @@ import { aiMentorService } from '../lib/ai-mentor';
 import { revenueCatService, PLANS, PREMIUM_FEATURES, SubscriptionStatus } from '../lib/revenuecat';
 import { CRYSTALS, Crystal } from '../components/AbundanceComponents';
 import { GeodeCracker } from '../components/GeodeCracker';
-import { UserProgress, DEFAULT_USER_PROGRESS, MAX_CRACK_LEVEL, TOTAL_GEODES } from '../src/types/journey';
+import { JourneyCarousel } from '../components/JourneyCarousel';
+import { UserProgress, DEFAULT_USER_PROGRESS, MAX_CRACK_LEVEL, TOTAL_GEODES, JourneyStatus, DEFAULT_JOURNEY_STATUS } from '../src/types/journey';
+import { useJourneyState } from '../src/hooks/useJourneyState';
 
 // Types
 type Screen = 'welcome' | 'arrival' | 'onboarding' | 'rhythm' | 'dashboard' | 'meditations' | 'journal' | 'progress' | 'mentor' | 'settings' | 'profile' | 'player' | 'board' | 'gratitude' | 'quickshifts' | 'breathing' | 'learn' | 'article' | 'visualizations' | 'visualizationPlayer' | 'emotionalReset' | 'soundscapes' | 'audiobooks' | 'paywall' | 'pricing' | 'reminders' | 'notifications' | 'energyMode' | 'voiceSelector';
@@ -1129,7 +1131,9 @@ const RhythmScreen: React.FC<{ onComplete: (morning: string, evening: string) =>
 const DashboardScreen: React.FC<{
   user: UserState;
   onNavigate: (screen: Screen) => void;
-}> = ({ user, onNavigate }) => {
+  journeyStatus: JourneyStatus;
+  onSelectCrystal: (crystalId: string) => void;
+}> = ({ user, onNavigate, journeyStatus, onSelectCrystal }) => {
   const quickActions = [
     { title: 'Quick Shifts', subtitle: 'Instant reset exercises.', icon: Icons.heart, screen: 'quickshifts' as Screen },
     { title: 'Gratitude Journal', subtitle: 'Capture what you are grateful for.', icon: Icons.journal, screen: 'gratitude' as Screen },
@@ -1153,6 +1157,14 @@ const DashboardScreen: React.FC<{
         </div>
       </div>
 
+      {/* Journey Carousel - ABOVE Morning Visioneering in selection/complete mode */}
+      {(journeyStatus.mode === 'selection' || journeyStatus.mode === 'complete') && (
+        <JourneyCarousel
+          journeyStatus={journeyStatus}
+          onSelectCrystal={onSelectCrystal}
+        />
+      )}
+
       {/* Featured: Morning Visioneering Card */}
       <div
         className={styles.featuredCard}
@@ -1172,6 +1184,14 @@ const DashboardScreen: React.FC<{
           </div>
         </div>
       </div>
+
+      {/* Journey Carousel - BELOW Morning Visioneering in active mode */}
+      {journeyStatus.mode === 'active' && (
+        <JourneyCarousel
+          journeyStatus={journeyStatus}
+          onSelectCrystal={onSelectCrystal}
+        />
+      )}
 
       {/* Shift Your State Button */}
       <button
@@ -5967,10 +5987,18 @@ export default function Home() {
   const [currentAudioSession, setCurrentAudioSession] = useState<AudioSession | null>(null);
   const [showEnergyMode, setShowEnergyMode] = useState(false);
 
-  // Journey Progress State (Hero's Path System)
+  // Journey Progress State (Hero's Path System) - Legacy
   const [userProgress, setUserProgress] = useState<UserProgress>(DEFAULT_USER_PROGRESS);
   const [showGeodeCracker, setShowGeodeCracker] = useState(false);
   const [selectedJourneyCrystal, setSelectedJourneyCrystal] = useState<Crystal | null>(null);
+
+  // New Journey State (Prompt 1 foundation)
+  const {
+    journeyStatus,
+    selectCrystal,
+    completeStage,
+    resetJourney,
+  } = useJourneyState();
 
   // Screen to URL path mapping
   const screenToPath: Record<Screen, string> = {
@@ -6207,6 +6235,8 @@ export default function Home() {
           <DashboardScreen
             user={user}
             onNavigate={navigateToScreen}
+            journeyStatus={journeyStatus}
+            onSelectCrystal={selectCrystal}
           />
         );
       case 'meditations':
@@ -6384,6 +6414,8 @@ export default function Home() {
           <DashboardScreen
             user={user}
             onNavigate={navigateToScreen}
+            journeyStatus={journeyStatus}
+            onSelectCrystal={selectCrystal}
           />
         );
     }
