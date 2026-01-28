@@ -1609,7 +1609,8 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  /* overflow-y must NOT be hidden for sticky positioning to work */
 }
 
 /* Breathing ambient background glow */
