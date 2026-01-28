@@ -146,10 +146,13 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
 
       <section
         style={{
-          position: 'relative',
+          position: isHeroMode ? 'sticky' : 'relative',
+          top: isHeroMode ? '0' : undefined,
           width: '100%',
           height: '280px',
           overflow: 'hidden',
+          backgroundColor: '#000', // Prevent content showing through
+          zIndex: isHeroMode ? 20 : 1,
         }}
       >
         {/* Status Header */}
