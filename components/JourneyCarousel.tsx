@@ -233,8 +233,8 @@ export const JourneyCarousel: React.FC<JourneyCarouselProps> = ({
             {/* CENTER: Selected Hero Geode - ALWAYS VISIBLE */}
             <div
               style={{
-                width: `${GEODE_SIZE.SELECTED}px`,
-                height: `${GEODE_SIZE.SELECTED}px`,
+                width: `${GEODE_SIZE.CENTER_SELECTION}px`,
+                height: `${GEODE_SIZE.CENTER_SELECTION}px`,
                 position: 'relative',
                 animation: 'geode-appear 0.3s ease-out forwards',
               }}
