@@ -33,20 +33,35 @@ import {
 } from 'lucide-react';
 
 // ============================================================================
-// FIREBASE CONFIGURATION
+// FIREBASE CONFIGURATION (Safe parsing with fallbacks)
 // ============================================================================
 
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'abundance-recode-app';
-const firebaseConfig = typeof __firebase_config !== 'undefined'
-  ? JSON.parse(__firebase_config)
-  : {
-      apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
-      authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "",
-      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "",
-      storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "",
-      messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "",
-      appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || ""
-    };
+
+// Safe Firebase config - start with env vars as default
+let firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "",
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "",
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "",
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || ""
+};
+
+// Try to use global config if available (with safe parsing)
+if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+  try {
+    const parsed = typeof __firebase_config === 'string'
+      ? JSON.parse(__firebase_config)
+      : __firebase_config;
+    if (parsed && typeof parsed === 'object' && parsed.apiKey) {
+      firebaseConfig = parsed;
+    }
+  } catch (e) {
+    console.warn('Firebase config parse failed, using env vars:', e.message);
+  }
+}
+
 const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
 let app, auth, db;
@@ -1352,6 +1367,50 @@ export default function App() {
   const tier = useMemo(() => getTier(stats.totalPoints), [stats.totalPoints]);
   const isPathChosen = selectedGeode !== null;
 
+  // Offline data fallback - load from localStorage on mount
+  useEffect(() => {
+    if (!user?.uid) {
+      try {
+        const offlineStats = localStorage.getItem('abundance-offline-stats');
+        const offlineGoals = localStorage.getItem('abundance-offline-goals');
+        const offlineGratitude = localStorage.getItem('abundance-offline-gratitude');
+        const offlineProgress = localStorage.getItem('abundance-offline-progress');
+
+        if (offlineStats) setStats(JSON.parse(offlineStats));
+        if (offlineGoals) setGoals(JSON.parse(offlineGoals));
+        if (offlineGratitude) setGratitude(JSON.parse(offlineGratitude));
+        if (offlineProgress) setGeodeProgress(JSON.parse(offlineProgress));
+      } catch (e) {
+        console.log('No offline data available');
+      }
+    }
+  }, [user?.uid]);
+
+  // Save to localStorage as backup when data changes
+  useEffect(() => {
+    if (stats.totalPoints > 0) {
+      localStorage.setItem('abundance-offline-stats', JSON.stringify(stats));
+    }
+  }, [stats]);
+
+  useEffect(() => {
+    if (goals.length > 0) {
+      localStorage.setItem('abundance-offline-goals', JSON.stringify(goals));
+    }
+  }, [goals]);
+
+  useEffect(() => {
+    if (gratitude.length > 0) {
+      localStorage.setItem('abundance-offline-gratitude', JSON.stringify(gratitude));
+    }
+  }, [gratitude]);
+
+  useEffect(() => {
+    if (Object.keys(geodeProgress).length > 0) {
+      localStorage.setItem('abundance-offline-progress', JSON.stringify(geodeProgress));
+    }
+  }, [geodeProgress]);
+
   const addPoints = useCallback((pts) => {
     setStats(prev => {
       const newStats = { ...prev, totalPoints: prev.totalPoints + pts };
@@ -1372,23 +1431,42 @@ export default function App() {
     });
   }, [user?.uid]);
 
-  // Auth
+  // Auth with timeout safety net
   useEffect(() => {
+    // Timeout safety net - show app even if auth fails/hangs
+    const timeoutId = setTimeout(() => {
+      console.warn('Auth timeout reached - loading app without auth');
+      setLoading(false);
+    }, 5000);
+
     if (!auth) {
+      clearTimeout(timeoutId);
       setLoading(false);
       return;
     }
+
     const unsub = onAuthStateChanged(auth, async (u) => {
-      if (u) setUser(u);
-      else {
+      clearTimeout(timeoutId);
+      if (u) {
+        setUser(u);
+      } else {
         try {
-          if (initialAuthToken) await signInWithCustomToken(auth, initialAuthToken);
-          else await signInAnonymously(auth);
-        } catch (e) { console.error(e); }
+          if (initialAuthToken) {
+            await signInWithCustomToken(auth, initialAuthToken);
+          } else {
+            await signInAnonymously(auth);
+          }
+        } catch (e) {
+          console.error('Auth error:', e);
+        }
       }
       setLoading(false);
     });
-    return () => unsub();
+
+    return () => {
+      clearTimeout(timeoutId);
+      unsub();
+    };
   }, []);
 
   // Load data
