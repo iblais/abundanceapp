@@ -327,6 +327,138 @@ const Header = ({ stats, tier, userName }) => (
 );
 
 // ============================================================================
+// CROWN OF ABUNDANCE (8 Crystal Progress Indicators)
+// ============================================================================
+
+const CrownOfAbundance = ({ geodes, geodeProgress, selectedGeode, onSelectGeode }) => {
+  const getGeodeState = (geode) => {
+    const progress = geodeProgress[geode.id];
+    if (progress?.stage >= 3) return 'completed';
+    if (geode.id === selectedGeode) return 'active';
+    if (progress?.stage > 0) return 'in-progress';
+    return 'locked';
+  };
+
+  const stateColors = {
+    completed: 'ring-2 ring-amber-400 opacity-100',
+    active: 'ring-2 ring-amber-400 animate-pulse opacity-100',
+    'in-progress': 'ring-1 ring-white/30 opacity-70',
+    locked: 'opacity-30 grayscale'
+  };
+
+  return (
+    <div className="fixed top-16 left-0 right-0 z-30 glass border-b border-white/5 py-2">
+      <div className="flex justify-center items-center gap-2 max-w-lg mx-auto px-4">
+        {geodes.map((geode) => {
+          const state = getGeodeState(geode);
+          const isCompleted = state === 'completed';
+          return (
+            <button
+              key={geode.id}
+              onClick={() => onSelectGeode(geode.id)}
+              className={`relative w-8 h-8 rounded-full flex items-center justify-center transition-all ${stateColors[state]} ${
+                state !== 'locked' ? 'hover:scale-110 cursor-pointer' : 'cursor-default'
+              }`}
+              title={`${geode.name} - ${geode.domain}`}
+            >
+              {isCompleted ? (
+                <div className={`w-6 h-6 rounded-full bg-gradient-to-br ${geode.color} flex items-center justify-center`}>
+                  <Crown className="w-3 h-3 text-white" />
+                </div>
+              ) : (
+                <img
+                  src={`/images/geode-${state === 'in-progress' ? 'cracked' : 'closed'}.png`}
+                  alt={geode.name}
+                  className="w-6 h-6 object-contain"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.parentElement.innerHTML = `<div class="w-6 h-6 rounded-full bg-gradient-to-br ${geode.color} opacity-50"></div>`;
+                  }}
+                />
+              )}
+              {state === 'active' && (
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-amber-400" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// STAGE TASK PANEL (Shows current stage task when path is active)
+// ============================================================================
+
+const StageTaskPanel = ({ geode, geodeProgress, onCompleteStage, addPoints }) => {
+  const [journalEntry, setJournalEntry] = useState('');
+  const progress = geodeProgress[geode?.id] || { stage: 0 };
+  const currentStage = progress.stage || 0;
+  const stageData = geode?.stages?.[currentStage];
+
+  if (!geode || !stageData || currentStage >= 3) return null;
+
+  const handleComplete = () => {
+    if (journalEntry.trim().length < 10) return;
+    onCompleteStage(geode.id, currentStage + 1);
+    addPoints(50);
+    setJournalEntry('');
+  };
+
+  return (
+    <div className={`glass-card-elevated p-6 mx-4 ${geode.glowClass}`}>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${geode.color} flex items-center justify-center`}>
+            <Gem className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h3 className="font-display text-lg text-white">{geode.name}</h3>
+            <p className="text-xs text-gray-400">{geode.domain}</p>
+          </div>
+        </div>
+        <span className="text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 font-medium">
+          Stage {currentStage + 1}/3
+        </span>
+      </div>
+
+      {/* Stage Info */}
+      <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl p-4 mb-4 border border-purple-500/20">
+        <h4 className="text-sm font-semibold text-purple-300 mb-1">{stageData.title}</h4>
+        <p className="text-white">{stageData.task}</p>
+      </div>
+
+      {/* Prompt */}
+      <div className="mb-4">
+        <p className="text-xs text-gray-500 mb-2">Reflection prompt:</p>
+        <p className="text-sm text-amber-300/80 italic">"{stageData.prompt}"</p>
+      </div>
+
+      {/* Journal Entry */}
+      <textarea
+        value={journalEntry}
+        onChange={(e) => setJournalEntry(e.target.value)}
+        placeholder="Write your reflection here... (min 10 characters)"
+        rows={4}
+        className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500/50 resize-none mb-4"
+      />
+
+      {/* Complete Button */}
+      <button
+        onClick={handleComplete}
+        disabled={journalEntry.trim().length < 10}
+        className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-amber-500/20 transition-all flex items-center justify-center gap-2"
+      >
+        <Check className="w-5 h-5" />
+        Complete Stage (+50 pts)
+      </button>
+    </div>
+  );
+};
+
+// ============================================================================
 // GEODE CAROUSEL (Hero's Journey Visual)
 // ============================================================================
 
@@ -610,7 +742,7 @@ const TabNavigation = ({ activeTab, setActiveTab }) => {
 };
 
 // ============================================================================
-// HOME TAB (Selection Mode vs Active Mode)
+// HOME TAB (Selection Mode vs Active Mode - DASHBOARD STAYS ON PAGE)
 // ============================================================================
 
 const HomeTab = ({
@@ -619,12 +751,13 @@ const HomeTab = ({
   geodeProgress,
   selectedGeode,
   setSelectedGeode,
-  setActiveTab
+  onCompleteStage,
+  addPoints
 }) => {
   if (!isPathChosen) {
     // SELECTION MODE - Geode Carousel is hero
     return (
-      <div className="pb-24 space-y-8 pt-6">
+      <div className="pb-24 space-y-8 pt-14">
         <div className="text-center mb-2">
           <h2 className="text-xl font-display text-amber-400/90 tracking-wide">Choose Your Path</h2>
           <p className="text-sm text-gray-500 mt-1">Select a crystal to begin your transformation</p>
@@ -633,10 +766,7 @@ const HomeTab = ({
           geodes={geodes}
           geodeProgress={geodeProgress}
           selectedGeode={selectedGeode}
-          onSelectGeode={(id) => {
-            setSelectedGeode(id);
-            setActiveTab('journey');
-          }}
+          onSelectGeode={(id) => setSelectedGeode(id)}
           isSecondary={false}
         />
         <MorningVisioneeringCard isPriority={false} onStart={() => {}} />
@@ -646,11 +776,13 @@ const HomeTab = ({
     );
   }
 
-  // ACTIVE MODE - Morning Visioneering is hero
+  // ACTIVE MODE - Morning Visioneering is hero, Stage Task Panel below geode
   const activeGeode = geodes.find(g => g.id === selectedGeode);
   return (
-    <div className="pb-24 space-y-6 pt-4">
+    <div className="pb-24 space-y-6 pt-14">
       <MorningVisioneeringCard isPriority={true} onStart={() => {}} />
+
+      {/* Compact Geode Carousel */}
       <div className="mx-4 text-center">
         <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Your Active Path</p>
         <p className="text-sm text-amber-400/80 font-medium">{activeGeode?.name} • {activeGeode?.domain}</p>
@@ -659,14 +791,23 @@ const HomeTab = ({
         geodes={geodes}
         geodeProgress={geodeProgress}
         selectedGeode={selectedGeode}
-        onSelectGeode={(id) => {
-          setSelectedGeode(id);
-          setActiveTab('journey');
-        }}
+        onSelectGeode={(id) => setSelectedGeode(id)}
         isSecondary={true}
       />
-      <RealityShiftBoardCard onNavigate={() => window.location.href = '/board'} />
-      <InnerMentorCard onNavigate={() => window.location.href = '/mentor'} />
+
+      {/* Stage Task Panel - Core Feature */}
+      <StageTaskPanel
+        geode={activeGeode}
+        geodeProgress={geodeProgress}
+        onCompleteStage={onCompleteStage}
+        addPoints={addPoints}
+      />
+
+      {/* Dashboard Tools - Always Accessible */}
+      <div className="space-y-4 pt-2">
+        <RealityShiftBoardCard onNavigate={() => window.location.href = '/board'} />
+        <InnerMentorCard onNavigate={() => window.location.href = '/mentor'} />
+      </div>
     </div>
   );
 };
@@ -1533,6 +1674,14 @@ export default function App() {
       <AmbientBackground activeGeode={selectedGeode} />
       <Header stats={stats} tier={tier} userName="Creator" />
 
+      {/* Crown of Abundance - 8 Crystal Progress Indicators */}
+      <CrownOfAbundance
+        geodes={GEODES}
+        geodeProgress={geodeProgress}
+        selectedGeode={selectedGeode}
+        onSelectGeode={setSelectedGeode}
+      />
+
       <main className="relative z-10">
         {activeTab === 'home' && (
           <HomeTab
@@ -1541,7 +1690,8 @@ export default function App() {
             geodeProgress={geodeProgress}
             selectedGeode={selectedGeode}
             setSelectedGeode={setSelectedGeode}
-            setActiveTab={setActiveTab}
+            onCompleteStage={onCompleteStage}
+            addPoints={addPoints}
           />
         )}
         {activeTab === 'journey' && (
