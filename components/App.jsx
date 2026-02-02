@@ -394,7 +394,7 @@ const GeodeCarousel = ({
     <div className="relative py-8">
       {/* Hero Geode (Center) */}
       <div className="flex justify-center items-center mb-6">
-        <div className={`relative ${geodes[activeIndex]?.glowClass || ''}`}>
+        <div className={`relative geode-hero-glow ${geodes[activeIndex]?.glowClass || ''}`}>
           <button
             onClick={() => onSelectGeode(geodes[activeIndex]?.id)}
             className="geode-hero flex items-center justify-center transition-transform hover:scale-105"
@@ -624,7 +624,11 @@ const HomeTab = ({
   if (!isPathChosen) {
     // SELECTION MODE - Geode Carousel is hero
     return (
-      <div className="pb-24 space-y-6">
+      <div className="pb-24 space-y-8 pt-6">
+        <div className="text-center mb-2">
+          <h2 className="text-xl font-display text-amber-400/90 tracking-wide">Choose Your Path</h2>
+          <p className="text-sm text-gray-500 mt-1">Select a crystal to begin your transformation</p>
+        </div>
         <GeodeCarousel
           geodes={geodes}
           geodeProgress={geodeProgress}
@@ -636,16 +640,21 @@ const HomeTab = ({
           isSecondary={false}
         />
         <MorningVisioneeringCard isPriority={false} onStart={() => {}} />
-        <RealityShiftBoardCard onNavigate={() => {}} />
+        <RealityShiftBoardCard onNavigate={() => window.location.href = '/board'} />
         <InnerMentorCard onNavigate={() => setActiveTab('mentor')} />
       </div>
     );
   }
 
   // ACTIVE MODE - Morning Visioneering is hero
+  const activeGeode = geodes.find(g => g.id === selectedGeode);
   return (
     <div className="pb-24 space-y-6 pt-4">
       <MorningVisioneeringCard isPriority={true} onStart={() => {}} />
+      <div className="mx-4 text-center">
+        <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Your Active Path</p>
+        <p className="text-sm text-amber-400/80 font-medium">{activeGeode?.name} • {activeGeode?.domain}</p>
+      </div>
       <GeodeCarousel
         geodes={geodes}
         geodeProgress={geodeProgress}
@@ -656,7 +665,7 @@ const HomeTab = ({
         }}
         isSecondary={true}
       />
-      <RealityShiftBoardCard onNavigate={() => {}} />
+      <RealityShiftBoardCard onNavigate={() => window.location.href = '/board'} />
       <InnerMentorCard onNavigate={() => setActiveTab('mentor')} />
     </div>
   );
