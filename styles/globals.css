@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /**
  * Abundance Recode - Void Mode Design System
  * True Black & Metallic Gold - Premium OLED Aesthetic
