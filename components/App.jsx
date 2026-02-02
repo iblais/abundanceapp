@@ -641,7 +641,7 @@ const HomeTab = ({
         />
         <MorningVisioneeringCard isPriority={false} onStart={() => {}} />
         <RealityShiftBoardCard onNavigate={() => window.location.href = '/board'} />
-        <InnerMentorCard onNavigate={() => setActiveTab('mentor')} />
+        <InnerMentorCard onNavigate={() => window.location.href = '/mentor'} />
       </div>
     );
   }
@@ -666,7 +666,7 @@ const HomeTab = ({
         isSecondary={true}
       />
       <RealityShiftBoardCard onNavigate={() => window.location.href = '/board'} />
-      <InnerMentorCard onNavigate={() => setActiveTab('mentor')} />
+      <InnerMentorCard onNavigate={() => window.location.href = '/mentor'} />
     </div>
   );
 };
